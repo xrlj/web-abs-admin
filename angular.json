@@ -33,7 +33,9 @@
               }
             ],
             "styles": [
-              "src/styles.less"
+              "src/styles.less",
+              "src/assets/styles/ng-zorro.less",
+              "src/assets/styles/global.less"
             ],
             "scripts": []
           },
