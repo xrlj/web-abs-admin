@@ -12,20 +12,8 @@ const routes: Routes = [
     children: [
       { path: '', component: DashboardComponent },
       {
-        path: 'general',
-        loadChildren: './general/general.module#GeneralModule'
-      },
-      {
         path: 'navigation',
         loadChildren: './navigation/navigation.module#NavigationModule'
-      },
-      {
-        path: 'data-entry',
-        loadChildren: './data-entry/data-entry.module#DataEntryModule'
-      },
-      {
-        path: 'biz',
-        loadChildren: './biz/biz.module#BizModule'
       }
     ]
   },
