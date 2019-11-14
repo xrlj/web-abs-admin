@@ -8,5 +8,9 @@ import { Component, OnInit } from '@angular/core';
 export class AppHeaderComponent implements OnInit {
   constructor() {}
 
-  ngOnInit() {}
+  appName: string;
+
+  ngOnInit() {
+    this.appName = '运营总后台';
+  }
 }
