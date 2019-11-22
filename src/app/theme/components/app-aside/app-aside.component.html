@@ -1,11 +1,11 @@
 <div class="app-aside">
   <div class="app-aside-list">
-    <ul nz-menu [nzInlineCollapsed]="collapsed" nzTheme="dark" nzMode="inline">
+    <ul nz-menu [nzInlineCollapsed]="collapsed" [nzTheme]="theme ? 'dark' : 'light'" nzMode="inline">
       <ng-container *ngFor="let menu of menus">
         <ng-container *ngIf="menu.children; else withoutChild">
-          <li nz-submenu>
+          <li nz-submenu [(nzOpen)]="openMap[menu.title]" (nzOpenChange)="openHandler(menu.title)">
             <span title>
-              <i nz-icon [type]="menu.icon"></i>
+              <i nz-icon [nzType]="menu.icon"></i>
               <span>{{ menu.title }}</span>
             </span>
 
@@ -40,7 +40,7 @@
           <li nz-menu-item>
             <a [routerLink]="menu.link">
               <span title>
-                <i nz-icon [type]="menu.icon"></i>
+                <i nz-icon [nzType]="menu.icon"></i>
                 <span>{{ menu.title }}</span>
               </span>
             </a>

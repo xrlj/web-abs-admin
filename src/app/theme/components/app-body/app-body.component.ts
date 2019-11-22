@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, Event, NavigationEnd } from '@angular/router';
-import { APP_MENUS } from '../../../app-menu';
+import { APP_MENUS } from '../../../mock/app-menu';
 
 const expandMenu = menus => {
   const result = [];
@@ -48,6 +48,8 @@ export class AppBodyComponent implements OnInit {
   ngOnInit() {}
 
   setCurrentBreads() {
+    // tslint:disable-next-line:no-debugger
+    debugger;
     const currentUrl = this.router.url;
     const expandedMenus = expandMenu(APP_MENUS);
 

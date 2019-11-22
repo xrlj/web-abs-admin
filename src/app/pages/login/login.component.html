@@ -1,36 +1,33 @@
-<div nz-row class="login">
-  <div nz-col nzSpan="14"></div>
-  <div nz-col nzSpan="10">
-    <div class="login-form">
-      <form nz-form>
-        <h2>Sign In</h2>
+<div class="login">
+  <img src="assets/images/login-bg.jpg" alt="" />
 
+  <div class="login-content">
+    <div class="form-left">
+      <h3 style="margin: 30px 0px;"><img src="assets/images/logo01.png" alt="" style="max-width: 60px;"></h3>
+      <h3 style="">供应链金融服务平台</h3>
+      <form nz-form [formGroup]="validateForm" class="login-form" (ngSubmit)="submitForm()">
         <nz-form-item>
-          <nz-form-control>
-            <input nz-input placeholder="Username" nzSize="large"/>
+          <nz-form-control nzErrorTip="请输入用户账号!">
+            <nz-input-group nzPrefixIcon="user">
+              <input type="text" nz-input formControlName="userName" placeholder="用户名" />
+            </nz-input-group>
           </nz-form-control>
         </nz-form-item>
-
         <nz-form-item>
-          <nz-form-control>
-            <input nz-input placeholder="Password" nzSize="large"/>
+          <nz-form-control nzErrorTip="请输入密码!">
+            <nz-input-group nzPrefixIcon="lock">
+              <input type="password" nz-input formControlName="password" placeholder="密码" />
+            </nz-input-group>
           </nz-form-control>
         </nz-form-item>
-
         <nz-form-item>
           <nz-form-control>
-            <label nz-checkbox>
-              <span>Remember me</span>
-            </label>
-          </nz-form-control>
-        </nz-form-item>
-
-        <nz-form-item nz-row style="margin-bottom:8px;">
-          <nz-form-control>
-            <button nz-button nzBlock nzSize="large" nzType="primary" (click)="submit()">Submit</button>
+            <button nz-button class="login-form-button" nzType="primary" [disabled]="!validateForm.valid" (click)="submitForm()">登录</button>
           </nz-form-control>
         </nz-form-item>
       </form>
     </div>
+    <img src="assets/images/login-form-right.png" class="form-right" alt="">
+    <div style="clear:both">&nbsp;</div>
   </div>
 </div>

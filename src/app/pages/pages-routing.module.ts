@@ -8,6 +8,11 @@ import { LoginComponent } from './login/login.component';
 const routes: Routes = [
   {
     path: '',
+    redirectTo: '/login',
+    pathMatch: 'full'
+  },
+  {
+    path: 'pages',
     component: DefaultComponent,
     children: [
       { path: '', component: DashboardComponent },

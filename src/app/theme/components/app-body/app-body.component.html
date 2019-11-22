@@ -1,5 +1,9 @@
 <div class="app-body">
   <div class="breadcrumb">
+    <span>
+      <i nz-icon nzType="environment" nzTheme="outline"></i>
+      <span>当前位置：</span>
+    </span>
     <nz-breadcrumb>
       <nz-breadcrumb-item *ngFor="let bread of currentBreads">
         <a [routerLink]="bread.link">{{ bread.title }}</a>

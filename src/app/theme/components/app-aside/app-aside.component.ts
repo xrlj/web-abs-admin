@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Input, Output } from '@angular/core';
-import { APP_MENUS } from '../../../app-menu';
+import { APP_MENUS } from '../../../mock/app-menu';
 
 @Component({
   selector: 'app-aside',
@@ -7,16 +7,52 @@ import { APP_MENUS } from '../../../app-menu';
   styleUrls: ['./app-aside.component.less']
 })
 export class AppAsideComponent implements OnInit {
+
+  constructor() {}
   @Input() collapsed: boolean;
   @Output() toggleCollapsed = new EventEmitter();
 
   menus = APP_MENUS;
 
-  constructor() {}
+  theme  = true;  // 主题
 
-  ngOnInit() {}
+  openMap: { [name: string]: boolean } = {};  // 类似hashMap
+
+  ngOnInit() {
+    this.initOpenMap();
+  }
 
   toggle() {
     this.toggleCollapsed.emit();
+  }
+
+  /**
+   * 用key-value对象，记录每个菜单展开状态，收缩是false（默认），展开是true。
+   */
+  initOpenMap() {
+    for (const i of this.menus) {
+      console.log(i.title);
+      this.openMap[i.title] = false;
+    }
+    console.log(this.openMap);
+  }
+
+  /**
+   * 菜单展开时间回调该方法。然后修改其余一级菜单的展开状态。
+   * @param value 一级菜单名称。
+   */
+  openHandler(value: string): void {
+    for (const key in this.openMap) {
+      if (key !== value) {
+        this.openMap[key] = false;
+      }
+    }
+  }
+
+  /**
+   * TODO 更改主题方法。
+   */
+  changeTheme() {
+    this.theme  = false;
   }
 }
