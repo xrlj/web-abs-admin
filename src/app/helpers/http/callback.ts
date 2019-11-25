@@ -13,7 +13,7 @@ interface Callback {
   /**
    * 请求错误回调。错误处理。
    */
-  error(): void;
+  error(): any;
 
   /**
    * 请求完成后回调。
