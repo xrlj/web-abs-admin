@@ -10,7 +10,7 @@ import {environment} from '../../../environments/environment';
 const httpOptions = {
   headers: new HttpHeaders({
     'Content-Type':  'application/json',
-    Authorization: 'b '
+    Authorization: 'Basic '
   })
 };
 
