@@ -6,6 +6,7 @@
     "no-string-literal": false,
     "array-type": false,
     "arrow-parens": false,
+    "prefer-const": true,
     "deprecation": {
       "severity": "warning"
     },

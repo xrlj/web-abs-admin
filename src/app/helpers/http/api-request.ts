@@ -45,7 +45,6 @@ export class ApiRequest {
   get<P, R>(path: string): void {
     this.assertCallback();
     this.callback.start();
-    console.log('>>>发起请求' + this._url);
     this.http.get<R>(this.url.concat(path))
       .pipe(
         retry(Constants.apiRequest.retryTime),
@@ -56,6 +55,21 @@ export class ApiRequest {
         this.callback.fail(error.status, error.msg);
         this.callback.finally();
     });
+  }
+
+  post<P, R>(path: string, parVo: P): void {
+    this.assertCallback();
+    this.callback.start();
+    this.http.post<R>(this.url.concat(path), parVo, httpOptions)
+      .pipe(retry(Constants.apiRequest.retryTime), catchError(this.handleError))
+      .subscribe(json => {
+        console.log('>>>>success json:' + json);
+        this.callback.ok(json);
+        this.callback.finally();
+      }, error => {
+        this.callback.fail(error.status, error.msg);
+        this.callback.finally();
+      });
   }
 
   /**

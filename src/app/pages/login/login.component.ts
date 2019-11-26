@@ -29,18 +29,17 @@ export class LoginComponent implements OnInit {
     // this.router.navigateByUrl('/pages');
 
     this.apiRequest.handle(new class implements Callback {
-      fail(status: number, msg: any) {
-        alert(status);
-        alert(msg);
+      fail(status: number, msg: any): void {
       }
 
       finally(): void {
       }
 
-      ok(): any {
+      ok(data: any): void {
       }
 
-      start(): void {
+      start(): any[] {
+        return [];
       }
     }).get('/');
   }
