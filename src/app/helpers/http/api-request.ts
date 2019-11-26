@@ -1,58 +1,86 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 import {Constants} from '../constants';
 import {HandleError, HttpErrorHandler} from './http-error-handler';
+import {environment} from '../../../environments/environment';
+
+const httpOptions = {
+  headers: new HttpHeaders({
+    'Content-Type':  'application/json',
+    Authorization: 'b '
+  })
+};
 
 @Injectable()
 export class ApiRequest {
 
+  private _url: string = environment.apiUrl;
+
+  private callback: Callback;
+
   constructor( private http: HttpClient, private httpErrorHandler: HttpErrorHandler) {
   }
 
-  private callback: Callback;
+  set url(url: string) {
+    this._url = url;
+  }
+
+  get url(): string {
+    return this._url;
+  }
 
   handle(callback: Callback): ApiRequest {
     this.callback = callback;
     return this;
   }
 
-  get<P, R>(url: string): void {
+  /**
+   * get请求。
+   * 泛型：P-请求参数对象；R-响应body对象。
+   * @param path url的path路径，如：auth/login
+   */
+  get<P, R>(path: string): void {
     this.assertCallback();
-
-    this.http.get<R>(url)
+    this.callback.start();
+    console.log('>>>发起请求' + this._url);
+    this.http.get<R>(this.url.concat(path))
       .pipe(
         retry(Constants.apiRequest.retryTime),
         catchError(this.handleError)
-      ).subscribe();
+      ).subscribe(json => {
+        this.callback.finally();
+    }, error => {
+        this.callback.fail(error.status, error.msg);
+        this.callback.finally();
+    });
   }
 
+  /**
+   * 判断要先初始化callback对象。否则抛出异常。
+   */
   private assertCallback(): void {
     if (this.callback === null || this.callback === undefined) {
-      throw Error;
+      throw new Error('before init callback object!');
     }
   }
 
   /**
-   * 请求一场处理。
+   * 请求异常处理。
    * @param error 错误信息体。
    */
   private handleError(error: HttpErrorResponse) {
+    debugger;
+    let  errorInfo = {status: 0, msg: '网络异常，稍后再试！'};
     if (error.error instanceof ErrorEvent) {
-      console.error('An error occurred:', error.error.message);
-
-      this.callback.error(error.status, error.error.message);
-    } else {
-      console.error(
-        `Backend returned code ${error.status}, ` +
-        `body was: ${error.error}`);
-
-      this.callback.error(error.status, error.error);
+      console.error('发生请求错误，请检查您的本地网络哦！:', error.error.message);
+    } else { // 后台返回异常，状态码非200
+      console.error(`请求异常： ${JSON.stringify(error.error)}`);
+      errorInfo = {status: error.status, msg: error.error.msg};
     }
 
-    return throwError(
-      'Something bad happened; please try again later.');
+    return throwError(errorInfo);
   }
 }

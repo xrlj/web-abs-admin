@@ -1,11 +1,21 @@
 {
   "extends": "tslint:recommended",
   "rules": {
+    "forin": false,  // 设置成false，使用forin不报错
+    "new-parens": false, // true-调用构造函数时需要用括号。false-不需要，直接new 接口不报错。
+    "no-string-literal": false,
     "array-type": false,
     "arrow-parens": false,
     "deprecation": {
       "severity": "warning"
     },
+    "variable-name": [ // 定义变量命名规则
+      true,
+      "ban-keywords",
+      "check-format",
+      "allow-pascal-case",
+      "allow-leading-underscore"
+    ],
     "component-class-suffix": true,
     "contextual-lifecycle": true,
     "directive-class-suffix": true,
@@ -61,7 +71,7 @@
     "no-redundant-jsdoc": true,
     "no-switch-case-fall-through": true,
     "no-var-requires": false,
-    "object-literal-key-quotes": [
+    "object-literal-key-quotes": [ //key没必要加引号
       true,
       "as-needed"
     ],

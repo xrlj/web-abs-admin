@@ -9,11 +9,15 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { registerLocaleData } from '@angular/common';
 import zh from '@angular/common/locales/zh';
+import {HttpErrorHandler} from './helpers/http/http-error-handler';
+import {ApiRequest} from './helpers/http/api-request';
+import {AppConfig} from './app.config';
+import {CustomBtnComponent} from './components/custom-btn/custom-btn.component';
 
 registerLocaleData(zh);
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, CustomBtnComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -22,7 +26,7 @@ registerLocaleData(zh);
     HttpClientModule,
     BrowserAnimationsModule
   ],
-  providers: [{ provide: NZ_I18N, useValue: zh_CN }],
+  providers: [{ provide: NZ_I18N, useValue: zh_CN }, AppConfig, HttpErrorHandler, ApiRequest],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

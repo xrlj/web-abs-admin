@@ -9,7 +9,7 @@ import {ApiRequest} from '../../helpers/http/api-request';
   styleUrls: ['./login.component.less']
 })
 export class LoginComponent implements OnInit {
-  constructor(private router: Router, private fb: FormBuilder, private apis: ApiRequest) {}
+  constructor(private router: Router, private fb: FormBuilder, private apiRequest: ApiRequest) {}
 
   validateForm: FormGroup;
 
@@ -22,28 +22,26 @@ export class LoginComponent implements OnInit {
   }
 
   submitForm(): void {
-    // tslint:disable-next-line:no-debugger
-    debugger;
-    // @ts-ignore
-    // tslint:disable-next-line:new-parens
-    this.apis.go(new class implements Callback {
-      doing(): any {
-      }
+    for (const i in this.validateForm.controls) {
+      this.validateForm.controls[i].markAsDirty();
+      this.validateForm.controls[i].updateValueAndValidity();
+    }
+    // this.router.navigateByUrl('/pages');
 
-      error(): void {
+    this.apiRequest.handle(new class implements Callback {
+      fail(status: number, msg: any) {
+        alert(status);
+        alert(msg);
       }
 
       finally(): void {
       }
 
-      pre(): void {
+      ok(): any {
       }
-    }).get('url');
-    // tslint:disable-next-line:forin
-    for (const i in this.validateForm.controls) {
-      this.validateForm.controls[i].markAsDirty();
-      this.validateForm.controls[i].updateValueAndValidity();
-    }
-    this.router.navigateByUrl('/pages');
+
+      start(): void {
+      }
+    }).get('/');
   }
 }
