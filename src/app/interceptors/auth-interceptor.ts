@@ -1,25 +1,30 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {
   HttpEvent, HttpInterceptor, HttpHandler, HttpRequest
 } from '@angular/common/http';
 import {ApiPath} from '../api-path';
+import {Router} from '@angular/router';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
-  constructor() {}
+  constructor(private router: Router) {
+  }
 
   intercept(req: HttpRequest<any>, next: HttpHandler) {
     console.log('>>>>>AuthInterceptor');
-    console.log('>>>>>url:' + req.url);
     const url: string = req.url;
-    if (!url.includes(ApiPath.login)) {
-      const authReq = req.clone({ setHeaders: { 'Content-Type':  'application/json' } });
-      return next.handle(authReq);
-    } else {
+    /*if (url.includes(ApiPath.login)) { // 登录
+      // const authReq = req.clone({ setHeaders: { 'Content-Type':  'application/json' } });
+      return next.handle(req);
+    } else { // 非登录请求，带上token
       const authToken = localStorage.getItem('token');
+      if (authToken === undefined || authToken === null) {
+        this.router.navigateByUrl('/login');
+      }
       const authReq = req.clone({ setHeaders: { Authorization: authToken, 'Content-Type':  'application/json' } });
       return next.handle(authReq);
-    }
+    }*/
+    return next.handle(req);
   }
 }

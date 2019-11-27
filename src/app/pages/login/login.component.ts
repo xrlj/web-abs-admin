@@ -42,6 +42,8 @@ export class LoginComponent implements OnInit {
     }
     this.apiRequest.callback(new class implements Callback {
       fail(status: number, msg: string): void {
+        alert(status);
+        alert(msg);
       }
 
       finally(): void {
@@ -53,6 +55,6 @@ export class LoginComponent implements OnInit {
 
       start(): any {
       }
-    }).get(ApiPath.login);
+    }).post<VLoginResp>('/oauth2/token', parVo);
   }
 }
