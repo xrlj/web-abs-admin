@@ -9,8 +9,7 @@ import {environment} from '../../../environments/environment';
 
 const httpOptions = {
   headers: new HttpHeaders({
-    'Content-Type':  'application/json',
-    Authorization: 'Basic '
+    'Content-Version': '0'
   })
 };
 
@@ -19,7 +18,7 @@ export class ApiRequest {
 
   private _url: string = environment.apiUrl;
 
-  private callback: Callback;
+  private handler: Callback;
 
   constructor( private http: HttpClient, private httpErrorHandler: HttpErrorHandler) {
   }
@@ -32,8 +31,8 @@ export class ApiRequest {
     return this._url;
   }
 
-  handle(callback: Callback): ApiRequest {
-    this.callback = callback;
+  callback(callback: Callback): ApiRequest {
+    this.handler = callback;
     return this;
   }
 
@@ -42,41 +41,51 @@ export class ApiRequest {
    * 泛型：P-请求参数对象；R-响应body对象。
    * @param path url的path路径，如：auth/login
    */
-  get<P, R>(path: string): void {
+  get(path: string): ApiRequest {
     this.assertCallback();
-    this.callback.start();
-    this.http.get<R>(this.url.concat(path))
+    this.handler.start();
+    this.http.get(this.url.concat(path), httpOptions)
       .pipe(
         retry(Constants.apiRequest.retryTime),
         catchError(this.handleError)
-      ).subscribe(json => {
-        this.callback.finally();
+      ).subscribe(resp => {
+        console.log(resp);
+        // console.log(resp.data);
+        // const json = JSON.parse(JSON.stringify(resp));
+        // console.log('>>>>success:' + json.success);
+        // this.handler.ok(json);
+        // this.handler.finally();
     }, error => {
-        this.callback.fail(error.status, error.msg);
-        this.callback.finally();
+        this.handler.fail(error.status, error.msg);
+        this.handler.finally();
     });
+    return this;
   }
 
-  post<P, R>(path: string, parVo: P): void {
+  post<R extends VBaseResp>(path: string, parVO: any, version?: string): Callback {
     this.assertCallback();
-    this.callback.start();
-    this.http.post<R>(this.url.concat(path), parVo, httpOptions)
+    this.handler.start();
+    if (version) {
+      httpOptions.headers.set('Content-Version', version);
+    }
+    this.http.post<R>(this.url.concat(path), parVO, httpOptions)
       .pipe(retry(Constants.apiRequest.retryTime), catchError(this.handleError))
-      .subscribe(json => {
-        console.log('>>>>success json:' + json);
-        this.callback.ok(json);
-        this.callback.finally();
+      .subscribe(resp => {
+        console.log(resp);
+        this.handler.ok(resp);
+        this.handler.finally();
       }, error => {
-        this.callback.fail(error.status, error.msg);
-        this.callback.finally();
+        this.handler.fail(error.status, error.msg);
+        this.handler.finally();
       });
+    return this.handler;
   }
 
   /**
    * 判断要先初始化callback对象。否则抛出异常。
    */
   private assertCallback(): void {
-    if (this.callback === null || this.callback === undefined) {
+    if (this.handler === null || this.handler === undefined) {
       throw new Error('before init callback object!');
     }
   }
@@ -86,14 +95,16 @@ export class ApiRequest {
    * @param error 错误信息体。
    */
   private handleError(error: HttpErrorResponse) {
-    debugger;
     let  errorInfo = {status: 0, msg: '网络异常，稍后再试！'};
-    if (error.error instanceof ErrorEvent) {
+    /*if (error.error instanceof ErrorEvent) {
       console.error('发生请求错误，请检查您的本地网络哦！:', error.error.message);
     } else { // 后台返回异常，状态码非200
-      console.error(`请求异常： ${JSON.stringify(error.error)}`);
-      errorInfo = {status: error.status, msg: error.error.msg};
-    }
+      console.error('请求异常： ' + error.message);
+      if (error.error !== undefined ) {
+        console.error(`请求服务器异常： ${JSON.stringify(error.error)}`);
+        errorInfo = {status: error.status, msg: error.error.msg};
+      }
+    }*/
 
     return throwError(errorInfo);
   }

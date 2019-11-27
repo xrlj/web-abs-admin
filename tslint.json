@@ -6,7 +6,7 @@
     "no-string-literal": false,
     "array-type": false,
     "arrow-parens": false,
-    "prefer-const": true,
+    "prefer-const": true, // 检查变量如果没变动，则建议定义为const常量。优化性能。
     "deprecation": {
       "severity": "warning"
     },

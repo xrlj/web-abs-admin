@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import {ApiRequest} from '../../helpers/http/api-request';
+import {ApiPath} from '../../api-path';
+import {VLoginResp} from '../../helpers/vo/resp/v-login-resp';
+import {VLoginReq} from '../../helpers/vo/req/v-login-req';
 
 @Component({
   selector: 'app-login',
@@ -28,19 +31,28 @@ export class LoginComponent implements OnInit {
     }
     // this.router.navigateByUrl('/pages');
 
-    this.apiRequest.handle(new class implements Callback {
-      fail(status: number, msg: any): void {
+    /*this.apiRequest.get<VLoginResp, VLoginResp>(ApiPath.login).callback<VLoginResp>()
+      .start().ok(a: VLoginResp);*/
+
+    const parVo: VLoginReq = {
+      username: 'admin',
+      password: 'admin123',
+      clientid: '0a9cbbbb4f130988',
+      clientDeviceType: 'OTHERS'
+    }
+    this.apiRequest.callback(new class implements Callback {
+      fail(status: number, msg: string): void {
       }
 
       finally(): void {
       }
 
       ok(data: any): void {
+        console.log('>>>----:' + data.success);
       }
 
-      start(): any[] {
-        return [];
+      start(): any {
       }
-    }).get('/');
+    }).get(ApiPath.login);
   }
 }
