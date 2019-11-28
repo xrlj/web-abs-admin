@@ -147,9 +147,9 @@ export class ApiRequest {
     if (error.error instanceof ErrorEvent) {
       console.error('发生请求错误，请检查您的本地网络哦！:', error.error.message);
     } else { // 后台返回异常，状态码非200
-      if (error.error !== undefined && error.error.success) {
+      if (error.error !== undefined && !error.error.success) {
         console.error(`请求服务器异常： ${JSON.stringify(error.error)}`);
-        errorInfo = {status: error.status, msg: error.error.msg};
+        errorInfo = {status: error.error.code, msg: error.error.msg};
       }
     }
 
