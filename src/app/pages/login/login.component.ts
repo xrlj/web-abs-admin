@@ -34,9 +34,9 @@ export class LoginComponent implements OnInit {
     /*this.apiRequest.get<VLoginResp, VLoginResp>(ApiPath.login).callback<VLoginResp>()
       .start().ok(a: VLoginResp);*/
 
-    const parVo: VLoginReq = {
+    const body: VLoginReq = {
       username: 'admin',
-      password: 'admin123',
+      password: 'admin1232',
       clientid: '0a9cbbbb4f130988',
       clientDeviceType: 'OTHERS'
     }
@@ -50,11 +50,11 @@ export class LoginComponent implements OnInit {
       }
 
       ok(data: any): void {
-        console.log('>>>----:' + data.success);
+        console.log('>>>----:' + data.access_token);
       }
 
       start(): any {
       }
-    }).post<VLoginResp>('/oauth2/token', parVo);
+    }).post<VLoginResp>('/serviceauth/auth/login', body);
   }
 }

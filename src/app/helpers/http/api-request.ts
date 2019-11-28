@@ -10,10 +10,23 @@ import {ApiPath} from '../../api-path';
 
 const httpOptions = {
   headers: new HttpHeaders({
-    'Content-Version': '0'
+    'Content-Version': '0',
+    'Content-Type':  'application/json'
   }),
-  params: new HttpParams()
+  params: new HttpParams(),
+  withCredentials: true // 跨域设置
 };
+/*const loginHttpOptions = {
+  headers: {
+    'Content-Version': '0',
+    'Content-Type': 'application/x-www-form-urlencoded',
+    Authorization: 'Basic MVc2Rjd2eHlwd2JQdThFbFY2Y3NYNkplQm0wYTpDYkdmX1R5dlZfaUNVVXdudFAwaFF3MW5fOXNh',
+    'Access-Control-Allow-Origin': 'https://openapi.huawei.com'
+  },
+  params: {
+    grant_type: 'client_credentials'
+  }
+};*/
 
 @Injectable()
 export class ApiRequest {
@@ -64,33 +77,55 @@ export class ApiRequest {
     return this;
   }
 
-  post<R extends VBaseResp>(path: string, body?: any, version?: string): Callback {
-    debugger;
+  /**
+   * post通用请求。
+   * @param path 请求path。
+   * @param body 请求体。和params不同时存在。
+   * @param params 请求参数。
+   * @param contentType 请求内容类型，和params同时存在。
+   * @param version api版本号，默认0
+   */
+  post<R extends VBaseResp>(path: string, body?: any, params?: HttpParams | {}, contentType?: string, version?: string): void {
     this.assertCallback();
     this.handler.start();
     if (version) {
-      httpOptions.headers.set('Content-Version', version);
+      httpOptions.headers = httpOptions.headers.set('Content-Version', version);
     }
-    if (path === '/oauth2/token') {
-      const username: string = body.username;
-      const password: string = body.password;
-      httpOptions.headers = httpOptions.headers.append('Content-Type', 'application/x-www-form-urlencoded');
-      // httpOptions.headers = httpOptions.headers.set('Authorization', 'Basic MVc2Rjd2eHlwd2JQdThFbFY2Y3NYNkplQm0wYTpDYkdmX1R5dlZfaUNVVXdudFAwaFF3MW5fOXNh');
-      // httpOptions.headers = httpOptions.headers.set('Access-Control-Allow-Origin', environment.apiUrl);
-      // const p = {grant_type: 'client_credentials'};
-      httpOptions.params.append('grant_type', 'client_credentials');
+    let client: Observable<R>;
+    if (!body && params && contentType) {
+      if (params instanceof HttpParams) {
+        httpOptions.params = params;
+      } else {
+        for (const key of Object.keys(params)) {
+          if (params.hasOwnProperty(key)) {
+            const v = params[key];
+            httpOptions.params = httpOptions.params.set(key, v);
+          }
+        }
+      }
+      httpOptions.headers = httpOptions.headers.set('Content-Type', contentType);
+
+      client = this.http.post<R>(environment.apiUrl.concat(path), httpOptions);
+    } else {
+      client = this.http.post<R>(environment.apiUrl.concat(path), body, httpOptions);
     }
-    this.http.post<R>('https://openapi.huawei.com:443/oauth2/token', httpOptions)
-      .pipe(retry(Constants.apiRequest.retryTime), catchError(this.handleError))
+
+    client.pipe(retry(Constants.apiRequest.retryTime), catchError(this.handleError))
       .subscribe(resp => {
-        console.log(resp);
-        this.handler.ok(resp);
+        // console.log(resp);
+        const success = resp.success;
+        const code = resp.code;
+        const msg = resp.msg;
+        if (success && code === 200) {
+          this.handler.ok(resp.data);
+        } else {
+          this.handler.fail(code, msg);
+        }
         this.handler.finally();
       }, error => {
         this.handler.fail(error.status, error.msg);
         this.handler.finally();
       });
-    return this.handler;
   }
 
   /**
