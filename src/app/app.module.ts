@@ -14,6 +14,7 @@ import {ApiRequest} from './helpers/http/api-request';
 import {AppConfig} from './app.config';
 import {CustomBtnComponent} from './components/custom-btn/custom-btn.component';
 import {httpInterceptorProviders} from './interceptors';
+import {Utils} from './helpers/utils';
 
 registerLocaleData(zh);
 
@@ -27,7 +28,7 @@ registerLocaleData(zh);
     HttpClientModule,
     BrowserAnimationsModule
   ],
-  providers: [{ provide: NZ_I18N, useValue: zh_CN }, AppConfig, HttpErrorHandler, ApiRequest, httpInterceptorProviders],
+  providers: [{ provide: NZ_I18N, useValue: zh_CN }, Utils, AppConfig, HttpErrorHandler, ApiRequest, httpInterceptorProviders],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
