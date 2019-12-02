@@ -10,7 +10,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { registerLocaleData } from '@angular/common';
 import zh from '@angular/common/locales/zh';
 import {HttpErrorHandler} from './helpers/http/http-error-handler';
-import {ApiRequest} from './helpers/http/api-request';
+import {Api} from './helpers/http/api';
 import {AppConfig} from './app.config';
 import {CustomBtnComponent} from './components/custom-btn/custom-btn.component';
 import {httpInterceptorProviders} from './interceptors';
@@ -28,7 +28,7 @@ registerLocaleData(zh);
     HttpClientModule,
     BrowserAnimationsModule
   ],
-  providers: [{ provide: NZ_I18N, useValue: zh_CN }, Utils, AppConfig, HttpErrorHandler, ApiRequest, httpInterceptorProviders],
+  providers: [{ provide: NZ_I18N, useValue: zh_CN }, Utils, AppConfig, HttpErrorHandler, Api, httpInterceptorProviders],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

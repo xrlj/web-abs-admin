@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {environment} from '../environments/environment';
-import {ApiRequest} from './helpers/http/api-request';
+import {Api} from './helpers/http/api';
 
 /**
  * 主配置类，所有的配置均在此。配置全局变量等。
@@ -8,7 +8,7 @@ import {ApiRequest} from './helpers/http/api-request';
 @Injectable()
 export class AppConfig {
 
-    constructor(public apiRequest: ApiRequest) {
+    constructor(public apiRequest: Api) {
         if (environment.config_global) {
         }
     }

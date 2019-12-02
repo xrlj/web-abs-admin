@@ -48,8 +48,6 @@ export class AppBodyComponent implements OnInit {
   ngOnInit() {}
 
   setCurrentBreads() {
-    // tslint:disable-next-line:no-debugger
-    debugger;
     const currentUrl = this.router.url;
     const expandedMenus = expandMenu(APP_MENUS);
 

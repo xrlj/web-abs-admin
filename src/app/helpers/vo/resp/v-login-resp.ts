@@ -2,7 +2,7 @@ export interface VLoginResp extends VBaseResp {
   data: VLoginRespData;
 }
 
-interface VLoginRespData {
+export interface VLoginRespData {
   access_token: string;
   scope: string;
   token_type: string;

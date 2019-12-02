@@ -4,6 +4,8 @@ import {
 } from '@angular/common/http';
 import {ApiPath} from '../api-path';
 import {Router} from '@angular/router';
+import {Constants} from '../helpers/constants';
+import {Utils} from '../helpers/utils';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -17,7 +19,7 @@ export class AuthInterceptor implements HttpInterceptor {
     if (url.includes(ApiPath.login)) { // 登录
       return next.handle(req);
     } else { // 非登录请求，带上token
-      const authToken = localStorage.getItem('token');
+      const authToken = localStorage.getItem(Constants.localStorageKey.token);
       if (authToken === undefined || authToken === null) { // token失效
         this.router.navigateByUrl('/login');
       }
