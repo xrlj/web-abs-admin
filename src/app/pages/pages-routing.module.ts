@@ -4,12 +4,22 @@ import { Routes, RouterModule } from '@angular/router';
 import { DefaultComponent, BlankComponent } from '../theme/layouts';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LoginComponent } from './login/login.component';
+import { NotFoundComponent } from './not-found/not-found.component';
+import {InitComponent} from './init/init.component';
 
 const routes: Routes = [
   {
     path: '',
     redirectTo: '/login',
     pathMatch: 'full'
+  },
+  {
+    path: '',
+    component: BlankComponent,
+    children: [
+      { path: 'login', component: LoginComponent },
+      { path: 'init', component: InitComponent }
+    ]
   },
   {
     path: 'pages',
@@ -22,11 +32,7 @@ const routes: Routes = [
       }
     ]
   },
-  {
-    path: '',
-    component: BlankComponent,
-    children: [{ path: 'login', component: LoginComponent }]
-  }
+  { path: '**', component: NotFoundComponent }
 ];
 
 @NgModule({

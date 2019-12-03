@@ -1,7 +1,9 @@
 import {Buffer} from 'buffer';
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Md5} from 'ts-md5/dist/md5';
-import { JwtHelperService } from '@auth0/angular-jwt'; // https://github.com/auth0/angular2-jwt
+// https://github.com/auth0/angular2-jwt
+import {JwtHelperService} from '@auth0/angular-jwt';
+import {JwtKvEnum} from './enum/jwt-kv-enum';
 
 @Injectable()
 export class Utils {
@@ -40,17 +42,49 @@ export class Utils {
   jwtTokenDecode(token: string): any {
     const helper = new JwtHelperService();
     const decodedToken = helper.decodeToken(token);
-    console.log(decodedToken);
+    console.log(decodedToken.userId);
     return decodedToken;
   }
 
   /**
-   * 判断token是否已经过期。
+   * 判断token是否已经过期。true过期，false未过期。
    * @param token 保存的token。
    */
   jwtTokenIsExpired(token: string): boolean {
     const helper = new JwtHelperService();
     const isExpired = helper.isTokenExpired(token);
     return isExpired;
+  }
+
+  /**
+   * 获取jwt token中保存的自定义字段值。
+   * @param token jwt token
+   * @param jwtKvEnum 枚举
+   */
+  getJwtTokenClaim(token: string, jwtKvEnum: JwtKvEnum): any {
+    const decodeToken = this.jwtTokenDecode(token);
+    switch (jwtKvEnum) {
+      case JwtKvEnum.Username:
+        return decodeToken.username;
+        break;
+      case JwtKvEnum.AppType:
+        return decodeToken.appType;
+        break;
+      case JwtKvEnum.ClientDeviceType:
+        return decodeToken.clientDeviceType;
+        break;
+      case JwtKvEnum.ClientId:
+        return decodeToken.clientid;
+        break;
+      case JwtKvEnum.UserId:
+        return decodeToken.userId;
+        break;
+      case JwtKvEnum.UserType:
+        return decodeToken.userType;
+        break;
+      default:
+        return '';
+        break;
+    }
   }
 }

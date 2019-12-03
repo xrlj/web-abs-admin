@@ -8,6 +8,7 @@ import {ApiPath} from '../../api-path';
 import {environment} from '../../../environments/environment';
 import {Constants} from '../../helpers/constants';
 import {Utils} from '../../helpers/utils';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +16,7 @@ import {Utils} from '../../helpers/utils';
   styleUrls: ['./login.component.less']
 })
 export class LoginComponent implements OnInit {
-  constructor(private router: Router, private fb: FormBuilder, private api: Api, private utils: Utils) {}
+  constructor(private router: Router, private fb: FormBuilder, private api: Api, private utils: Utils, private notification: NzNotificationService) {}
 
   validateForm: FormGroup;
 
@@ -29,10 +30,22 @@ export class LoginComponent implements OnInit {
       password: [null, [Validators.required]],
       remember: [true]
     });
+
+    this.verifyLogin();
   }
 
-  submitForm(status: number, msg: string): void {
-    this.isLoadingOne = true;
+  private verifyLogin(): void {
+    const authToken = localStorage.getItem(Constants.localStorageKey.token);
+    if (authToken && !this.utils.jwtTokenIsExpired(authToken)) { // 已登录且未失效
+      this.router.navigateByUrl('/pages');
+    } else {
+      localStorage.clear();
+    }
+  }
+
+  submitForm(): void {
+    this.router.navigateByUrl('/init');
+    /*this.isLoadingOne = true;
     for (const i in this.validateForm.controls) {
       this.validateForm.controls[i].markAsDirty();
       this.validateForm.controls[i].updateValueAndValidity();
@@ -50,9 +63,8 @@ export class LoginComponent implements OnInit {
       this.utils.jwtTokenDecode(data.access_token);
       this.router.navigateByUrl('/pages');
     }).fail(error => {
-      alert(error.code);
-      alert(error.msg);
       this.isLoadingOne = false;
-    });
+      this.notification.create('error', '登录失败', error.msg);
+    });*/
   }
 }

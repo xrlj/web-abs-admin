@@ -9,9 +9,10 @@ import {ThemeModule} from '../theme/theme.module';
 import {DashboardComponent} from './dashboard/dashboard.component';
 import {LoginComponent} from './login/login.component';
 import { InitComponent } from './init/init.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 @NgModule({
-  declarations: [DashboardComponent, LoginComponent, InitComponent],
+  declarations: [DashboardComponent, LoginComponent, InitComponent, NotFoundComponent],
   imports: [
     CommonModule,
     FormsModule,

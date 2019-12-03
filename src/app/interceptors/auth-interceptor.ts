@@ -10,7 +10,7 @@ import {Utils} from '../helpers/utils';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private utils: Utils) {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler) {
@@ -20,7 +20,12 @@ export class AuthInterceptor implements HttpInterceptor {
       return next.handle(req);
     } else { // 非登录请求，带上token
       const authToken = localStorage.getItem(Constants.localStorageKey.token);
-      if (authToken === undefined || authToken === null) { // token失效
+      if (authToken) { // 已登录
+        const isExpired = this.utils.jwtTokenIsExpired(authToken);
+        if (isExpired) { // token已经失效
+          this.router.navigateByUrl('/login');
+        }
+      } else { // 未登录
         this.router.navigateByUrl('/login');
       }
       const authReq = req.clone({ setHeaders: { Authorization: authToken, 'Content-Type':  'application/json' } });

@@ -9,8 +9,7 @@ import {environment} from '../../../environments/environment';
 
 const httpOptionsCommon = {
   headers: new HttpHeaders({
-    'Content-Version': '0',
-    'Content-Type': 'application/json'
+    'Content-Version': '0'
   }),
   params: new HttpParams(),
   withCredentials: true // 跨域设置
@@ -64,6 +63,7 @@ export class Api {
 
       client = this.http.post(environment.apiUrl.concat(path), httpOptions);
     } else {
+      httpOptions.headers = httpOptions.headers.set('Content-Type', 'application/json');
       client = this.http.post(environment.apiUrl.concat(path), body, httpOptions);
     }
 
@@ -91,6 +91,67 @@ export class Api {
           fail(error);
         }
       });
+
+    // 拟态返回器
+    const result = {
+      ok: fn => {
+        handlers['ok'] = fn;
+        return result;
+      },
+      fail: fn => {
+        handlers['fail'] = fn;
+        return result;
+      }
+    };
+    return result;
+  }
+
+  get(path: string, version?: number, params?: HttpParams | {}): any {
+    if (!path) {
+      throw new Error('url缺少path');
+    }
+    const url = environment.apiUrl.concat(path);
+    const httpOptions = httpOptionsCommon;
+    if (version) {
+      httpOptions.headers = httpOptions.headers.set('Content-Version', version.toString());
+    }
+    let client: Observable<any>;
+    if (params) {
+      if (!(params instanceof HttpParams)) {
+        for (const key of Object.keys(params)) {
+          if (params.hasOwnProperty(key)) {
+            const v = params[key];
+            httpOptions.params = httpOptions.params.set(key, v);
+          }
+        }
+      } else {
+        httpOptions.params = params;
+      }
+    }
+    client = this.http.get(url, httpOptions);
+    const handlers = {};
+    client = client.pipe(retry(Constants.apiRequest.retryTime), catchError(this.handleError));
+    client.subscribe(resp => {
+      const ok = handlers['ok'];
+      const fail = handlers['fail'];
+      const success = resp.success;
+      const code = resp.code;
+      const msg = resp.msg;
+      if (success && code === 200) {
+        if (ok instanceof Function) {
+          ok(resp.data);
+        }
+      } else {
+        if (fail instanceof Function) {
+          fail(code, msg);
+        }
+      }
+    }, error => {
+      const fail = handlers['fail'];
+      if (fail instanceof Function) {
+        fail(error);
+      }
+    });
 
     // 拟态返回器
     const result = {
