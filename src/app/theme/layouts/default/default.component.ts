@@ -15,7 +15,7 @@ export class DefaultComponent implements OnInit {
   constructor(private router: Router, private utils: Utils) {}
 
   ngOnInit() {
-    this.verifyLogin();
+    // this.verifyLogin();
   }
 
   private verifyLogin(): void {

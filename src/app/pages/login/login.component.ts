@@ -44,7 +44,8 @@ export class LoginComponent implements OnInit {
   }
 
   submitForm(): void {
-    this.router.navigateByUrl('/init');
+    // this.router.navigateByUrl('/init');
+    this.router.navigateByUrl('/pages');
     /*this.isLoadingOne = true;
     for (const i in this.validateForm.controls) {
       this.validateForm.controls[i].markAsDirty();
