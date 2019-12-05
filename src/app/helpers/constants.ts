@@ -6,6 +6,7 @@ export const Constants = {
     clientDeviceType: 'BROWSER'
   },
   localStorageKey: {
-    token: 'jwt-token'
+    token: 'jwt-token',
+    menus: 'user-menus'
   }
 };

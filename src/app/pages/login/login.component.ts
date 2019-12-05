@@ -8,7 +8,8 @@ import {ApiPath} from '../../api-path';
 import {environment} from '../../../environments/environment';
 import {Constants} from '../../helpers/constants';
 import {Utils} from '../../helpers/utils';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
+import {UIHelper} from '../../helpers/ui-helper';
+
 
 @Component({
   selector: 'app-login',
@@ -16,7 +17,7 @@ import { NzNotificationService } from 'ng-zorro-antd/notification';
   styleUrls: ['./login.component.less']
 })
 export class LoginComponent implements OnInit {
-  constructor(private router: Router, private fb: FormBuilder, private api: Api, private utils: Utils, private notification: NzNotificationService) {}
+  constructor(private router: Router, private fb: FormBuilder, private api: Api, private utils: Utils, private uiHelper: UIHelper) {}
 
   validateForm: FormGroup;
 
@@ -44,9 +45,7 @@ export class LoginComponent implements OnInit {
   }
 
   submitForm(): void {
-    // this.router.navigateByUrl('/init');
-    this.router.navigateByUrl('/pages');
-    /*this.isLoadingOne = true;
+    this.isLoadingOne = true;
     for (const i in this.validateForm.controls) {
       this.validateForm.controls[i].markAsDirty();
       this.validateForm.controls[i].updateValueAndValidity();
@@ -61,11 +60,10 @@ export class LoginComponent implements OnInit {
     this.api.post(ApiPath.login, body).ok(data => {
       this.isLoadingOne = false;
       localStorage.setItem(Constants.localStorageKey.token, data.access_token);
-      this.utils.jwtTokenDecode(data.access_token);
-      this.router.navigateByUrl('/pages');
+      this.router.navigateByUrl('/init');
     }).fail(error => {
       this.isLoadingOne = false;
-      this.notification.create('error', '登录失败', error.msg);
-    });*/
+      this.uiHelper.msgTipError(error.msg);
+    });
   }
 }

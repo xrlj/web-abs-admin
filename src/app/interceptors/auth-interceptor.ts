@@ -16,13 +16,14 @@ export class AuthInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler) {
     console.log('>>>>>AuthInterceptor');
     const url: string = req.url;
-    if (url.includes(ApiPath.login)) { // 登录
+    if (url.includes(ApiPath.login) || url.includes(ApiPath.logout)) { // 不需要登录携带token请求
       return next.handle(req);
     } else { // 非登录请求，带上token
       const authToken = localStorage.getItem(Constants.localStorageKey.token);
       if (authToken) { // 已登录
         const isExpired = this.utils.jwtTokenIsExpired(authToken);
         if (isExpired) { // token已经失效
+          localStorage.clear();
           this.router.navigateByUrl('/login');
         }
       } else { // 未登录

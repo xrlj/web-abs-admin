@@ -12,10 +12,12 @@ export class DefaultComponent implements OnInit {
   // 控制目录的展开/折叠
   collapsed = false;
 
+  isSpinning = false;
+
   constructor(private router: Router, private utils: Utils) {}
 
   ngOnInit() {
-    // this.verifyLogin();
+    this.verifyLogin();
   }
 
   private verifyLogin(): void {
@@ -28,5 +30,9 @@ export class DefaultComponent implements OnInit {
   onToggleCollapsed(evt) {
     console.log('执行了 onToggleCollapsed');
     this.collapsed = !this.collapsed;
+  }
+
+  showSpinning(isSpinning: boolean) {
+    this.isSpinning = isSpinning;
   }
 }
