@@ -5,7 +5,9 @@ import {Md5} from 'ts-md5/dist/md5';
 import {JwtHelperService} from '@auth0/angular-jwt';
 import {JwtKvEnum} from './enum/jwt-kv-enum';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class Utils {
 
   /**

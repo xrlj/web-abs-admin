@@ -15,7 +15,9 @@ const httpOptionsCommon = {
   withCredentials: true // 跨域设置
 };
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class Api {
 
   private _url: string = environment.apiUrl;
