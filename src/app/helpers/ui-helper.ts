@@ -1,12 +1,24 @@
 import {Injectable} from '@angular/core';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import {Constants} from './constants';
+import {AppPath} from '../app-path';
+import {Utils} from './utils';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UIHelper {
-  constructor(private message: NzMessageService, private notification: NzNotificationService) {}
+  constructor(private utils: Utils, private router: Router, private message: NzMessageService, private notification: NzNotificationService) {}
+
+  /**
+   * 返回。相当按下浏览器返回按钮。
+   */
+  goBack() {
+    // history.go(-1);
+    history.back();
+  }
 
   /**
    * 操作成功提醒UI。
@@ -57,5 +69,27 @@ export class UIHelper {
    */
   notificationWarning(title: string, content: string): void {
     this.notification.create('warning', title, content);
+  }
+
+  /**
+   * 未登录或者已失效,跳转到登录。
+   */
+  verifyLoginAndJumpToLogin() {
+    const authToken = localStorage.getItem(Constants.localStorageKey.token);
+    if (!authToken || this.utils.jwtTokenIsExpired(authToken)) { // 未登录或者已失效
+      this.router.navigateByUrl(AppPath.login);
+    }
+  }
+
+  /**
+   * 已经登录，且登录未失效。跳转到首页。
+   */
+  verifyLoginAndJumpToHome() {
+    const authToken = localStorage.getItem(Constants.localStorageKey.token);
+    if (authToken && !this.utils.jwtTokenIsExpired(authToken)) { // 已登录且未失效
+      this.router.navigateByUrl(AppPath.pages);
+    } else {
+      localStorage.clear();
+    }
   }
 }

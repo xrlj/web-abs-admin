@@ -1,5 +1,6 @@
 import { Component, EventEmitter, OnInit, Input, Output } from '@angular/core';
 import { APP_MENUS } from '../../../mock/app-menu';
+import {Constants} from '../../../helpers/constants';
 
 @Component({
   selector: 'app-aside',
@@ -12,13 +13,15 @@ export class AppAsideComponent implements OnInit {
   @Input() collapsed: boolean;
   @Output() toggleCollapsed = new EventEmitter();
 
-  menus = APP_MENUS;
+  // menus = APP_MENUS;
+  menus: any;
 
   theme  = true;  // 主题
 
   openMap: { [name: string]: boolean } = {};  // 类似hashMap
 
   ngOnInit() {
+    this.menus = JSON.parse(localStorage.getItem(Constants.localStorageKey.menus));
     this.initOpenMap();
   }
 

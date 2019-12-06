@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Api} from '../../helpers/http/api';
-import {Utils} from '../../helpers/utils';
-import { Router } from '@angular/router';
+import {Router} from '@angular/router';
 import {ApiPath} from '../../api-path';
 import {Constants} from '../../helpers/constants';
+import {AppPath} from '../../app-path';
+import {UIHelper} from '../../helpers/ui-helper';
 
 @Component({
   selector: 'app-init',
@@ -12,21 +13,22 @@ import {Constants} from '../../helpers/constants';
 })
 export class InitComponent implements OnInit {
 
-  constructor(private router: Router, private api: Api, private utils: Utils) { }
+  constructor(private router: Router, private api: Api, private uiHelper: UIHelper) { }
 
   ngOnInit() {
     this.init();
   }
 
   init(): void {
+    this.uiHelper.verifyLoginAndJumpToLogin();
     this.api.get(ApiPath.usercentral.getUserMenus)
       .ok(data => {
         console.log(data);
-        localStorage.setItem(Constants.localStorageKey.menus, data);
-        this.router.navigateByUrl('/pages');
+        localStorage.setItem(Constants.localStorageKey.menus, JSON.stringify(data));
+        this.router.navigateByUrl(AppPath.pages);
       })
       .fail(error => {
-        alert(error.msg);
+        this.uiHelper.msgTipError('初始化失败！');
       });
   }
 

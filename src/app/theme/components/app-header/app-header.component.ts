@@ -4,6 +4,7 @@ import {Utils} from '../../../helpers/utils';
 import { Router } from '@angular/router';
 import {ApiPath} from '../../../api-path';
 import {AppBaseComponent} from '../../../app-base.component';
+import {UIHelper} from '../../../helpers/ui-helper';
 
 @Component({
   selector: 'app-header',
@@ -11,13 +12,11 @@ import {AppBaseComponent} from '../../../app-base.component';
   styleUrls: ['./app-header.component.less']
 })
 export class AppHeaderComponent extends AppBaseComponent implements OnInit {
-  constructor(private router: Router, private api: Api, private utils: Utils) {
+  constructor(private router: Router, private api: Api, private uiHelper: UIHelper) {
     super();
   }
 
   appName: string;
-
-  // @Output() loading = new EventEmitter<boolean>();
 
   ngOnInit() {
     this.appName = '运营总后台';
@@ -34,11 +33,12 @@ export class AppHeaderComponent extends AppBaseComponent implements OnInit {
         this.showLoading(false);
         this.router.navigateByUrl('/login'); // 退出成功
       } else {
-        alert('退出失败');
+        this.showLoading(false);
+        this.uiHelper.msgTipError('退出失败');
       }
     }).fail(error => {
       this.showLoading(false);
-      alert('退出失败');
+      this.uiHelper.msgTipError('退出失败');
     });
   }
 }

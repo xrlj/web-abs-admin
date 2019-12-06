@@ -29,6 +29,10 @@ const routes: Routes = [
       {
         path: 'navigation',
         loadChildren: './navigation/navigation.module#NavigationModule'
+      },
+      {
+        path: 'setting',
+        loadChildren: './setting/setting.module#SettingModule'
       }
     ]
   },

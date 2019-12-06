@@ -6,6 +6,9 @@ import {catchError, retry} from 'rxjs/operators';
 import {Constants} from '../constants';
 import {HandleError, HttpErrorHandler} from './http-error-handler';
 import {environment} from '../../../environments/environment';
+import {UIHelper} from '../ui-helper';
+import { Router } from '@angular/router';
+import {AppPath} from '../../app-path';
 
 const httpOptionsCommon = {
   headers: new HttpHeaders({
@@ -22,7 +25,7 @@ export class Api {
 
   private _url: string = environment.apiUrl;
 
-  constructor(private http: HttpClient, private httpErrorHandler: HttpErrorHandler) {
+  constructor(private http: HttpClient, private uiHelper: UIHelper, private router: Router, private httpErrorHandler: HttpErrorHandler) {
   }
 
   set url(url: string) {
@@ -83,11 +86,13 @@ export class Api {
             ok(resp.data);
           }
         } else {
+          this.dealError(code, msg);
           if (fail instanceof Function) {
-            fail(code, msg);
+            fail(resp);
           }
         }
       }, error => {
+        this.dealError(error.code, error.msg);
         const fail = handlers['fail'];
         if (fail instanceof Function) {
           fail(error);
@@ -134,21 +139,23 @@ export class Api {
     const handlers = {};
     client = client.pipe(retry(Constants.apiRequest.retryTime), catchError(this.handleError));
     client.subscribe(resp => {
-      const ok = handlers['ok'];
-      const fail = handlers['fail'];
       const success = resp.success;
       const code = resp.code;
       const msg = resp.msg;
+      const ok = handlers['ok'];
+      const fail = handlers['fail'];
       if (success && code === 200) {
         if (ok instanceof Function) {
           ok(resp.data);
         }
       } else {
+        this.dealError(code, msg);
         if (fail instanceof Function) {
-          fail(code, msg);
+          fail(resp);
         }
       }
     }, error => {
+      this.dealError(error.code, error.msg);
       const fail = handlers['fail'];
       if (fail instanceof Function) {
         fail(error);
@@ -186,5 +193,25 @@ export class Api {
     }
 
     return throwError(errorInfo);
+  }
+
+  private dealError(errorCode: number, msg: string): void {
+    if (errorCode === 401) { // 缺少api验证参数token
+        this.uiHelper.msgTipWarning(msg);
+    } else if (errorCode === 404) {
+      this.uiHelper.msgTipError('无效请求');
+    } else if (errorCode === 500) { // 系统内部未知异常
+      this.uiHelper.msgTipError(msg);
+    } else if (errorCode === 410) { // token已经过期
+      this.uiHelper.msgTipError(msg);
+      localStorage.clear();
+      this.router.navigateByUrl(AppPath.login);
+    } else if (errorCode === 411 || errorCode === 412) { // 无效token或者已退出登录
+      this.uiHelper.msgTipWarning(msg);
+      localStorage.clear();
+      this.router.navigateByUrl(AppPath.login);
+    } else if (errorCode === 405) { // 对接口无访问权限
+      this.uiHelper.msgTipWarning(msg);
+    }
   }
 }

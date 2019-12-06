@@ -9,6 +9,7 @@ import {environment} from '../../../environments/environment';
 import {Constants} from '../../helpers/constants';
 import {Utils} from '../../helpers/utils';
 import {UIHelper} from '../../helpers/ui-helper';
+import {AppPath} from '../../app-path';
 
 
 @Component({
@@ -32,16 +33,7 @@ export class LoginComponent implements OnInit {
       remember: [true]
     });
 
-    this.verifyLogin();
-  }
-
-  private verifyLogin(): void {
-    const authToken = localStorage.getItem(Constants.localStorageKey.token);
-    if (authToken && !this.utils.jwtTokenIsExpired(authToken)) { // 已登录且未失效
-      this.router.navigateByUrl('/pages');
-    } else {
-      localStorage.clear();
-    }
+    this.uiHelper.verifyLoginAndJumpToHome();
   }
 
   submitForm(): void {

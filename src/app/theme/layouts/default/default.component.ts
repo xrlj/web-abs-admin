@@ -1,7 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import {Constants} from '../../../helpers/constants';
-import { Router } from '@angular/router';
-import {Utils} from '../../../helpers/utils';
+import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
+import {UIHelper} from '../../../helpers/ui-helper';
 
 @Component({
   selector: 'app-default',
@@ -14,17 +13,10 @@ export class DefaultComponent implements OnInit {
 
   isSpinning = false;
 
-  constructor(private router: Router, private utils: Utils) {}
+  constructor(private router: Router, private uiHelper: UIHelper) {}
 
   ngOnInit() {
-    this.verifyLogin();
-  }
-
-  private verifyLogin(): void {
-    const authToken = localStorage.getItem(Constants.localStorageKey.token);
-    if (!authToken || this.utils.jwtTokenIsExpired(authToken)) { // 未登录或者已失效
-      this.router.navigateByUrl('/login');
-    }
+    this.uiHelper.verifyLoginAndJumpToLogin();
   }
 
   onToggleCollapsed(evt) {
