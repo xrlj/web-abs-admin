@@ -6,7 +6,7 @@ import {DepartmentManageComponent} from './department-manage/department-manage.c
 import {RoleManageComponent} from './role-manage/role-manage.component';
 import {PermissionManageComponent} from './permission-manage/permission-manage.component';
 import {MenuManageComponent} from './menu-manage/menu-manage.component';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgZorroAntdModule} from 'ng-zorro-antd';
 import {SettingRoutingModule} from './setting-routing.module';
 
@@ -17,6 +17,7 @@ import {SettingRoutingModule} from './setting-routing.module';
     CommonModule,
     FormsModule,
     NgZorroAntdModule,
+    ReactiveFormsModule,
     SettingRoutingModule
   ]
 })

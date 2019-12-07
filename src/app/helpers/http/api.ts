@@ -196,7 +196,7 @@ export class Api {
   }
 
   /**
-   * 系统错误码统一处理。业务错误码再回到函数中处理。
+   * 系统错误码统一处理。业务错误码在回调函数中处理。
    * @param errorCode 错误码
    * @param msg 错误信息。
    */
@@ -204,7 +204,7 @@ export class Api {
     if (errorCode === 401) { // 缺少api验证参数token
         this.uiHelper.msgTipWarning(msg);
     } else if (errorCode === 404) {
-      this.uiHelper.msgTipError('无效请求');
+      this.uiHelper.msgTipError('请求不存在');
     } else if (errorCode === 410) { // token已经过期
       this.uiHelper.msgTipError(msg);
       localStorage.clear();

@@ -25,6 +25,7 @@ export class InitComponent implements OnInit {
     this.status = false;
     this.api.get(ApiPath.usercentral.getUserMenus)
       .ok(data => {
+        console.log('>>>>>菜单内容：');
         console.log(data);
         localStorage.setItem(Constants.localStorageKey.menus, JSON.stringify(data));
         this.router.navigateByUrl(AppPath.pages);
