@@ -195,13 +195,16 @@ export class Api {
     return throwError(errorInfo);
   }
 
+  /**
+   * 系统错误码统一处理。业务错误码再回到函数中处理。
+   * @param errorCode 错误码
+   * @param msg 错误信息。
+   */
   private dealError(errorCode: number, msg: string): void {
     if (errorCode === 401) { // 缺少api验证参数token
         this.uiHelper.msgTipWarning(msg);
     } else if (errorCode === 404) {
       this.uiHelper.msgTipError('无效请求');
-    } else if (errorCode === 500) { // 系统内部未知异常
-      this.uiHelper.msgTipError(msg);
     } else if (errorCode === 410) { // token已经过期
       this.uiHelper.msgTipError(msg);
       localStorage.clear();
@@ -212,6 +215,8 @@ export class Api {
       this.router.navigateByUrl(AppPath.login);
     } else if (errorCode === 405) { // 对接口无访问权限
       this.uiHelper.msgTipWarning(msg);
+    } else if (errorCode === 500) { // 系统内部未知异常
+      this.uiHelper.msgTipError(msg);
     }
   }
 }

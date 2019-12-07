@@ -1,4 +1,11 @@
-<div class="init">
+<div *ngIf="!status" class="init">
   <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
   <div class="init-text"><span>正在初始化……</span></div>
+</div>
+<div *ngIf="status" class="error">
+  <nz-result nzStatus="warning" nzTitle="抱歉，系统初始化失败！！">
+    <div nz-result-extra>
+      <button nz-button nzType="primary" (click)="init()">重试</button>
+    </div>
+  </nz-result>
 </div>

@@ -15,12 +15,14 @@ export class InitComponent implements OnInit {
 
   constructor(private router: Router, private api: Api, private uiHelper: UIHelper) { }
 
+  status = false;
+
   ngOnInit() {
     this.init();
   }
 
   init(): void {
-    this.uiHelper.verifyLoginAndJumpToLogin();
+    this.status = false;
     this.api.get(ApiPath.usercentral.getUserMenus)
       .ok(data => {
         console.log(data);
@@ -28,7 +30,7 @@ export class InitComponent implements OnInit {
         this.router.navigateByUrl(AppPath.pages);
       })
       .fail(error => {
-        this.uiHelper.msgTipError('初始化失败！');
+        this.status = true;
       });
   }
 
