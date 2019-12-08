@@ -80,7 +80,7 @@ export const APP_MENUS = [
       { title: '部门管理', link: '/daa/dropdown' },
       { title: '角色管理', link: '/daa/breadcrumb' },
       { title: '权限管理', link: '/navadfigation/dropdown' },
-      { title: '菜单管理', link: '/navdsigation/menu' },
+      { title: '菜单管理', link: '/pages/setting/menu' },
       { title: '应用管理', link: '/nadfvigation/menu' }
     ]
   }

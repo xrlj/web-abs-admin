@@ -52,7 +52,7 @@ export class LoginComponent implements OnInit {
     this.api.post(ApiPath.login, body).ok(data => {
       this.isLoadingOne = false;
       localStorage.setItem(Constants.localStorageKey.token, data.access_token);
-      this.router.navigateByUrl('/init');
+      this.router.navigateByUrl(AppPath.init);
     }).fail(error => {
       this.isLoadingOne = false;
       this.uiHelper.msgTipError(error.msg);

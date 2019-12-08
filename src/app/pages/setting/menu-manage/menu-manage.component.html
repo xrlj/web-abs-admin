@@ -1,4 +1,5 @@
-<nz-card nzTitle="用户菜单" [nzExtra]="extraTemplate">
+<!--菜单列表-->
+<nz-card nzTitle="用户菜单列表" [nzExtra]="extraTemplate">
   <div style="margin-bottom: 16px;">
     <button nz-button nzType="primary" (click)="showModal()"><i nz-icon type="plus"></i>新增</button>
   </div>
@@ -30,7 +31,6 @@
     </tbody>
   </nz-table>
 </nz-card>
-
 <ng-template #extraTemplate>
   <span style="cursor: pointer;">
     <i nz-icon nzType="sync" nzTheme="outline"></i>
@@ -47,25 +47,35 @@
   (nzOnOk)="handleOk()"
   [nzOkLoading]="isAddOkLoading">
 
-  <nz-radio-group [(ngModel)]="radioValue" (ngModelChange)="selectAddMenuType($event)">
+  <nz-radio-group [(ngModel)]="radioValue" (ngModelChange)="selectAddMenuType($event)" class="menu-type">
+    <label><span>类型</span></label>
     <label nz-radio nzValue="A">菜单</label>
     <label nz-radio nzValue="B">按钮</label>
   </nz-radio-group>
 
-  <form nz-form [formGroup]="validateForm">
+  <form nz-form [formGroup]="addMenuForm">
     <nz-form-item>
-      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="nickname" nzRequired>昵称</nz-form-label>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="menuName" nzRequired>名称</nz-form-label>
       <nz-form-control [nzSm]="10" [nzXs]="24">
-        <input nz-input id="nickname" formControlName="nickname" placeholder="请输入" />
-        <nz-form-explain *ngIf="validateForm.get('nickname')?.dirty && validateForm.get('nickname')?.errors">Please
-          input your nickname!</nz-form-explain>
+        <input nz-input id="menuName" formControlName="menuName" placeholder="菜单名称" />
+        <nz-form-explain *ngIf="addMenuForm.get('menuName')?.dirty && addMenuForm.get('menuName')?.errors">请输入菜单名称!</nz-form-explain>
       </nz-form-control>
     </nz-form-item>
-    <nz-form-item *ngIf="radioType">
-      <nz-form-label [nzSm]="4" [nzXs]="24" nzRequired nzFor="email">邮箱</nz-form-label>
+    <nz-tree-select
+      style="width: 250px"
+      [nzExpandedKeys]="expandKeys"
+      [nzNodes]="nodes"
+      nzShowSearch
+      nzPlaceHolder="Please select"
+      [(ngModel)]="value"
+      (ngModelChange)="onChange($event)"
+    >
+    </nz-tree-select>
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzRequired>邮箱</nz-form-label>
       <nz-form-control [nzSm]="10" [nzXs]="24">
         <input nz-input formControlName="email" id="email" placeholder="请输入" />
-        <nz-form-explain *ngIf="validateForm.get('email')?.dirty && validateForm.get('email')?.errors">
+        <nz-form-explain *ngIf="addMenuForm.get('email')?.dirty && addMenuForm.get('email')?.errors">
           格式错误!
         </nz-form-explain>
       </nz-form-control>

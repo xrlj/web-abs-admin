@@ -24,7 +24,7 @@ export class MenuManageComponent implements OnInit {
   // ===新增对话框相关
   isShowAdd = false;
   isAddOkLoading = false;
-  validateForm: FormGroup;
+  addMenuForm: FormGroup;
   radioValue = 'A';
   radioType: boolean;
 
@@ -95,20 +95,51 @@ export class MenuManageComponent implements OnInit {
     }
   ];
 
+  /*=======新增菜单对话的菜单类型选择=======*/
+  expandKeys = ['100', '1001'];
+  value  = '一级菜单';
+  nodes = [
+    {
+      title: 'parent 1',
+      key: '100',
+      children: [
+        {
+          title: 'parent 1-0',
+          key: '1001',
+          children: [
+            { title: 'leaf 1-0-0', key: '10010', isLeaf: true },
+            { title: 'leaf 1-0-1', key: '10011', isLeaf: true }
+          ]
+        },
+        {
+          title: 'parent 1-1',
+          key: '1002',
+          children: [{ title: 'leaf 1-1-0', key: '10020', isLeaf: true }]
+        }
+      ]
+    }
+  ];
+  onChange($event: string): void {
+    console.log($event);
+  }
+
   ngOnInit() {
     this.listOfMapData.forEach(item => {
       this.mapOfExpandedData[item.key] = this.convertTreeToList(item);
     });
 
     // 新增对话框
-    this.validateForm = this.fb.group({
-      nickname: [null, [Validators.required]],
+    this.addMenuForm = this.fb.group({
+      menuName: [null, [Validators.required]],
       email: [null, [Validators.email, Validators.required]],
       password: [null, [Validators.required]],
       phoneNumberPrefix: ['+86'],
       phoneNumber: [null, [Validators.required]],
       desc: [null, [Validators.required]],
     });
+    setTimeout(() => {
+      this.value = '1001';
+    }, 1000);
   }
 
   /**
@@ -134,6 +165,7 @@ export class MenuManageComponent implements OnInit {
    */
   handleCancel(): void {
     this.isShowAdd = false;
+    this.resetAddDialog();
   }
 
   selectAddMenuType(b: boolean) {
@@ -142,6 +174,11 @@ export class MenuManageComponent implements OnInit {
     } else {
       this.radioType = true;
     }
+  }
+
+  resetAddDialog() {
+    this.addMenuForm.reset();
+    this.radioValue = 'A';
   }
 
   collapse(array: TreeNodeInterface[], data: TreeNodeInterface, $event: boolean): void {
