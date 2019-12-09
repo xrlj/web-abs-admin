@@ -1,8 +1,9 @@
 <!--菜单列表-->
 <nz-card nzTitle="用户菜单列表" [nzExtra]="extraTemplate">
   <div style="margin-bottom: 16px;">
-    <button nz-button nzType="primary" (click)="showModal()"><i nz-icon type="plus"></i>新增</button>
+    <button nz-button nzType="primary" (click)="showAddMenuModal()"><i nz-icon type="plus"></i>新增</button>
   </div>
+  <!--列表-->
   <nz-table #expandTable [nzData]="listOfMapData">
     <thead>
     <tr>
@@ -12,7 +13,7 @@
     </tr>
     </thead>
     <tbody>
-    <ng-container *ngFor="let data of expandTable.data">
+    <!--<ng-container *ngFor="let data of expandTable.data">
       <ng-container *ngFor="let item of mapOfExpandedData[data.key]">
         <tr *ngIf="(item.parent && item.parent.expand) || !item.parent">
           <td
@@ -27,13 +28,13 @@
           <td>{{ item.address }}</td>
         </tr>
       </ng-container>
-    </ng-container>
+    </ng-container>-->
     </tbody>
   </nz-table>
 </nz-card>
 <ng-template #extraTemplate>
   <span style="cursor: pointer;">
-    <i nz-icon nzType="sync" nzTheme="outline"></i>
+    <i nz-icon [nzType]="'sync'" [nzSpin]="false"></i><!--动态加载的，点击刷新的时候把false改成true-->
     <span style="margin-left: 5px;">刷新数据</span>
   </span>
 </ng-template>
@@ -61,23 +62,41 @@
         <nz-form-explain *ngIf="addMenuForm.get('menuName')?.dirty && addMenuForm.get('menuName')?.errors">请输入菜单名称!</nz-form-explain>
       </nz-form-control>
     </nz-form-item>
-    <nz-tree-select
-      style="width: 250px"
-      [nzExpandedKeys]="expandKeys"
-      [nzNodes]="nodes"
-      nzShowSearch
-      nzPlaceHolder="Please select"
-      [(ngModel)]="value"
-      (ngModelChange)="onChange($event)"
-    >
-    </nz-tree-select>
     <nz-form-item>
-      <nz-form-label [nzSm]="4" [nzXs]="24" nzRequired>邮箱</nz-form-label>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="parentMenu" nzRequired>上级菜单</nz-form-label>
       <nz-form-control [nzSm]="10" [nzXs]="24">
-        <input nz-input formControlName="email" id="email" placeholder="请输入" />
-        <nz-form-explain *ngIf="addMenuForm.get('email')?.dirty && addMenuForm.get('email')?.errors">
-          格式错误!
-        </nz-form-explain>
+        <nz-tree-select id="parentMenu" formControlName="parentMenu"
+                        [nzExpandedKeys]="expandKeys"
+                        [nzNodes]="nodes"
+                        nzShowSearch
+                        nzPlaceHolder="一级菜单"
+                        [(ngModel)]="value"
+                        (ngModelChange)="onChange($event)">
+        </nz-tree-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item *ngIf="radioValue === 'A'">
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="routerPath">路由</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24">
+        <input nz-input id="routerPath" formControlName="routerPath" placeholder="路由" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="sortNumber">排序</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24">
+        <nz-input-number id="sortNumber" formControlName="sortNumber" [nzMin]="1" [nzMax]="1000" [nzStep]="1" text="0" style="width: 150px"></nz-input-number>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="menuPermission">授权标志</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24">
+        <input nz-input id="menuPermission" formControlName="menuPermission" placeholder="多个用英文逗号分隔，如：sys:menu:save,sys:menu:select" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item *ngIf="radioValue === 'A'">
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="icon">图标</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24">
+        <input nz-input id="icon" formControlName="icon" placeholder="图标" />
       </nz-form-control>
     </nz-form-item>
   </form>

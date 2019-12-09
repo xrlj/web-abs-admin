@@ -29,9 +29,10 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
     this.validateForm = this.fb.group({
       username: [null, [Validators.required]],
-      password: [null, [Validators.required]],
-      remember: [true]
+      password: [null, [Validators.required]]
     });
+
+    console.log(this.validateForm);
 
     this.uiHelper.verifyLoginAndJumpToHome();
   }
@@ -57,5 +58,13 @@ export class LoginComponent implements OnInit {
       this.isLoadingOne = false;
       this.uiHelper.msgTipError(error.msg);
     });
+  }
+
+  clearUsername() {
+    this.validateForm.controls.username.setValue(null);
+  }
+
+  clearPassword() {
+    this.validateForm.controls.password.setValue(null);
   }
 }

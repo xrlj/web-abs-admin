@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import {MenuManageService} from './menu-manage.service';
 
 export interface TreeNodeInterface {
   key: number;
@@ -19,14 +20,13 @@ export interface TreeNodeInterface {
 })
 export class MenuManageComponent implements OnInit {
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private menuManageService: MenuManageService, private fb: FormBuilder) { }
 
   // ===新增对话框相关
   isShowAdd = false;
   isAddOkLoading = false;
   addMenuForm: FormGroup;
   radioValue = 'A';
-  radioType: boolean;
 
   mapOfExpandedData: { [key: string]: TreeNodeInterface[] } = {};
 
@@ -97,7 +97,7 @@ export class MenuManageComponent implements OnInit {
 
   /*=======新增菜单对话的菜单类型选择=======*/
   expandKeys = ['100', '1001'];
-  value  = '一级菜单';
+  value: any;
   nodes = [
     {
       title: 'parent 1',
@@ -119,33 +119,34 @@ export class MenuManageComponent implements OnInit {
       ]
     }
   ];
-  onChange($event: string): void {
-    console.log($event);
-  }
 
   ngOnInit() {
     this.listOfMapData.forEach(item => {
       this.mapOfExpandedData[item.key] = this.convertTreeToList(item);
     });
 
+    this.initAddMenuDialog();
+  }
+
+  initAddMenuDialog() {
     // 新增对话框
     this.addMenuForm = this.fb.group({
       menuName: [null, [Validators.required]],
-      email: [null, [Validators.email, Validators.required]],
-      password: [null, [Validators.required]],
-      phoneNumberPrefix: ['+86'],
-      phoneNumber: [null, [Validators.required]],
-      desc: [null, [Validators.required]],
+      parentMenu: [null, null],
+      routerPath: [null, null],
+      sortNumber: [null, [Validators.required]],
+      menuPermission: [null, null],
+      icon: [null, null]
     });
-    setTimeout(() => {
+    /*setTimeout(() => {
       this.value = '1001';
-    }, 1000);
+    }, 1000);*/
   }
 
   /**
    * 显示新增对话框
    */
-  showModal(): void {
+  showAddMenuModal(): void {
     this.isShowAdd = true;
   }
 
@@ -165,20 +166,28 @@ export class MenuManageComponent implements OnInit {
    */
   handleCancel(): void {
     this.isShowAdd = false;
-    this.resetAddDialog();
+    this.resetAddMenuDialog();
   }
 
   selectAddMenuType(b: boolean) {
-    if (this.radioValue === 'A') {
-      this.radioType = false;
-    } else {
-      this.radioType = true;
-    }
+    console.log(b);
   }
 
-  resetAddDialog() {
+  /**
+   * 重置新增菜单对话框中表单内容。
+   */
+  resetAddMenuDialog() {
     this.addMenuForm.reset();
     this.radioValue = 'A';
+  }
+
+  /**
+   * 新增菜单表单选择上级菜单回调。
+   * @param $event 事件。
+   */
+  onChange($event: string): void {
+    console.log($event);
+    console.log(this.addMenuForm.value.parentMenu);
   }
 
   collapse(array: TreeNodeInterface[], data: TreeNodeInterface, $event: boolean): void {

@@ -8,14 +8,14 @@
       <form nz-form [formGroup]="validateForm" class="login-form" (ngSubmit)="submitForm()">
         <nz-form-item>
           <nz-form-control nzErrorTip="请输入用户账号!">
-            <nz-input-group nzPrefixIcon="user">
+            <nz-input-group nzPrefixIcon="user" [nzSuffix]="usernameSuffixTemplate">
               <input type="text" nz-input formControlName="username" placeholder="用户名" />
             </nz-input-group>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
           <nz-form-control nzErrorTip="请输入密码!">
-            <nz-input-group nzPrefixIcon="lock">
+            <nz-input-group nzPrefixIcon="lock" [nzSuffix]="pwdSuffixTemplate">
               <input type="password" nz-input formControlName="password" placeholder="密码" />
             </nz-input-group>
           </nz-form-control>
@@ -31,4 +31,25 @@
     <div style="clear:both">&nbsp;</div>
   </div>
 </div>
-
+<ng-template #usernameSuffixTemplate>
+  <i
+  nz-icon
+  nz-tooltip
+  class="ant-input-clear-icon"
+  nzTheme="fill"
+  nzType="close-circle"
+  *ngIf="validateForm.value.username"
+  (click)="clearUsername()">
+  </i>
+</ng-template>
+<ng-template #pwdSuffixTemplate>
+  <i
+    nz-icon
+    nz-tooltip
+    class="ant-input-clear-icon"
+    nzTheme="fill"
+    nzType="close-circle"
+    *ngIf="validateForm.value.password"
+    (click)="clearPassword()">
+  </i>
+</ng-template>
