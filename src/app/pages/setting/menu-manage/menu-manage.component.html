@@ -4,31 +4,39 @@
     <button nz-button nzType="primary" (click)="showAddMenuModal()"><i nz-icon type="plus"></i>新增</button>
   </div>
   <!--列表-->
-  <nz-table #expandTable [nzData]="listOfMapData">
+  <nz-table #expandTable [nzData]="menuList">
     <thead>
     <tr>
-      <th nzWidth="40%">Name</th>
-      <th nzWidth="30%">Age</th>
-      <th>Address</th>
+      <th nzWidth="20%">名称</th>
+      <th nzWidth="10%">图标</th>
+      <th nzWidth="10%">类型</th>
+      <th nzWidth="10%">排序</th>
+      <th nzWidth="20%">路由</th>
+      <th nzWidth="15%">授权标识</th>
+      <th>操作</th>
     </tr>
     </thead>
     <tbody>
-    <!--<ng-container *ngFor="let data of expandTable.data">
-      <ng-container *ngFor="let item of mapOfExpandedData[data.key]">
+    <ng-container *ngFor="let data of expandTable.data">
+      <ng-container *ngFor="let item of menuListOfExpandedData[data.key]">
         <tr *ngIf="(item.parent && item.parent.expand) || !item.parent">
           <td
             [nzIndentSize]="item.level * 20"
             [nzShowExpand]="!!item.children"
             [(nzExpand)]="item.expand"
-            (nzExpandChange)="collapse(mapOfExpandedData[data.key], item, $event)"
+            (nzExpandChange)="collapse(menuListOfExpandedData[data.key], item, $event)"
           >
-            {{ item.name }}
+            {{ item.title }}
           </td>
-          <td>{{ item.age }}</td>
-          <td>{{ item.address }}</td>
+          <td>{{ item.icon }}</td>
+          <td>{{ item.type }}</td>
+          <td>{{ item.sort }}</td>
+          <td>{{ item.link }}</td>
+          <td>{{ item.perms }}</td>
+          <td>删除</td>
         </tr>
       </ng-container>
-    </ng-container>-->
+    </ng-container>
     </tbody>
   </nz-table>
 </nz-card>

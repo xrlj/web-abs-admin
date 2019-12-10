@@ -6,6 +6,7 @@ import {ApiPath} from '../api-path';
 import {Router} from '@angular/router';
 import {Constants} from '../helpers/constants';
 import {Utils} from '../helpers/utils';
+import {AppPath} from '../app-path';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -21,13 +22,13 @@ export class AuthInterceptor implements HttpInterceptor {
     } else { // 非登录请求，带上token
       const authToken = localStorage.getItem(Constants.localStorageKey.token);
       if (authToken) { // 已登录
-        const isExpired = this.utils.jwtTokenIsExpired(authToken);
+        const isExpired = this.utils.jwtTokenIsExpired();
         if (isExpired) { // token已经失效
           localStorage.clear();
-          this.router.navigateByUrl('/login');
+          this.router.navigateByUrl(AppPath.login);
         }
       } else { // 未登录
-        this.router.navigateByUrl('/login');
+        this.router.navigateByUrl(AppPath.login);
       }
       const authReq = req.clone({ setHeaders: { Authorization: authToken, 'Content-Type':  'application/json' } });
       return next.handle(authReq);

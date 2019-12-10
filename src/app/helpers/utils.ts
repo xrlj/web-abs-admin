@@ -4,6 +4,7 @@ import {Md5} from 'ts-md5/dist/md5';
 // https://github.com/auth0/angular2-jwt
 import {JwtHelperService} from '@auth0/angular-jwt';
 import {JwtKvEnum} from './enum/jwt-kv-enum';
+import {Constants} from './constants';
 
 @Injectable({
   providedIn: 'root'
@@ -41,7 +42,11 @@ export class Utils {
    * 解析jwt token。
    * @param token 待解析token。
    */
-  jwtTokenDecode(token: string): any {
+  jwtTokenDecode(): any {
+    const  token = localStorage.getItem(Constants.localStorageKey.token);
+    if (!token) {
+      throw new Error('没有获取到token');
+    }
     const helper = new JwtHelperService();
     const decodedToken = helper.decodeToken(token);
     console.log(decodedToken.userId);
@@ -52,7 +57,11 @@ export class Utils {
    * 判断token是否已经过期。true过期，false未过期。
    * @param token 保存的token。
    */
-  jwtTokenIsExpired(token: string): boolean {
+  jwtTokenIsExpired(): boolean {
+    const  token = localStorage.getItem(Constants.localStorageKey.token);
+    if (!token) {
+      throw new Error('没有获取到token');
+    }
     const helper = new JwtHelperService();
     const isExpired = helper.isTokenExpired(token);
     return isExpired;
@@ -63,8 +72,8 @@ export class Utils {
    * @param token jwt token
    * @param jwtKvEnum 枚举
    */
-  getJwtTokenClaim(token: string, jwtKvEnum: JwtKvEnum): any {
-    const decodeToken = this.jwtTokenDecode(token);
+  getJwtTokenClaim(jwtKvEnum: JwtKvEnum): any {
+    const decodeToken = this.jwtTokenDecode();
     switch (jwtKvEnum) {
       case JwtKvEnum.Username:
         return decodeToken.username;

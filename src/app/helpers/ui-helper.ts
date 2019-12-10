@@ -76,7 +76,7 @@ export class UIHelper {
    */
   verifyLoginAndJumpToLogin() {
     const authToken = localStorage.getItem(Constants.localStorageKey.token);
-    if (!authToken || this.utils.jwtTokenIsExpired(authToken)) { // 未登录或者已失效
+    if (!authToken || this.utils.jwtTokenIsExpired()) { // 未登录或者已失效
       this.router.navigateByUrl(AppPath.login);
     }
   }
@@ -86,7 +86,7 @@ export class UIHelper {
    */
   verifyLoginAndJumpToHome() {
     const authToken = localStorage.getItem(Constants.localStorageKey.token);
-    if (authToken && !this.utils.jwtTokenIsExpired(authToken)) { // 已登录且未失效
+    if (authToken && !this.utils.jwtTokenIsExpired()) { // 已登录且未失效
       this.router.navigateByUrl(AppPath.pages);
     } else {
       localStorage.clear();

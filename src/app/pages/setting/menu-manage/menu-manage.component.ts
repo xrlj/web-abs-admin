@@ -1,17 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MenuManageService} from './menu-manage.service';
-
-export interface TreeNodeInterface {
-  key: number;
-  name: string;
-  age?: number;
-  level?: number;
-  expand?: boolean;
-  address?: string;
-  children?: TreeNodeInterface[];
-  parent?: TreeNodeInterface;
-}
+import {Utils} from '../../../helpers/utils';
+import {JwtKvEnum} from '../../../helpers/enum/jwt-kv-enum';
+import {UIHelper} from '../../../helpers/ui-helper';
+import {VMenuResp} from '../../../helpers/vo/resp/v-menu-resp';
 
 @Component({
   selector: 'app-menu-manage',
@@ -20,7 +13,7 @@ export interface TreeNodeInterface {
 })
 export class MenuManageComponent implements OnInit {
 
-  constructor(private menuManageService: MenuManageService, private fb: FormBuilder) { }
+  constructor(private menuManageService: MenuManageService, private utils: Utils, private uiHelper: UIHelper, private fb: FormBuilder) { }
 
   // ===新增对话框相关
   isShowAdd = false;
@@ -28,74 +21,10 @@ export class MenuManageComponent implements OnInit {
   addMenuForm: FormGroup;
   radioValue = 'A';
 
-  mapOfExpandedData: { [key: string]: TreeNodeInterface[] } = {};
+  menuList: VMenuResp[];
+  menuListOfExpandedData: { [key: string]: VMenuResp[] } = {};
 
-  listOfMapData: TreeNodeInterface[] = [
-    {
-      key: 1,
-      name: 'John Brown sr.',
-      age: 60,
-      address: 'New York No. 1 Lake Park',
-      children: [
-        {
-          key: 11,
-          name: 'John Brown',
-          age: 42,
-          address: 'New York No. 2 Lake Park'
-        },
-        {
-          key: 12,
-          name: 'John Brown jr.',
-          age: 30,
-          address: 'New York No. 3 Lake Park',
-          children: [
-            {
-              key: 121,
-              name: 'Jimmy Brown',
-              age: 16,
-              address: 'New York No. 3 Lake Park'
-            }
-          ]
-        },
-        {
-          key: 13,
-          name: 'Jim Green sr.',
-          age: 72,
-          address: 'London No. 1 Lake Park',
-          children: [
-            {
-              key: 131,
-              name: 'Jim Green',
-              age: 42,
-              address: 'London No. 2 Lake Park',
-              children: [
-                {
-                  key: 1311,
-                  name: 'Jim Green jr.',
-                  age: 25,
-                  address: 'London No. 3 Lake Park'
-                },
-                {
-                  key: 1312,
-                  name: 'Jimmy Green sr.',
-                  age: 18,
-                  address: 'London No. 4 Lake Park'
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      key: 2,
-      name: 'Joe Black',
-      age: 32,
-      address: 'Sidney No. 1 Lake Park'
-    }
-  ];
-
-  /*=======新增菜单对话的菜单类型选择=======*/
+    /*=======新增菜单对话的菜单类型选择=======*/
   expandKeys = ['100', '1001'];
   value: any;
   nodes = [
@@ -121,11 +50,21 @@ export class MenuManageComponent implements OnInit {
   ];
 
   ngOnInit() {
-    this.listOfMapData.forEach(item => {
-      this.mapOfExpandedData[item.key] = this.convertTreeToList(item);
-    });
-
+    this.getMenuByClientId();
     this.initAddMenuDialog();
+  }
+
+  getMenuByClientId() {
+    this.menuManageService.getMenusByClientId(this.utils.getJwtTokenClaim(JwtKvEnum.ClientId))
+      .ok(data => {
+        this.menuList = data;
+        console.log(this.menuList);
+        this.menuList.forEach(item => {
+          this.menuListOfExpandedData[item.key] = this.convertTreeToList(item);
+        });
+      }).fail(error => {
+        this.uiHelper.msgTipError(error.msg);
+    });
   }
 
   initAddMenuDialog() {
@@ -190,7 +129,7 @@ export class MenuManageComponent implements OnInit {
     console.log(this.addMenuForm.value.parentMenu);
   }
 
-  collapse(array: TreeNodeInterface[], data: TreeNodeInterface, $event: boolean): void {
+  collapse(array: VMenuResp[], data: VMenuResp, $event: boolean): void {
     if ($event === false) {
       if (data.children) {
         data.children.forEach(d => {
@@ -204,9 +143,9 @@ export class MenuManageComponent implements OnInit {
     }
   }
 
-  convertTreeToList(root: TreeNodeInterface): TreeNodeInterface[] {
-    const stack: TreeNodeInterface[] = [];
-    const array: TreeNodeInterface[] = [];
+  convertTreeToList(root: VMenuResp): VMenuResp[] {
+    const stack: VMenuResp[] = [];
+    const array: VMenuResp[] = [];
     const hashMap = {};
     stack.push({ ...root, level: 0, expand: false });
 
@@ -223,7 +162,7 @@ export class MenuManageComponent implements OnInit {
     return array;
   }
 
-  visitNode(node: TreeNodeInterface, hashMap: { [key: string]: boolean }, array: TreeNodeInterface[]): void {
+  visitNode(node: VMenuResp, hashMap: { [key: string]: boolean }, array: VMenuResp[]): void {
     if (!hashMap[node.key]) {
       hashMap[node.key] = true;
       array.push(node);

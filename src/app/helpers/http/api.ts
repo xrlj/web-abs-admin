@@ -86,16 +86,18 @@ export class Api {
             ok(resp.data);
           }
         } else {
-          this.dealError(code, msg);
-          if (fail instanceof Function) {
-            fail(resp);
+          if (!this.dealError(code, msg)) {
+            if (fail instanceof Function) {
+              fail(resp);
+            }
           }
         }
       }, error => {
-        this.dealError(error.code, error.msg);
-        const fail = handlers['fail'];
-        if (fail instanceof Function) {
-          fail(error);
+        if (!this.dealError(error.code, error.msg)) {
+          const fail = handlers['fail'];
+          if (fail instanceof Function) {
+            fail(error);
+          }
         }
       });
 
@@ -113,7 +115,7 @@ export class Api {
     return result;
   }
 
-  get(path: string, version?: number, params?: HttpParams | {}): any {
+  get(path: string, params?: HttpParams | {}, version?: number): any {
     if (!path) {
       throw new Error('url缺少path');
     }
@@ -149,16 +151,18 @@ export class Api {
           ok(resp.data);
         }
       } else {
-        this.dealError(code, msg);
-        if (fail instanceof Function) {
-          fail(resp);
+        if (!this.dealError(code, msg)) {
+          if (fail instanceof Function) {
+            fail(resp);
+          }
         }
       }
     }, error => {
-      this.dealError(error.code, error.msg);
-      const fail = handlers['fail'];
-      if (fail instanceof Function) {
-        fail(error);
+      if (!this.dealError(error.code, error.msg)) {
+        const fail = handlers['fail'];
+        if (fail instanceof Function) {
+          fail(error);
+        }
       }
     });
 
@@ -200,23 +204,31 @@ export class Api {
    * @param errorCode 错误码
    * @param msg 错误信息。
    */
-  private dealError(errorCode: number, msg: string): void {
+  private dealError(errorCode: number, msg: string): boolean {
+    let isUnifiedError = true;
     if (errorCode === 401) { // 缺少api验证参数token
-        this.uiHelper.msgTipWarning(msg);
+      isUnifiedError = true;
+      this.uiHelper.msgTipWarning(msg);
     } else if (errorCode === 404) {
+      isUnifiedError = true;
       this.uiHelper.msgTipError('请求不存在');
     } else if (errorCode === 410) { // token已经过期
+      isUnifiedError = true;
       this.uiHelper.msgTipError(msg);
       localStorage.clear();
       this.router.navigateByUrl(AppPath.login);
     } else if (errorCode === 411 || errorCode === 412) { // 无效token或者已退出登录
+      isUnifiedError = true;
       this.uiHelper.msgTipWarning(msg);
       localStorage.clear();
       this.router.navigateByUrl(AppPath.login);
     } else if (errorCode === 405) { // 对接口无访问权限
+      isUnifiedError = true;
       this.uiHelper.msgTipWarning(msg);
     } else if (errorCode === 500) { // 系统内部未知异常
+      isUnifiedError = true;
       this.uiHelper.msgTipError(msg);
     }
+    return isUnifiedError;
   }
 }
