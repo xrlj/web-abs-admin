@@ -5,12 +5,13 @@ import {Constants} from './constants';
 import {AppPath} from '../app-path';
 import {Utils} from './utils';
 import { Router } from '@angular/router';
+import { NzModalService } from 'ng-zorro-antd/modal';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UIHelper {
-  constructor(private utils: Utils, private router: Router, private message: NzMessageService, private notification: NzNotificationService) {}
+  constructor(private utils: Utils, private router: Router, private message: NzMessageService, private notification: NzNotificationService, private modalService: NzModalService) {}
 
   /**
    * 返回。相当按下浏览器返回按钮。
@@ -70,6 +71,88 @@ export class UIHelper {
   notificationWarning(title: string, content: string): void {
     this.notification.create('warning', title, content);
   }
+
+  // =================== 各种通用对话框 start ==================== //
+
+  /**
+   * 普通提示对话框。点击确定按钮会回调。
+   * @param content 提示内容。
+   * @param title 标题。
+   */
+  modalInfo(content: string, title?: string): any {
+    const handlers = {};
+    this.modalService.info({
+      nzTitle: title === undefined ? '提示' : title,
+      nzContent: content,
+      nzOnOk: () => {
+        const ok = handlers['ok'];
+        if (ok instanceof Function) {
+          ok();
+        }
+      }
+    });
+    const result = {
+      ok: fn => {
+        handlers['ok'] = fn;
+        return result;
+      }
+    };
+    return result;
+  }
+
+  modalSuccess(content: string, title?: string) {
+    this.modalService.success({
+      nzTitle: title === undefined ? '成功提示' : title,
+      nzContent: content
+    });
+  }
+
+  /**
+   * 警告对话框。
+   * @param content 内容
+   * @param title 标题
+   */
+  modalWarning(content: string, title?: string) {
+    this.modalService.warning({
+      nzTitle: title === undefined ? '警告提示' : title,
+      nzContent: content
+    });
+  }
+
+  modalError(content: string, title?: string) {
+    this.modalService.error({
+      nzTitle: title === undefined ? '错误提示' : title,
+      nzContent: content
+    });
+  }
+
+  modalConfirm(content: string, title?: string) {
+    const handlers = {};
+    this.modalService.confirm({
+      nzTitle: title === undefined ? '确认提示' : title,
+      nzContent: content,
+      nzOnOk: () => {
+        new Promise((resolve, reject) => {
+          // console.log(reject);
+          // console.log(reject);
+          // setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
+          const ok = handlers['ok'];
+          if (ok instanceof Function) {
+            ok();
+          }
+        }).catch(() => console.log('操作错误!'));
+      }
+    });
+    const result = {
+      ok: fn => {
+        handlers['ok'] = fn;
+        return result;
+      }
+    };
+    return result;
+  }
+
+  // =================== 各种通用对话框 end ==================== //
 
   /**
    * 未登录或者已失效,跳转到登录。

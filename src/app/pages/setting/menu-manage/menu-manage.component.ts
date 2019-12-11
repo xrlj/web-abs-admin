@@ -5,6 +5,7 @@ import {Utils} from '../../../helpers/utils';
 import {JwtKvEnum} from '../../../helpers/enum/jwt-kv-enum';
 import {UIHelper} from '../../../helpers/ui-helper';
 import {VMenuResp} from '../../../helpers/vo/resp/v-menu-resp';
+import { NzModalService } from 'ng-zorro-antd/modal';
 
 @Component({
   selector: 'app-menu-manage',
@@ -13,16 +14,18 @@ import {VMenuResp} from '../../../helpers/vo/resp/v-menu-resp';
 })
 export class MenuManageComponent implements OnInit {
 
-  constructor(private menuManageService: MenuManageService, private utils: Utils, private uiHelper: UIHelper, private fb: FormBuilder) { }
+  constructor(private menuManageService: MenuManageService, private utils: Utils, private uiHelper: UIHelper, private fb: FormBuilder, private modalService: NzModalService) { }
 
   // ===新增对话框相关
   isShowAdd = false;
+  dialogType = 1; // 1-新增；2-修改
   isAddOkLoading = false;
   addMenuForm: FormGroup;
   radioValue = 'A';
 
   menuList: VMenuResp[];
   menuListOfExpandedData: { [key: string]: VMenuResp[] } = {};
+  isRefreshMenuList = false;
 
     /*=======新增菜单对话的菜单类型选择=======*/
   expandKeys = ['100', '1001'];
@@ -50,20 +53,27 @@ export class MenuManageComponent implements OnInit {
   ];
 
   ngOnInit() {
-    this.getMenuByClientId();
+    this.getMenuByClientId(false, 0);
     this.initAddMenuDialog();
   }
 
-  getMenuByClientId() {
-    this.menuManageService.getMenusByClientId(this.utils.getJwtTokenClaim(JwtKvEnum.ClientId))
+  refreshMenuList() {
+    this.isRefreshMenuList = true;
+    this.getMenuByClientId(this.isRefreshMenuList, 0);
+  }
+
+  getMenuByClientId(isRefresh: boolean, type: number) {
+    this.menuManageService.getMenusByClientId(this.utils.getJwtTokenClaim(JwtKvEnum.ClientId), type)
       .ok(data => {
         this.menuList = data;
         console.log(this.menuList);
         this.menuList.forEach(item => {
           this.menuListOfExpandedData[item.key] = this.convertTreeToList(item);
         });
+        this.isRefreshMenuList = false;
       }).fail(error => {
         this.uiHelper.msgTipError(error.msg);
+        this.isRefreshMenuList = false;
     });
   }
 
@@ -77,16 +87,49 @@ export class MenuManageComponent implements OnInit {
       menuPermission: [null, null],
       icon: [null, null]
     });
-    /*setTimeout(() => {
-      this.value = '1001';
-    }, 1000);*/
   }
 
   /**
    * 显示新增对话框
    */
-  showAddMenuModal(): void {
+  showAddMenuModal(type: number): void {
+    this.dialogType = type;
     this.isShowAdd = true;
+  }
+
+  delMenu(menuId: string, name: string) {
+    /*this.uiHelper.modalConfirm(`确定要删除[${name}]菜单吗？`).ok(() => {
+      console.log('调用接口做实际删除');
+      this.menuManageService.delMenuById(menuId)
+        .ok(data => {
+          if (data) {
+            this.refreshMenuList();
+          }
+        })
+        .fail(error => {
+          this.uiHelper.msgTipError(error.msg);
+        });
+    });*/
+
+    this.modalService.confirm({
+      nzTitle: '删除提示',
+      nzContent: `确定要删除[${name}]菜单吗？`,
+      nzOkText: '确定',
+      nzOkType: 'danger',
+      nzOnOk: () => {
+        this.menuManageService.delMenuById(menuId)
+          .ok(data => {
+            if (data) {
+              this.refreshMenuList();
+            }
+          })
+          .fail(error => {
+            this.uiHelper.msgTipError(error.msg);
+          });
+      },
+      nzCancelText: '取消',
+      nzOnCancel: () => console.log('Cancel')
+    });
   }
 
   /**

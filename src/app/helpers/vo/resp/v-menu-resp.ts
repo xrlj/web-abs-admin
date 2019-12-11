@@ -1,15 +1,15 @@
 export interface VMenuResp {
-  children?: VMenuResp[];
+  id: string;
   link: string;
   icon: string;
   perms: string;
-  id: number;
   sort: number;
   title: string;
   type: number;
   key: number;
-  parentId: string;
+  parentId?: string;
   parent?: VMenuResp;
+  children?: VMenuResp[];
   level?: number;
   expand?: boolean;
 }

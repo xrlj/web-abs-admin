@@ -40,9 +40,9 @@ export class Api {
    * post通用请求。
    * @param path 请求path。
    * @param body 请求体。和params不同时存在。
+   * @param version api版本号，默认0
    * @param params 请求参数。
    * @param contentType 请求内容类型，和params同时存在。
-   * @param version api版本号，默认0
    */
   post(path: string, body?: any, version?: number, params?: HttpParams | {}, contentType?: string): any {
     if (path === null || path === undefined) {
@@ -86,18 +86,19 @@ export class Api {
             ok(resp.data);
           }
         } else {
-          if (!this.dealError(code, msg)) {
+          /*if (!this.dealError(code, msg)) {
             if (fail instanceof Function) {
               fail(resp);
             }
+          }*/
+          if (fail instanceof Function) {
+            fail(resp, this.dealError(code, msg));
           }
         }
       }, error => {
-        if (!this.dealError(error.code, error.msg)) {
-          const fail = handlers['fail'];
-          if (fail instanceof Function) {
-            fail(error);
-          }
+        const fail = handlers['fail'];
+        if (fail instanceof Function) {
+          fail(error, this.dealError(error.code, error.msg));
         }
       });
 
@@ -151,18 +152,14 @@ export class Api {
           ok(resp.data);
         }
       } else {
-        if (!this.dealError(code, msg)) {
-          if (fail instanceof Function) {
-            fail(resp);
-          }
+        if (fail instanceof Function) {
+          fail(resp, this.dealError(code, msg));
         }
       }
     }, error => {
-      if (!this.dealError(error.code, error.msg)) {
-        const fail = handlers['fail'];
-        if (fail instanceof Function) {
-          fail(error);
-        }
+      const fail = handlers['fail'];
+      if (fail instanceof Function) {
+        fail(error,  this.dealError(error.code, error.msg));
       }
     });
 

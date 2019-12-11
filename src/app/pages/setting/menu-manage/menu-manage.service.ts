@@ -12,8 +12,18 @@ export class MenuManageService {
   /**
    * 根据clientId获取该应用下所有菜单。
    * @param clientId 应用id。
+   * @param type 菜单类型。1-菜单; 2-按钮
    */
-  getMenusByClientId(clientId: string): any {
-    return this.api.get(`${ApiPath.usercentral.getMenusByClientId}/${clientId}`);
+  getMenusByClientId(clientId: string, type: number): any {
+    return this.api.get(`${ApiPath.usercentral.getMenusByClientId}/${clientId}/${type}`);
+  }
+
+  delMenuById(menuId: string): any {
+    const par = {
+      id: menuId
+    };
+    const path = ApiPath.usercentral.delById;
+    console.log(path);
+    return this.api.post(ApiPath.usercentral.delById, par);
   }
 }

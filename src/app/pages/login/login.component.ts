@@ -32,8 +32,6 @@ export class LoginComponent implements OnInit {
       password: [null, [Validators.required]]
     });
 
-    console.log(this.validateForm);
-
     this.uiHelper.verifyLoginAndJumpToHome();
   }
 
