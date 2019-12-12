@@ -82,7 +82,7 @@ export class Api {
         const success = resp.success;
         const code = resp.code;
         const msg = resp.msg;
-        if (success && code === 200) {
+        if (code === 200 && success) {
           if (ok instanceof Function) {
             ok(resp.data);
           }
