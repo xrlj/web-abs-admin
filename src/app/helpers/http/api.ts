@@ -78,6 +78,7 @@ export class Api {
       .subscribe(resp => {
         const ok = handlers['ok'];
         const fail = handlers['fail'];
+        const final = handlers['final'];
         const success = resp.success;
         const code = resp.code;
         const msg = resp.msg;
@@ -86,19 +87,25 @@ export class Api {
             ok(resp.data);
           }
         } else {
-          /*if (!this.dealError(code, msg)) {
+          if (!this.dealError(code, msg)) {
             if (fail instanceof Function) {
               fail(resp);
             }
-          }*/
-          if (fail instanceof Function) {
-            fail(resp, this.dealError(code, msg));
           }
+        }
+        if (final instanceof Function) {
+          final();
         }
       }, error => {
         const fail = handlers['fail'];
-        if (fail instanceof Function) {
-          fail(error, this.dealError(error.code, error.msg));
+        const final = handlers['final'];
+        if (!this.dealError(error.code, error.msg)) {
+          if (fail instanceof Function) {
+            fail(error);
+          }
+        }
+        if (final instanceof Function) {
+          final();
         }
       });
 
@@ -110,6 +117,10 @@ export class Api {
       },
       fail: fn => {
         handlers['fail'] = fn;
+        return result;
+      },
+      final: fn => {
+        handlers['final'] = fn;
         return result;
       }
     };
@@ -147,19 +158,31 @@ export class Api {
       const msg = resp.msg;
       const ok = handlers['ok'];
       const fail = handlers['fail'];
+      const final = handlers['final'];
       if (success && code === 200) {
         if (ok instanceof Function) {
           ok(resp.data);
         }
       } else {
-        if (fail instanceof Function) {
-          fail(resp, this.dealError(code, msg));
+        if (!this.dealError(code, msg)) {
+          if (fail instanceof Function) {
+            fail(resp);
+          }
         }
+      }
+      if (final instanceof Function) {
+        final();
       }
     }, error => {
       const fail = handlers['fail'];
-      if (fail instanceof Function) {
-        fail(error,  this.dealError(error.code, error.msg));
+      const final = handlers['final'];
+      if (!this.dealError(error.code, error.msg)) {
+        if (fail instanceof Function) {
+          fail(error);
+        }
+      }
+      if (final instanceof Function) {
+        final();
       }
     });
 
@@ -171,6 +194,10 @@ export class Api {
       },
       fail: fn => {
         handlers['fail'] = fn;
+        return result;
+      },
+      final: fn => {
+        handlers['final'] = fn;
         return result;
       }
     };
@@ -184,6 +211,9 @@ export class Api {
   private handleError(error: HttpErrorResponse) {
     console.error('请求异常： ' + error.message);
     let errorInfo = {code: error.status, msg: '网络异常，稍后再试！'};
+    if (error.status === 0) {
+      return throwError(errorInfo);
+    }
     if (error.error instanceof ErrorEvent) {
       console.error('发生请求错误，请检查您的本地网络哦！:', error.error.message);
     } else { // 后台返回异常，状态码非200

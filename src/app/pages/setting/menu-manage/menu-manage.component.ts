@@ -49,26 +49,31 @@ export class MenuManageComponent implements OnInit {
     this.menuManageService.getMenusByClientId(this.utils.getJwtTokenClaim(JwtKvEnum.ClientId), type)
       .ok(data => {
         this.menuList = data;
-        /*this.menuList.forEach(item => {
-          this.menuListOfExpandedData[item.key] = this.convertTreeToList(item);
-          // 设置key
-          /!*if (item.children) {
-            item.key =
-          } else {
-
-          }*!/
-        });*/
-        this.menuList.every((val, index, Array) => {
+        this.menuList.forEach((val, index, array) => {
+          val.key = index + 1; // 一级
+          if (val.children && val.children.length > 0) {
+            val.children.forEach((val1, index1, array1) => {
+              val1.key = val.key * 10 + index1 + 1; // 二级
+              if (val1.children && val1.children.length > 0) {
+                val1.children.forEach((val11, index11, array11) => {
+                  val11.key = val1.key * 10 + index11 + 1; // 三级
+                  if (val11.children && val11.children.length > 0) {
+                    val11.children.forEach((val111, index111, array111) => {
+                      val111.key = val11.key * 10 + index111 + 1; // 四级
+                    });
+                  }
+                });
+              }
+            });
+          }
           this.menuListOfExpandedData[val.key] = this.convertTreeToList(val);
-          val.key = index + 1;
-          return true;
         });
+        debugger;
         console.log(this.menuList);
-
-        this.isRefreshMenuList = false;
       }).fail(error => {
         this.uiHelper.msgTipError(error.msg);
-        this.isRefreshMenuList = false;
+    }).final(() => {
+      this.isRefreshMenuList = false;
     });
   }
 
@@ -90,6 +95,7 @@ export class MenuManageComponent implements OnInit {
   showAddMenuModal(type: number): void {
     this.dialogType = type;
     this.isShowAdd = true;
+    // 设置上级菜单选择列表
     this.menuManageService.getMenusByClientId(this.utils.getJwtTokenClaim(JwtKvEnum.ClientId), 1)
       .ok(data => {
         this.nodes = data;

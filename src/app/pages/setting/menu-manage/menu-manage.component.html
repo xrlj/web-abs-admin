@@ -59,7 +59,7 @@
 </ng-template>
 
 <!--新增菜单对话框-->
-<nz-modal
+<nz-modal *ngIf="isShowAdd"
   [(nzVisible)]="isShowAdd"
   nzWidth="800"
   nzTitle="新增"
