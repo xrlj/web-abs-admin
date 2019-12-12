@@ -209,12 +209,7 @@ export class Api {
     } else if (errorCode === 404) {
       isUnifiedError = true;
       this.uiHelper.msgTipError('请求不存在');
-    } else if (errorCode === 410) { // token已经过期
-      isUnifiedError = true;
-      this.uiHelper.msgTipError(msg);
-      localStorage.clear();
-      this.router.navigateByUrl(AppPath.login);
-    } else if (errorCode === 411 || errorCode === 412) { // 无效token或者已退出登录
+    } else if (errorCode === 410 || errorCode === 411 || errorCode === 412) { // 无效token或者已退出登录
       isUnifiedError = true;
       this.uiHelper.msgTipWarning(msg);
       localStorage.clear();

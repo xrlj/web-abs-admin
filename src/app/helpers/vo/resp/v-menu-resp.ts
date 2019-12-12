@@ -7,6 +7,7 @@ export interface VMenuResp {
   title: string;
   type: number;
   key: number;
+  isLeaf?: boolean;
   parentId?: string;
   parent?: VMenuResp;
   children?: VMenuResp[];

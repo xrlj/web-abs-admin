@@ -28,29 +28,8 @@ export class MenuManageComponent implements OnInit {
   isRefreshMenuList = false;
 
     /*=======新增菜单对话的菜单类型选择=======*/
-  expandKeys = ['100', '1001'];
   value: any;
-  nodes = [
-    {
-      title: 'parent 1',
-      key: '100',
-      children: [
-        {
-          title: 'parent 1-0',
-          key: '1001',
-          children: [
-            { title: 'leaf 1-0-0', key: '10010', isLeaf: true },
-            { title: 'leaf 1-0-1', key: '10011', isLeaf: true }
-          ]
-        },
-        {
-          title: 'parent 1-1',
-          key: '1002',
-          children: [{ title: 'leaf 1-1-0', key: '10020', isLeaf: true }]
-        }
-      ]
-    }
-  ];
+  nodes: VMenuResp[];
 
   ngOnInit() {
     this.getMenuByClientId(0);
@@ -70,9 +49,22 @@ export class MenuManageComponent implements OnInit {
     this.menuManageService.getMenusByClientId(this.utils.getJwtTokenClaim(JwtKvEnum.ClientId), type)
       .ok(data => {
         this.menuList = data;
-        this.menuList.forEach(item => {
+        /*this.menuList.forEach(item => {
           this.menuListOfExpandedData[item.key] = this.convertTreeToList(item);
+          // 设置key
+          /!*if (item.children) {
+            item.key =
+          } else {
+
+          }*!/
+        });*/
+        this.menuList.every((val, index, Array) => {
+          this.menuListOfExpandedData[val.key] = this.convertTreeToList(val);
+          val.key = index + 1;
+          return true;
         });
+        console.log(this.menuList);
+
         this.isRefreshMenuList = false;
       }).fail(error => {
         this.uiHelper.msgTipError(error.msg);
@@ -98,11 +90,30 @@ export class MenuManageComponent implements OnInit {
   showAddMenuModal(type: number): void {
     this.dialogType = type;
     this.isShowAdd = true;
-    /*this.menuManageService.getMenusByClientId(this.utils.getJwtTokenClaim(JwtKvEnum.ClientId), 1)
+    this.menuManageService.getMenusByClientId(this.utils.getJwtTokenClaim(JwtKvEnum.ClientId), 1)
       .ok(data => {
         this.nodes = data;
+        this.nodes.forEach(item => {
+          if (item.children) {
+            item.children.forEach(item2 => {
+              if (item2.children) {
+                item2.children.forEach(item3 => {
+                  if (item3.children) {
+                  } else {
+                    item3.isLeaf = true;
+                  }
+                });
+              } else {
+                item2.isLeaf = true;
+              }
+            });
+          } else {
+            item.isLeaf = true;
+          }
+        });
+        console.log(this.nodes);
       })
-      .fail(error => {});*/
+      .fail(error => {});
   }
 
   delMenu(menuId: string, name: string) {
