@@ -202,7 +202,7 @@ export class Api {
    * @param msg 错误信息。
    */
   private dealError(errorCode: number, msg: string): boolean {
-    let isUnifiedError = true;
+    let isUnifiedError = false;
     if (errorCode === 401) { // 缺少api验证参数token
       isUnifiedError = true;
       this.uiHelper.msgTipWarning(msg);

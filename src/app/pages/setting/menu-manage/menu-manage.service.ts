@@ -12,7 +12,7 @@ export class MenuManageService {
   /**
    * 根据clientId获取该应用下所有菜单。
    * @param clientId 应用id。
-   * @param type 菜单类型。1-菜单; 2-按钮
+   * @param type 菜单类型。0-获取所有菜单和按钮;1-菜单; 2-按钮
    */
   getMenusByClientId(clientId: string, type: number): any {
     return this.api.get(`${ApiPath.usercentral.getMenusByClientId}/${clientId}/${type}`);

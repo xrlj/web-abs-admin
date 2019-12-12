@@ -5,7 +5,7 @@ import {Utils} from '../../../helpers/utils';
 import {JwtKvEnum} from '../../../helpers/enum/jwt-kv-enum';
 import {UIHelper} from '../../../helpers/ui-helper';
 import {VMenuResp} from '../../../helpers/vo/resp/v-menu-resp';
-import { NzModalService } from 'ng-zorro-antd/modal';
+import {NzModalService} from 'ng-zorro-antd/modal';
 
 @Component({
   selector: 'app-menu-manage',
@@ -53,20 +53,23 @@ export class MenuManageComponent implements OnInit {
   ];
 
   ngOnInit() {
-    this.getMenuByClientId(false, 0);
+    this.getMenuByClientId(0);
     this.initAddMenuDialog();
   }
 
   refreshMenuList() {
     this.isRefreshMenuList = true;
-    this.getMenuByClientId(this.isRefreshMenuList, 0);
+    this.getMenuByClientId(0);
   }
 
-  getMenuByClientId(isRefresh: boolean, type: number) {
+  /**
+   * 根据菜单列表。
+   * @param type 菜单类型。
+   */
+  getMenuByClientId(type: number) {
     this.menuManageService.getMenusByClientId(this.utils.getJwtTokenClaim(JwtKvEnum.ClientId), type)
       .ok(data => {
         this.menuList = data;
-        console.log(this.menuList);
         this.menuList.forEach(item => {
           this.menuListOfExpandedData[item.key] = this.convertTreeToList(item);
         });
@@ -95,6 +98,11 @@ export class MenuManageComponent implements OnInit {
   showAddMenuModal(type: number): void {
     this.dialogType = type;
     this.isShowAdd = true;
+    /*this.menuManageService.getMenusByClientId(this.utils.getJwtTokenClaim(JwtKvEnum.ClientId), 1)
+      .ok(data => {
+        this.nodes = data;
+      })
+      .fail(error => {});*/
   }
 
   delMenu(menuId: string, name: string) {
