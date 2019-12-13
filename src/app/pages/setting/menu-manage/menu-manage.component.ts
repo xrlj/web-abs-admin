@@ -40,6 +40,7 @@ export class MenuManageComponent implements OnInit {
 
     /*=======新增菜单对话的菜单类型选择=======*/
   selectMenuKey: any;
+  selectMenuId: string;
   selectMenuList: VMenuResp[];
 
   ngOnInit() {
@@ -81,7 +82,7 @@ export class MenuManageComponent implements OnInit {
         this.menuList = data;
         this.dealMenuList(this.menuList);
         this.menuList.forEach((val, index, array) => {
-          this.setMenuKey(val, index);
+          // this.setMenuKey(val, index);
           this.menuListOfExpandedData[val.key] = this.convertTreeToList(val);
         });
       }).fail(error => {
@@ -89,30 +90,6 @@ export class MenuManageComponent implements OnInit {
     }).final(() => {
       this.isRefreshMenuList = false;
     });
-  }
-
-  /**
-   * 设置菜单key。最多四级。
-   * @param val 菜单对象
-   * @param index 下标
-   */
-  private setMenuKey(val: VMenuResp, index: number) {
-    val.key = index + 1; // 一级
-    if (val.children && val.children.length > 0) {
-      val.children.forEach((val1, index1, array1) => {
-        val1.key = val.key * 10 + index1 + 1; // 二级
-        if (val1.children && val1.children.length > 0) {
-          val1.children.forEach((val11, index11, array11) => {
-            val11.key = val1.key * 10 + index11 + 1; // 三级
-            if (val11.children && val11.children.length > 0) {
-              val11.children.forEach((val111, index111, array111) => {
-                val111.key = val11.key * 10 + index111 + 1; // 四级
-              });
-            }
-          });
-        }
-      });
-    }
   }
 
   /**
@@ -169,8 +146,29 @@ export class MenuManageComponent implements OnInit {
           this.radioValue = 'B';
         }
         this.setSelectMenuList();
-      })
-      .fail(error => {});
+        this.selectMenuKey = this.menuDetails.key;
+      }).fail(error => {});
+  }
+
+  /**
+   * 根据菜单key获取菜单id。
+   * @param key menuKey
+   */
+  getSelectMenuIdByKey(menuList: VMenuResp[]): string {
+    if (menuList && menuList.length > 0) {
+      menuList.every((item) => {
+        if (item.key === this.selectMenuKey) {
+          this.selectMenuId = item.id;
+          return false;
+        } else {
+          if (item.children && item.children.length > 0) {
+            this.getSelectMenuIdByKey(item.children);
+          }
+        }
+        return true;
+      });
+    }
+    return this.selectMenuId;
   }
 
   /**
@@ -181,8 +179,7 @@ export class MenuManageComponent implements OnInit {
       .ok(data => {
         this.selectMenuList = data;
         this.dealMenuList(this.selectMenuList);
-        this.selectMenuList.forEach((item, index, array) => {
-          this.setMenuKey(item, index);
+        this.selectMenuList.forEach((item) => {
           if (item.children) {
             item.children.forEach(item2 => {
               if (item2.children) {
@@ -240,13 +237,19 @@ export class MenuManageComponent implements OnInit {
   }
 
   /**
-   * 新增对话框确定提交
+   * 新增、编辑确定提交
    */
   handleOk(): void {
     this.isAddOkLoading = true;
+    const body = {
+      title: this.addMenuForm.value.menuName,
+      parentId: this.getSelectMenuIdByKey(this.selectMenuList)
+    };
+    console.log(body);
     setTimeout(() => {
       this.isShowAdd = false;
       this.isAddOkLoading = false;
+      this.resetInit();
     }, 3000);
   }
 
@@ -254,7 +257,15 @@ export class MenuManageComponent implements OnInit {
    * 取消新增对话框
    */
   handleCancel(): void {
+    this.resetInit();
+  }
+
+  /**
+   * 重新初始化各个值和控件。
+   */
+  resetInit() {
     this.isShowAdd = false;
+    this.isAddOkLoading = false;
     this.radioValue = 'A';
     this.menuDetails = null;
     this.selectMenuList = null;
