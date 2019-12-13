@@ -15,15 +15,25 @@ export class MenuManageService {
    * @param type 菜单类型。0-获取所有菜单和按钮;1-菜单; 2-按钮
    */
   getMenusByClientId(clientId: string, type: number): any {
-    return this.api.get(`${ApiPath.usercentral.getMenusByClientId}/${clientId}/${type}`);
+    return this.api.get(`${ApiPath.usercentral.menuApi.getMenusByClientId}/${clientId}/${type}`);
   }
 
+  /**
+   * 删除菜单。
+   * @param menuId 菜单id。
+   */
   delMenuById(menuId: string): any {
     const par = {
       id: menuId
     };
-    const path = ApiPath.usercentral.delById;
-    console.log(path);
-    return this.api.post(ApiPath.usercentral.delById, par);
+    return this.api.post(ApiPath.usercentral.menuApi.delById, par);
+  }
+
+  /**
+   * 获取菜单详情。
+   * @param menuId 菜单id
+   */
+  getMenuById(menuId: string): any {
+    return this.api.get(`${ApiPath.usercentral.menuApi.getById}/${menuId}`);
   }
 }

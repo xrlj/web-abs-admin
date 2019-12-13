@@ -1,19 +1,18 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Api} from '../../../helpers/http/api';
-import {Utils} from '../../../helpers/utils';
-import { Router } from '@angular/router';
+import {Router} from '@angular/router';
 import {ApiPath} from '../../../api-path';
-import {AppBaseComponent} from '../../../app-base.component';
 import {UIHelper} from '../../../helpers/ui-helper';
+import {AppPath} from '../../../app-path';
+import {DefaultBusService} from '../../../helpers/event-bus/default-bus.service';
 
 @Component({
   selector: 'app-header',
   templateUrl: './app-header.component.html',
   styleUrls: ['./app-header.component.less']
 })
-export class AppHeaderComponent extends AppBaseComponent implements OnInit {
-  constructor(private router: Router, private api: Api, private uiHelper: UIHelper) {
-    super();
+export class AppHeaderComponent implements OnInit {
+  constructor(private router: Router, private api: Api, private uiHelper: UIHelper, private defaultBusService: DefaultBusService) {
   }
 
   appName: string;
@@ -26,19 +25,18 @@ export class AppHeaderComponent extends AppBaseComponent implements OnInit {
    * 退出登录。
    */
   logout(): void {
-    this.showLoading(true);
+    this.defaultBusService.showLoading(true);
     this.api.get(ApiPath.logout).ok(data => {
       if (data) {
         localStorage.clear();
-        this.showLoading(false);
-        this.router.navigateByUrl('/login'); // 退出成功
+        this.router.navigateByUrl(AppPath.login); // 退出成功
       } else {
-        this.showLoading(false);
         this.uiHelper.msgTipError('退出失败');
       }
     }).fail(error => {
-      this.showLoading(false);
       this.uiHelper.msgTipError('退出失败');
+    }).final(() => {
+      this.defaultBusService.showLoading(false);
     });
   }
 }

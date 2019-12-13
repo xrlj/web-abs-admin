@@ -5,8 +5,16 @@ export const ApiPath = {
   login: `/${serviceauth}/auth/login`,
   logout: `/${serviceauth}/auth/invalidate`,
   usercentral: {
-    getUserMenus: `/${usercentral}/user/getUserMenus`,
-    getMenusByClientId: `/${usercentral}/menu/getMenusByClientId/`,
-    delById: `/${usercentral}/menu/delById`
+    userApi: {
+      getUserMenus: `/${usercentral}/user/getUserMenus`,
+    },
+    menuApi: {
+      getMenusByClientId: `/${usercentral}/menu/getMenusByClientId`,
+      delById: `/${usercentral}/menu/delById`,
+      getById: `/${usercentral}/menu/getById`
+    },
+    appInfoApi: {
+      getAll: `/${usercentral}/appInfo/getAll`
+    }
   }
 };

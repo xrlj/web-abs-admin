@@ -1,6 +1,6 @@
 <nz-spin [nzSpinning]="isSpinning" nzTip="努力加载中...">
   <div class="default-layout" [class.aside-collapsed]="collapsed">
-    <app-header (loading)="showSpinning($event)"></app-header>
+    <app-header></app-header>
     <app-body></app-body>
     <app-aside
       [collapsed]="collapsed"

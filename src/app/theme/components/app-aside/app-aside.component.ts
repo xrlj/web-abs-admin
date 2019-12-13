@@ -1,6 +1,7 @@
 import { Component, EventEmitter, OnInit, Input, Output } from '@angular/core';
 import { APP_MENUS } from '../../../mock/app-menu';
 import {Constants} from '../../../helpers/constants';
+import {VMenuResp} from '../../../helpers/vo/resp/v-menu-resp';
 
 @Component({
   selector: 'app-aside',
@@ -14,7 +15,7 @@ export class AppAsideComponent implements OnInit {
   @Output() toggleCollapsed = new EventEmitter();
 
   // menus = APP_MENUS;
-  menus: any;
+  menus: VMenuResp[];
 
   theme  = true;  // 主题
 
@@ -34,7 +35,6 @@ export class AppAsideComponent implements OnInit {
    */
   initOpenMap() {
     for (const i of this.menus) {
-      console.log(i.title);
       this.openMap[i.title] = false;
     }
     console.log(this.openMap);

@@ -4,7 +4,6 @@ import {Router} from '@angular/router';
 import {ApiPath} from '../../api-path';
 import {Constants} from '../../helpers/constants';
 import {AppPath} from '../../app-path';
-import {UIHelper} from '../../helpers/ui-helper';
 
 @Component({
   selector: 'app-init',
@@ -13,7 +12,7 @@ import {UIHelper} from '../../helpers/ui-helper';
 })
 export class InitComponent implements OnInit {
 
-  constructor(private router: Router, private api: Api, private uiHelper: UIHelper) { }
+  constructor(private router: Router, private api: Api) { }
 
   status = false;
 
@@ -23,10 +22,8 @@ export class InitComponent implements OnInit {
 
   init(): void {
     this.status = false;
-    this.api.get(ApiPath.usercentral.getUserMenus)
+    this.api.get(ApiPath.usercentral.userApi.getUserMenus)
       .ok(data => {
-        console.log('>>>>>菜单内容：');
-        console.log(data);
         localStorage.setItem(Constants.localStorageKey.menus, JSON.stringify(data));
         this.router.navigateByUrl(AppPath.pages);
       })
