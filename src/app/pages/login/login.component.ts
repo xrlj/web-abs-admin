@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Api} from '../../helpers/http/api';
-import {VLoginResp, VLoginRespData} from '../../helpers/vo/resp/v-login-resp';
+import {VLoginRespData} from '../../helpers/vo/resp/v-login-resp';
 import {VLoginReq} from '../../helpers/vo/req/v-login-req';
 import {ApiPath} from '../../api-path';
 import {environment} from '../../../environments/environment';

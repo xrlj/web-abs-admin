@@ -9,6 +9,7 @@ export const ApiPath = {
       getUserMenus: `/${usercentral}/user/getUserMenus`,
     },
     menuApi: {
+      saveOrUpdate: `/${usercentral}/menu/saveOrUpdate`,
       getMenusByClientId: `/${usercentral}/menu/getMenusByClientId`,
       delById: `/${usercentral}/menu/delById`,
       getById: `/${usercentral}/menu/getById`

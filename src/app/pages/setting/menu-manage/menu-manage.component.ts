@@ -9,6 +9,7 @@ import {NzModalService} from 'ng-zorro-antd/modal';
 import {CommonService} from '../../../helpers/common.service';
 import {VAppInfoResp} from '../../../helpers/vo/resp/v-appInfo-resp';
 import {EventBusService} from '../../../helpers/event-bus/event-bus.service';
+import {VMenuReq} from '../../../helpers/vo/req/v-menu-req';
 
 @Component({
   selector: 'app-menu-manage',
@@ -20,7 +21,8 @@ export class MenuManageComponent implements OnInit {
   constructor(private menuManageService: MenuManageService,
               private utils: Utils, private uiHelper: UIHelper,
               private fb: FormBuilder, private modalService: NzModalService,
-              private commonService: CommonService) { }
+              private commonService: CommonService) {
+  }
 
   appSelected: any;
   appDataList: VAppInfoResp[];
@@ -38,7 +40,7 @@ export class MenuManageComponent implements OnInit {
   menuListOfExpandedData: { [key: string]: VMenuResp[] } = {};
   isRefreshMenuList = false;
 
-    /*=======新增菜单对话的菜单类型选择=======*/
+  /*=======新增菜单对话的菜单类型选择=======*/
   selectMenuKey: any;
   selectMenuId: string;
   selectMenuList: VMenuResp[];
@@ -60,15 +62,14 @@ export class MenuManageComponent implements OnInit {
 
       this.getMenuByClientId(0);
     }).fail((error) => {
-        console.log(`获取应用列表失败:${error.code}`);
-      });
+      console.log(`获取应用列表失败:${error.code}`);
+    });
   }
 
   /**
    * 刷新菜单列表。
    */
   refreshMenuList() {
-    this.isRefreshMenuList = true;
     this.getMenuByClientId(0);
   }
 
@@ -77,19 +78,25 @@ export class MenuManageComponent implements OnInit {
    * @param type 菜单类型。
    */
   getMenuByClientId(type: number) {
+    if (!this.appSelected) {
+      this.uiHelper.msgTipWarning('请先选择应用系统');
+      return;
+    }
+    this.isRefreshMenuList = true;
     this.menuManageService.getMenusByClientId(this.appSelected, type)
       .ok(data => {
         this.menuList = data;
         this.dealMenuList(this.menuList);
-        this.menuList.forEach((val, index, array) => {
-          // this.setMenuKey(val, index);
+        this.menuList.forEach((val) => {
           this.menuListOfExpandedData[val.key] = this.convertTreeToList(val);
         });
-      }).fail(error => {
+      })
+      .fail(error => {
         this.uiHelper.msgTipError(error.msg);
-    }).final(() => {
-      this.isRefreshMenuList = false;
-    });
+      })
+      .final(() => {
+        this.isRefreshMenuList = false;
+      });
   }
 
   /**
@@ -115,6 +122,7 @@ export class MenuManageComponent implements OnInit {
     this.addMenuForm = this.fb.group({
       menuName: [null, [Validators.required]],
       parentMenu: [null, null],
+      isShow: [null, [Validators.required]],
       routerPath: [null, null],
       sortNumber: [null, [Validators.required]],
       menuPermission: [null, null],
@@ -126,6 +134,10 @@ export class MenuManageComponent implements OnInit {
    * 新增菜单。
    */
   addMenu(): void {
+    if (!this.appSelected) {
+      this.uiHelper.msgTipWarning('请先选择应用系统');
+      return;
+    }
     this.isShowAdd = true;
     // 获取上级菜单选择列表
     this.setSelectMenuList();
@@ -147,7 +159,8 @@ export class MenuManageComponent implements OnInit {
         }
         this.setSelectMenuList();
         this.selectMenuKey = this.menuDetails.key;
-      }).fail(error => {});
+      }).fail(error => {
+    });
   }
 
   /**
@@ -198,7 +211,8 @@ export class MenuManageComponent implements OnInit {
           }
         });
       })
-      .fail(error => {});
+      .fail(error => {
+      });
   }
 
   delMenu(menuId: string, name: string) {
@@ -223,8 +237,12 @@ export class MenuManageComponent implements OnInit {
       nzOnOk: () => {
         this.menuManageService.delMenuById(menuId)
           .ok(data => {
-            if (data) {
-              this.refreshMenuList();
+            if (data === true) {
+              setTimeout(() => {
+                this.refreshMenuList();
+                }, 500);
+            } else {
+              this.uiHelper.msgTipError('删除菜单失败');
             }
           })
           .fail(error => {
@@ -240,17 +258,37 @@ export class MenuManageComponent implements OnInit {
    * 新增、编辑确定提交
    */
   handleOk(): void {
+    console.log(this.selectMenuKey);
+    debugger;
+    console.log(this.getSelectMenuIdByKey(this.selectMenuKey));
     this.isAddOkLoading = true;
-    const body = {
+    const body: VMenuReq = {
+      type: this.radioValue === 'A' ? 1 : 2,
       title: this.addMenuForm.value.menuName,
+      isShow: this.addMenuForm.value.isShow === '1' ? true : false,
+      link: this.addMenuForm.value.routerPath,
+      sort: this.addMenuForm.value.sortNumber,
+      perms: this.addMenuForm.value.menuPermission,
+      icon: this.addMenuForm.value.icon,
+      id: this.menuDetails ? this.menuDetails.id : null,
       parentId: this.getSelectMenuIdByKey(this.selectMenuList)
     };
-    console.log(body);
-    setTimeout(() => {
-      this.isShowAdd = false;
+    this.menuManageService.saveOrUpdate(body).ok((data) => {
+      if (data && data !== '') {
+        this.uiHelper.msgTipSuccess('提交成功');
+        this.isShowAdd = false;
+        this.resetInit();
+        setTimeout(() => {
+          this.refreshMenuList();
+        }, 1000);
+      } else {
+        this.uiHelper.msgTipError('提交失败');
+      }
+    }).fail((error) => {
+        this.uiHelper.msgTipError(error.msg);
+    }).final(() => {
       this.isAddOkLoading = false;
-      this.resetInit();
-    }, 3000);
+    });
   }
 
   /**
@@ -300,6 +338,7 @@ export class MenuManageComponent implements OnInit {
     if ($event === false) {
       if (data.children) {
         data.children.forEach(d => {
+          // tslint:disable-next-line:no-non-null-assertion
           const target = array.find(a => a.key === d.key)!;
           target.expand = false;
           this.collapse(array, target, false);
@@ -314,14 +353,16 @@ export class MenuManageComponent implements OnInit {
     const stack: VMenuResp[] = [];
     const array: VMenuResp[] = [];
     const hashMap = {};
-    stack.push({ ...root, level: 0, expand: false });
+    stack.push({...root, level: 0, expand: false});
 
     while (stack.length !== 0) {
+      // tslint:disable-next-line:no-non-null-assertion
       const node = stack.pop()!;
       this.visitNode(node, hashMap, array);
       if (node.children) {
         for (let i = node.children.length - 1; i >= 0; i--) {
-          stack.push({ ...node.children[i], level: node.level! + 1, expand: false, parent: node });
+          // tslint:disable-next-line:no-non-null-assertion
+          stack.push({...node.children[i], level: node.level! + 1, expand: false, parent: node});
         }
       }
     }

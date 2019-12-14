@@ -1,7 +1,7 @@
 <!--菜单列表-->
 <nz-card class="content" nzTitle="用户菜单列表" [nzExtra]="extraTemplate">
   <div class="content-action">
-    <nz-select nzShowSearch nzAllowClear nzPlaceHolder="请选择" [(ngModel)]="appSelected" style="min-width: 200px">
+    <nz-select nzShowSearch nzAllowClear nzPlaceHolder="请选择应用系统" [(ngModel)]="appSelected" style="min-width: 200px">
       <nz-option *ngFor="let appInfo of appDataList" [nzLabel]="appInfo.appName" [nzValue]="appInfo.appId"></nz-option>
     </nz-select>
     <button nz-button nzType="default" (click)="refreshMenuList()"><i nz-icon nzType="search"></i>查询</button>
@@ -96,6 +96,15 @@
                         [(ngModel)]="selectMenuKey"
                         (ngModelChange)="onChange($event)">
         </nz-tree-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="isShow" nzRequired>是否显示</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24">
+        <nz-select id="isShow" formControlName="isShow" [ngModel]="'1'">
+          <nz-option nzLabel="显示" nzValue="1"></nz-option>
+          <nz-option nzLabel="不显示" nzValue="0"></nz-option>
+        </nz-select>
       </nz-form-control>
     </nz-form-item>
     <nz-form-item *ngIf="radioValue === 'A'">
