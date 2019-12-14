@@ -258,9 +258,6 @@ export class MenuManageComponent implements OnInit {
    * 新增、编辑确定提交
    */
   handleOk(): void {
-    console.log(this.selectMenuKey);
-    debugger;
-    console.log(this.getSelectMenuIdByKey(this.selectMenuKey));
     this.isAddOkLoading = true;
     const body: VMenuReq = {
       type: this.radioValue === 'A' ? 1 : 2,
