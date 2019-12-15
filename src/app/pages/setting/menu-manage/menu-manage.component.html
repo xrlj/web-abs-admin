@@ -15,8 +15,9 @@
       <th nzWidth="10%" nzAlign="center">图标</th>
       <th nzWidth="10%" nzAlign="center">类型</th>
       <th nzWidth="10%" nzAlign="center">排序</th>
+      <th nzWidth="10%" nzAlign="center">显示状态</th>
       <th nzWidth="20%" nzAlign="center">路由</th>
-      <th nzWidth="15%" nzAlign="center">授权标识</th>
+      <th nzWidth="10%" nzAlign="center">授权标识</th>
       <th nzAlign="center">操作</th>
     </tr>
     </thead>
@@ -42,6 +43,8 @@
               <nz-tag [nzColor]="'green'">按钮</nz-tag>
             </td>
             <td nzAlign="center">{{ item.sort }}</td>
+            <td *ngIf="item.show" nzAlign="center">显示</td>
+            <td *ngIf="!item.show" nzAlign="center">不显示</td>
             <td nzAlign="center">{{ item.link }}</td>
             <td nzAlign="center">{{ item.perms }}</td>
             <td nzAlign="center">
@@ -101,7 +104,7 @@
     <nz-form-item>
       <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="isShow" nzRequired>是否显示</nz-form-label>
       <nz-form-control [nzSm]="10" [nzXs]="24">
-        <nz-select id="isShow" formControlName="isShow" [ngModel]="'1'">
+        <nz-select id="isShow" formControlName="isShow" [ngModel]="menuDetails ? (menuDetails.show ? '1' : '0') : '1'">
           <nz-option nzLabel="显示" nzValue="1"></nz-option>
           <nz-option nzLabel="不显示" nzValue="0"></nz-option>
         </nz-select>

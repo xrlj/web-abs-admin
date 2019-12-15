@@ -24,7 +24,10 @@ registerLocaleData(zh);
     HttpClientModule,
     BrowserAnimationsModule
   ],
-  providers: [{ provide: NZ_I18N, useValue: zh_CN }, httpInterceptorProviders],
+  providers: [{provide: NZ_I18N, useValue: zh_CN}, httpInterceptorProviders],
+  exports: [
+    CustomBtnComponent
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

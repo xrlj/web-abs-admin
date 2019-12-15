@@ -4,6 +4,7 @@ export interface VMenuResp {
   icon: string;
   perms: string;
   sort: number;
+  show: boolean;
   title: string;
   type: number;
   key: number;

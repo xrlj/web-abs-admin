@@ -43,6 +43,7 @@ export class MenuManageComponent implements OnInit {
   /*=======新增菜单对话的菜单类型选择=======*/
   selectMenuKey: any;
   selectMenuId: string;
+  selectMenu: VMenuResp;
   selectMenuList: VMenuResp[];
 
   ngOnInit() {
@@ -140,7 +141,12 @@ export class MenuManageComponent implements OnInit {
     }
     this.isShowAdd = true;
     // 获取上级菜单选择列表
-    this.setSelectMenuList();
+    this.menuManageService.getMenusByClientId(this.appSelected, 1).ok(data => {
+        this.selectMenuList = data;
+        this.dealMenuList(this.selectMenuList);
+        this.setSelectMenuLeaf();
+      }).fail(error => {
+    });
   }
 
   /**
@@ -157,10 +163,68 @@ export class MenuManageComponent implements OnInit {
         } else { // 按钮
           this.radioValue = 'B';
         }
-        this.setSelectMenuList();
-        this.selectMenuKey = this.menuDetails.key;
+        this.addMenuForm.patchValue({
+          menuName: this.menuDetails.title,
+          routerPath: this.menuDetails.link,
+          sortNumber: this.menuDetails.sort,
+          menuPermission: this.menuDetails.perms,
+          icon: this.menuDetails.icon
+        });
+        // 设置上级菜单下拉
+        this.menuManageService.getMenusByClientId(this.appSelected, 1).ok(data1 => {
+            this.selectMenuList = data1;
+            this.dealMenuList(this.selectMenuList);
+            this.getMenuById(this.menuDetails.parentId, this.selectMenuList);
+            if (this.selectMenu) {
+              this.selectMenuKey = this.selectMenu.key;
+            }
+            this.setSelectMenuLeaf();
+          }).fail(error => {
+        });
       }).fail(error => {
     });
+  }
+
+  setSelectMenuLeaf() {
+    this.selectMenuList.forEach((item) => {
+      if (item.children) {
+        item.children.forEach(item2 => {
+          if (item2.children) {
+            item2.children.forEach(item3 => {
+              if (item3.children) {
+              } else {
+                item3.isLeaf = true;
+              }
+            });
+          } else {
+            item2.isLeaf = true;
+          }
+        });
+      } else {
+        item.isLeaf = true;
+      }
+    });
+  }
+
+  /**
+   * 根据id在树结构中查找到整个对象。
+   * @param id 菜单id。
+   * @param menuList 菜单树形列表。
+   */
+  getMenuById(id: string, menuList: VMenuResp[]) {
+    if (menuList && menuList.length > 0) {
+      menuList.every(value => {
+        if (value.id === id) {
+          this.selectMenu = value;
+          return false;
+        } else {
+          if (value.children && value.children.length > 0) {
+            this.getMenuById(id, value.children);
+          }
+        }
+        return true;
+      });
+    }
   }
 
   /**
@@ -182,37 +246,6 @@ export class MenuManageComponent implements OnInit {
       });
     }
     return this.selectMenuId;
-  }
-
-  /**
-   * 设置新增，编辑对话中选择上级菜单列表。
-   */
-  setSelectMenuList() {
-    this.menuManageService.getMenusByClientId(this.appSelected, 1)
-      .ok(data => {
-        this.selectMenuList = data;
-        this.dealMenuList(this.selectMenuList);
-        this.selectMenuList.forEach((item) => {
-          if (item.children) {
-            item.children.forEach(item2 => {
-              if (item2.children) {
-                item2.children.forEach(item3 => {
-                  if (item3.children) {
-                  } else {
-                    item3.isLeaf = true;
-                  }
-                });
-              } else {
-                item2.isLeaf = true;
-              }
-            });
-          } else {
-            item.isLeaf = true;
-          }
-        });
-      })
-      .fail(error => {
-      });
   }
 
   delMenu(menuId: string, name: string) {
@@ -268,6 +301,7 @@ export class MenuManageComponent implements OnInit {
       perms: this.addMenuForm.value.menuPermission,
       icon: this.addMenuForm.value.icon,
       id: this.menuDetails ? this.menuDetails.id : null,
+      clientId: this.appSelected,
       parentId: this.getSelectMenuIdByKey(this.selectMenuList)
     };
     this.menuManageService.saveOrUpdate(body).ok((data) => {
@@ -275,6 +309,7 @@ export class MenuManageComponent implements OnInit {
         this.uiHelper.msgTipSuccess('提交成功');
         this.isShowAdd = false;
         this.resetInit();
+        // 1s后再刷新，服务端数据库主从复制有延迟，可能数据不一致，因此延迟1s再刷新。
         setTimeout(() => {
           this.refreshMenuList();
         }, 1000);
@@ -306,6 +341,7 @@ export class MenuManageComponent implements OnInit {
     this.selectMenuList = null;
     this.selectMenuKey = null;
     this.dialogType = 1;
+    this.selectMenu = null;
     this.resetAddMenuDialog();
   }
 

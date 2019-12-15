@@ -1,1 +1,25 @@
-<p>role-manage works!</p>
+<nz-card class="list" nzTitle="角色列表">
+  <div class="list-action">
+    <nz-select [(ngModel)]="appSelected" style="min-width: 200px">
+      <nz-option *ngFor="let appInfo of appDataList" [nzLabel]="appInfo.appName" [nzValue]="appInfo.appId"></nz-option>
+    </nz-select>
+    <nz-input-group [nzSuffix]="suffixTemplate">
+      <input type="text" nz-input [(ngModel)]="roleName" placeholder="角色名称" />
+    </nz-input-group>
+    <button nz-button nzType="default"><i nz-icon nzType="search"></i>查询</button>
+    <button nz-button nzType="primary"><i nz-icon type="plus"></i>新增</button>
+    <button class="action-btn-del" nz-button nzType="danger"><i nz-icon type="delete"></i>删除</button>
+  </div>
+</nz-card>
+
+<ng-template #suffixTemplate
+><i
+  nz-icon
+  nz-tooltip
+  class="ant-input-clear-icon"
+  nzTheme="fill"
+  nzType="close-circle"
+  *ngIf="roleName"
+  (click)="roleName = null"
+></i
+></ng-template>

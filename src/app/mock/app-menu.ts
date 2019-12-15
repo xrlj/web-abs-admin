@@ -76,7 +76,7 @@ export const APP_MENUS = [
     title: '系统管理',
     icon: 'setting',
     children: [
-      { title: '系统用户管理', link: '/ddd/affix' },
+      { title: '用户管理', link: '/ddd/affix' },
       { title: '部门管理', link: '/daa/dropdown' },
       { title: '角色管理', link: '/daa/breadcrumb' },
       { title: '权限管理', link: '/navadfigation/dropdown' },
