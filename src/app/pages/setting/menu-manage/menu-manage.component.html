@@ -8,7 +8,7 @@
     <button nz-button nzType="primary" (click)="addMenu()"><i nz-icon type="plus"></i>新增</button>
   </div>
   <!--列表-->
-  <nz-table #expandTable [nzData]="menuList" [nzShowPagination]="false" [nzLoading]="isRefreshMenuList">
+  <nz-table #expandTable [nzData]="menuList" [nzShowPagination]="false" [nzLoading]="isRefreshMenuList" nzBordered>
     <thead>
     <tr>
       <th nzWidth="20%" nzAlign="center">名称</th>
