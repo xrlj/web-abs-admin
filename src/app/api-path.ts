@@ -16,6 +16,9 @@ export const ApiPath = {
     },
     appInfoApi: {
       getAll: `/${usercentral}/appInfo/getAll`
+    },
+    roleApi: {
+
     }
   }
 };

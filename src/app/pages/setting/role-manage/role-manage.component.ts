@@ -64,6 +64,10 @@ export class RoleManageComponent implements OnInit {
     });
   }
 
+  search() {
+
+  }
+
   currentPageDataChange($event: Data[]): void {
     this.listOfDisplayData = $event;
     this.refreshStatus();
