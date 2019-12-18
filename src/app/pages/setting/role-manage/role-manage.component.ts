@@ -87,24 +87,36 @@ export class RoleManageComponent implements OnInit  {
       this.checkedKeys = [];
       this.checkedMenuIds = [];
       event.checkedKeys.forEach(value => {
-        this.dealNzTreeCheck(value.origin, this.checkedKeys, this.checkedMenuIds);
+        this.dealNzTreeCheck(value, this.checkedKeys, this.checkedMenuIds);
       });
     }
+    console.log(this.checkedKeys);
+    console.log(this.checkedMenuIds);
   }
 
-  dealNzTreeCheck(origin: NzTreeNodeOptions, checkedKeys: number[], checkIds: string[]): void {
-    if (origin.checked) {
-      checkedKeys.push(Number(origin.key));
-      checkIds.push(origin.id);
-      const children: NzTreeNodeOptions[] = origin.children;
-      if (children && children.length > 0) {
-        children.forEach(value => {
+  dealNzTreeCheck(node: NzTreeNode, checkedKeys: number[], checkIds: string[]): void {
+    const parentNode = node.parentNode;
+    const childrenNode = node.children;
+    if (!parentNode && (!childrenNode || childrenNode.length === 0)) {
+      checkedKeys.push(Number(node.origin.key));
+      checkIds.push(node.origin.id);
+    } else {
+      if (parentNode) {
+        const pKey = Number(parentNode.origin.key);
+        checkedKeys.push(pKey);
+        checkIds.push(parentNode.origin.id);
+        if (parentNode.parentNode) {
+          this.dealNzTreeCheck(parentNode.parentNode, checkedKeys, checkIds);
+        }
+      }
+      if (childrenNode && childrenNode.length > 0) {
+        childrenNode.forEach(value => {
+          checkedKeys.push(Number(value.origin.key));
+          checkIds.push(value.origin.id);
           this.dealNzTreeCheck(value, checkedKeys, checkIds);
         });
       }
     }
-    console.log(checkedKeys);
-    console.log(checkIds);
   }
 
   /**
