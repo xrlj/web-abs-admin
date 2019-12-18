@@ -49,7 +49,6 @@ export class Utils {
     }
     const helper = new JwtHelperService();
     const decodedToken = helper.decodeToken(token);
-    console.log(decodedToken.userId);
     return decodedToken;
   }
 

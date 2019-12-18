@@ -6,6 +6,7 @@ import {AppPath} from '../app-path';
 import {Utils} from './utils';
 import { Router } from '@angular/router';
 import { NzModalService } from 'ng-zorro-antd/modal';
+import {VMenuResp} from './vo/resp/v-menu-resp';
 
 @Injectable({
   providedIn: 'root'
@@ -174,5 +175,23 @@ export class UIHelper {
     } else {
       localStorage.clear();
     }
+  }
+
+  /**
+   * 递归遍历菜单树。当节点没有子节点的时候，添加isLeaf=true。目的，去掉箭头展开按钮。
+   * @param data 菜单节点数据。
+   */
+  setMenuPerDataLeaf(data: VMenuResp[]): void {
+    if (!data) {
+      return;
+    }
+    data.forEach(value => {
+      const children = value.children;
+      if (children === null || children === undefined || children.length === 0) {
+        value.isLeaf = true;
+      } else {
+        this.setMenuPerDataLeaf(children);
+      }
+    });
   }
 }

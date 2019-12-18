@@ -144,7 +144,8 @@ export class MenuManageComponent implements OnInit {
     this.menuManageService.getMenusByClientId(this.appSelected, 1).ok(data => {
         this.selectMenuList = data;
         this.dealMenuList(this.selectMenuList);
-        this.setSelectMenuLeaf();
+        // this.setSelectMenuLeaf();
+        this.uiHelper.setMenuPerDataLeaf(this.selectMenuList);
       }).fail(error => {
     });
   }
@@ -178,31 +179,10 @@ export class MenuManageComponent implements OnInit {
             if (this.selectMenu) {
               this.selectMenuKey = this.selectMenu.key;
             }
-            this.setSelectMenuLeaf();
+            this.uiHelper.setMenuPerDataLeaf(this.selectMenuList);
           }).fail(error => {
         });
       }).fail(error => {
-    });
-  }
-
-  setSelectMenuLeaf() {
-    this.selectMenuList.forEach((item) => {
-      if (item.children) {
-        item.children.forEach(item2 => {
-          if (item2.children) {
-            item2.children.forEach(item3 => {
-              if (item3.children) {
-              } else {
-                item3.isLeaf = true;
-              }
-            });
-          } else {
-            item2.isLeaf = true;
-          }
-        });
-      } else {
-        item.isLeaf = true;
-      }
     });
   }
 

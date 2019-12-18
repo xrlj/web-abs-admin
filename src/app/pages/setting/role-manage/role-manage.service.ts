@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {Api} from '../../../helpers/http/api';
 import {ApiPath} from '../../../api-path';
+import {VRoleReq} from '../../../helpers/vo/req/v-role-req';
 
 @Injectable({
   providedIn: 'root'
@@ -9,8 +10,11 @@ export class RoleManageService {
 
   constructor(private api: Api) { }
 
-  /*getRolePage(): any {
-    this.api.post(ApiPath)
-    return null;
-  }*/
+  /**
+   * 分页获取角色列表。
+   * @param vRoleReq 参数body。
+   */
+  getRolePage(vRoleReq: VRoleReq): any {
+    return this.api.post(ApiPath.usercentral.roleApi.getAll, vRoleReq);
+  }
 }
