@@ -25,4 +25,12 @@ export class RoleManageService {
   saveRole(vRoleReq: VRoleReq): any {
     return this.api.post(ApiPath.usercentral.roleApi.save, vRoleReq);
   }
+
+  /**
+   * 获取角色详情。包含其菜单授权列表，接口授权列表。
+   * @param roleId 菜单id
+   */
+  getRoleInfo(roleId: string): any {
+    return this.api.get(`${ApiPath.usercentral.roleApi.getById}/${roleId}`);
+  }
 }

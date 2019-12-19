@@ -19,7 +19,8 @@ export const ApiPath = {
     },
     roleApi: {
       getAll: `/${usercentral}/role/getAll`,
-      save: `/${usercentral}/role/save`
+      save: `/${usercentral}/role/save`,
+      getById: `/${usercentral}/role/getById`
     }
   }
 };

@@ -7,21 +7,23 @@ import {RoleManageService} from './role-manage.service';
 import {VRoleReq} from '../../../helpers/vo/req/v-role-req';
 import {UIHelper} from '../../../helpers/ui-helper';
 import {VRoleResp} from '../../../helpers/vo/resp/v-role-resp';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { NzTreeComponent, NzTreeNodeOptions, NzFormatEmitEvent, NzTreeNode } from 'ng-zorro-antd';
+import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {NzTreeComponent, NzTreeNodeOptions, NzFormatEmitEvent, NzTreeNode} from 'ng-zorro-antd';
 import {MenuManageService} from '../menu-manage/menu-manage.service';
 import {VMenuResp} from '../../../helpers/vo/resp/v-menu-resp';
+import {DefaultBusService} from '../../../helpers/event-bus/default-bus.service';
 
 @Component({
   selector: 'app-role-manage',
   templateUrl: './role-manage.component.html',
   styleUrls: ['./role-manage.component.less']
 })
-export class RoleManageComponent implements OnInit  {
+export class RoleManageComponent implements OnInit {
 
   constructor(private commonService: CommonService, private utils: Utils,
               private roleManageService: RoleManageService, private uiHelper: UIHelper,
-              private fb: FormBuilder, private menuManageService: MenuManageService) {
+              private fb: FormBuilder, private menuManageService: MenuManageService,
+              private defaultBusService: DefaultBusService) {
   }
 
   // 搜索条件
@@ -50,6 +52,8 @@ export class RoleManageComponent implements OnInit  {
   checkedMenuIds = []; // 选中的菜单的id
   expandedKeys = []; // 展开的
   nzTreeMenusData: VMenuResp[] = [];
+
+  roleInfo: VRoleResp;
 
   ngOnInit() {
     // 新增编辑对话框
@@ -91,8 +95,6 @@ export class RoleManageComponent implements OnInit  {
       this.checkedKeys = this.utils.removeRepeatOfArray<number>(this.checkedKeys);
       this.checkedMenuIds = this.utils.removeRepeatOfArray<string>(this.checkedMenuIds);
     }
-    console.log(this.checkedKeys);
-    console.log(this.checkedMenuIds);
   }
 
   /**
@@ -117,7 +119,34 @@ export class RoleManageComponent implements OnInit  {
    */
   editRole(id: string): void {
     this.dialogType = 2;
-    this.isShowDialog = true;
+    this.defaultBusService.showLoading(true);
+    this.roleManageService.getRoleInfo(id)
+      .ok(data => {
+        console.log(data);
+        this.isShowDialog = true;
+        this.roleInfo = data;
+        this.addOrEditForm.patchValue({
+          roleName: this.roleInfo.roleName,
+          roleDesc: this.roleInfo.description
+        });
+        // 设置菜单授权
+        this.menuManageService.getMenusByClientId(this.appSelected, 0)
+          .ok(data1 => {
+            this.nzTreeMenusData = data1;
+            this.uiHelper.setMenuPerDataLeaf(this.nzTreeMenusData);
+          })
+          .fail(error1 => {
+            this.uiHelper.msgTipError('加载授权菜单失败');
+          })
+          .final(b => {
+          });
+      })
+      .fail(error => {
+        this.uiHelper.msgTipError(error.msg);
+      })
+      .final(b => {
+        this.defaultBusService.showLoading(false);
+      });
   }
 
   /**
@@ -237,16 +266,16 @@ export class RoleManageComponent implements OnInit  {
     this.refreshStatus();
   }
 
- /* ngAfterViewInit(): void {
-    console.log('>>>>>>>>>>>>>>>>>>after:');
-    // get node by key: '10011'
-    console.log(this.nzTreeComponent.getTreeNodeByKey('10011'));
-    // use tree methods
-    console.log(
-      this.nzTreeComponent.getTreeNodes(),
-      this.nzTreeComponent.getCheckedNodeList(),
-      this.nzTreeComponent.getSelectedNodeList(),
-      this.nzTreeComponent.getExpandedNodeList()
-    );
-  }*/
+  /* ngAfterViewInit(): void {
+     console.log('>>>>>>>>>>>>>>>>>>after:');
+     // get node by key: '10011'
+     console.log(this.nzTreeComponent.getTreeNodeByKey('10011'));
+     // use tree methods
+     console.log(
+       this.nzTreeComponent.getTreeNodes(),
+       this.nzTreeComponent.getCheckedNodeList(),
+       this.nzTreeComponent.getSelectedNodeList(),
+       this.nzTreeComponent.getExpandedNodeList()
+     );
+   }*/
 }
