@@ -53,6 +53,7 @@ export class RoleManageComponent implements OnInit {
   expandedKeys = []; // 展开的
   nzTreeMenusData: VMenuResp[] = [];
 
+  // 详情
   roleInfo: VRoleResp;
 
   ngOnInit() {
