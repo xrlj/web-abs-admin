@@ -7,6 +7,7 @@ import {Utils} from './utils';
 import { Router } from '@angular/router';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import {VMenuResp} from './vo/resp/v-menu-resp';
+import { NzTreeNode } from 'ng-zorro-antd';
 
 @Injectable({
   providedIn: 'root'
@@ -193,5 +194,38 @@ export class UIHelper {
         this.setMenuPerDataLeaf(children);
       }
     });
+  }
+
+  /**
+   * 通用方法。递归收集树选择（checked）的key以及对象id。注意去重。在多选树中的checked回调方法中调用改该方法。
+   * @param node 节点。
+   * @param checkedKeys 保存的选中key。注意去重
+   * @param checkIds 保存的选中对象的id。包括父节点的。注意去重
+   */
+  dealNzTreeCheck(node: NzTreeNode, checkedKeys: number[], checkIds: string[]): void {
+    if (!node) {
+      return;
+    }
+    const parentNode = node.parentNode;
+    const childrenNode = node.children;
+    checkedKeys.push(Number(node.origin.key));
+    checkIds.push(node.origin.id);
+    if (parentNode) {
+      const pKey = Number(parentNode.origin.key);
+      if (parentNode.origin.checked) {
+        checkedKeys.push(pKey);
+      }
+      checkIds.push(parentNode.origin.id);
+      this.dealNzTreeCheck(parentNode.parentNode, checkedKeys, checkIds);
+    }
+    if (childrenNode && childrenNode.length > 0) {
+      childrenNode.forEach(value => {
+        if (value.origin.checked) {
+          checkedKeys.push(Number(value.origin.key));
+        }
+        checkIds.push(value.origin.id);
+        this.dealNzTreeCheck(value, checkedKeys, checkIds);
+      });
+    }
   }
 }

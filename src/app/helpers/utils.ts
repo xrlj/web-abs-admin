@@ -97,4 +97,21 @@ export class Utils {
         break;
     }
   }
+
+  /**
+   * 数组去重。
+   * @param array 数组
+   */
+  removeRepeatOfArray<T>(array: Array<T>): Array<T> {
+    if (!array) {
+      return [];
+    }
+    const arrayNew = [];
+    array.forEach(value => {
+      if (!arrayNew.includes(value)) {
+        arrayNew.push(value);
+      }
+    });
+    return arrayNew;
+  }
 }

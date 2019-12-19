@@ -86,15 +86,18 @@ export class Api {
           if (ok instanceof Function) {
             ok(resp.data);
           }
+          if (final instanceof Function) {
+            final(true);
+          }
         } else {
           if (!this.dealError(code, msg)) {
             if (fail instanceof Function) {
               fail(resp);
             }
           }
-        }
-        if (final instanceof Function) {
-          final();
+          if (final instanceof Function) {
+            final(false);
+          }
         }
       }, error => {
         const fail = handlers['fail'];
@@ -105,7 +108,7 @@ export class Api {
           }
         }
         if (final instanceof Function) {
-          final();
+          final(false);
         }
       });
 
@@ -163,15 +166,18 @@ export class Api {
         if (ok instanceof Function) {
           ok(resp.data);
         }
+        if (final instanceof Function) {
+          final(true);
+        }
       } else {
         if (!this.dealError(code, msg)) {
           if (fail instanceof Function) {
             fail(resp);
           }
         }
-      }
-      if (final instanceof Function) {
-        final();
+        if (final instanceof Function) {
+          final(false);
+        }
       }
     }, error => {
       const fail = handlers['fail'];
@@ -182,7 +188,7 @@ export class Api {
         }
       }
       if (final instanceof Function) {
-        final();
+        final(false);
       }
     });
 

@@ -17,4 +17,12 @@ export class RoleManageService {
   getRolePage(vRoleReq: VRoleReq): any {
     return this.api.post(ApiPath.usercentral.roleApi.getAll, vRoleReq);
   }
+
+  /**
+   * 添加角色并授权菜单。
+   * @param vRoleReq 参数对象。
+   */
+  saveRole(vRoleReq: VRoleReq): any {
+    return this.api.post(ApiPath.usercentral.roleApi.save, vRoleReq);
+  }
 }

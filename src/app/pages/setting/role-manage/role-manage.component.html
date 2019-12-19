@@ -97,17 +97,17 @@
       </nz-form-control>
     </nz-form-item>
     <nz-form-item>
-      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="roleDesc">备注</nz-form-label>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="roleDesc" nzRequired>备注</nz-form-label>
       <nz-form-control [nzSm]="10" [nzXs]="24">
         <input nz-input id="roleDesc" formControlName="roleDesc"
                placeholder="备注"/>
+        <nz-form-explain *ngIf="addOrEditForm.get('roleDesc')?.dirty && addOrEditForm.get('roleDesc')?.errors">备注不能为空!</nz-form-explain>
       </nz-form-control>
     </nz-form-item>
   </form>
   <div class="menu-per">
     <label><span>菜单授权:</span></label>
     <nz-tree class="menu-per-tree"
-      #nzTreeMenus
       [nzData]="nzTreeMenusData"
       nzCheckable
       [nzCheckedKeys]="checkedKeys"

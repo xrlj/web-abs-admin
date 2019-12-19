@@ -55,7 +55,7 @@ export class RoleManageComponent implements OnInit  {
     // 新增编辑对话框
     this.addOrEditForm = this.fb.group({
       roleName: [null, [Validators.required]],
-      roleDesc: [null, null]
+      roleDesc: [null, [Validators.required]]
     });
     this.getAppList();
     this.search();
@@ -80,56 +80,19 @@ export class RoleManageComponent implements OnInit  {
    * @param event 对象
    */
   nzTreeMenusCheck(event: NzFormatEmitEvent): void {
-    console.log('>>>check');
     console.log(event);
-    console.log(event.checkedKeys);
     if (event.checkedKeys) {
       this.checkedKeys = [];
       this.checkedMenuIds = [];
       event.checkedKeys.forEach(value => {
-        this.dealNzTreeCheck(value, this.checkedKeys, this.checkedMenuIds);
+        this.uiHelper.dealNzTreeCheck(value, this.checkedKeys, this.checkedMenuIds);
       });
       // 去重
-      const checkedKeysNew = [];
-      const checkedIdsNew = [];
-      this.checkedKeys.forEach(value => {
-        if (!checkedKeysNew.includes(value)) {
-          checkedKeysNew.push(value);
-        }
-      });
-      this.checkedMenuIds.forEach(value => {
-        if (!checkedIdsNew.includes(value)) {
-          checkedIdsNew.push(value);
-        }
-      });
-      this.checkedKeys = checkedKeysNew;
-      this.checkedMenuIds = checkedIdsNew;
+      this.checkedKeys = this.utils.removeRepeatOfArray<number>(this.checkedKeys);
+      this.checkedMenuIds = this.utils.removeRepeatOfArray<string>(this.checkedMenuIds);
     }
     console.log(this.checkedKeys);
     console.log(this.checkedMenuIds);
-  }
-
-  dealNzTreeCheck(node: NzTreeNode, checkedKeys: number[], checkIds: string[]): void {
-    if (!node) {
-      return;
-    }
-    const parentNode = node.parentNode;
-    const childrenNode = node.children;
-    checkedKeys.push(Number(node.origin.key));
-    checkIds.push(node.origin.id);
-    if (parentNode) {
-      const pKey = Number(parentNode.origin.key);
-      checkedKeys.push(pKey);
-      checkIds.push(parentNode.origin.id);
-      this.dealNzTreeCheck(parentNode.parentNode, checkedKeys, checkIds);
-    }
-    if (childrenNode && childrenNode.length > 0) {
-      childrenNode.forEach(value => {
-        checkedKeys.push(Number(value.origin.key));
-        checkIds.push(value.origin.id);
-        this.dealNzTreeCheck(value, checkedKeys, checkIds);
-      });
-    }
   }
 
   /**
@@ -167,7 +130,27 @@ export class RoleManageComponent implements OnInit  {
       this.addOrEditForm.controls[i].markAsDirty();
       this.addOrEditForm.controls[i].updateValueAndValidity();
     }
-    // this.reInitDialog();
+    const vRoleReq: VRoleReq = {
+      clientId: this.appSelected,
+      roleName: this.addOrEditForm.value.roleName,
+      description: this.addOrEditForm.value.roleDesc,
+      menuIds: this.checkedMenuIds
+    };
+    this.isAddOkLoading = true;
+    this.roleManageService.saveRole(vRoleReq).ok(data => {
+      this.uiHelper.msgTipSuccess('添加角色成功');
+      this.isShowDialog = false;
+      this.reInitDialog();
+      setTimeout(() => {
+        this.search();
+      }, 100);
+    })
+      .fail(error => {
+        this.uiHelper.msgTipError(error.msg);
+      })
+      .final(b => {
+        this.isAddOkLoading = false;
+      });
   }
 
   /**
