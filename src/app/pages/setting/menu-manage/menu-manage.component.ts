@@ -253,7 +253,7 @@ export class MenuManageComponent implements OnInit {
             if (data === true) {
               setTimeout(() => {
                 this.refreshMenuList();
-                }, 500);
+                }, 200);
             } else {
               this.uiHelper.msgTipError('删除菜单失败');
             }
@@ -289,10 +289,10 @@ export class MenuManageComponent implements OnInit {
         this.uiHelper.msgTipSuccess('提交成功');
         this.isShowAdd = false;
         this.resetInit();
-        // 1s后再刷新，服务端数据库主从复制有延迟，可能数据不一致，因此延迟1s再刷新。
+        // 200毫秒后再刷新，服务端数据库主从复制有延迟，可能数据不一致，因此延迟1s再刷新。
         setTimeout(() => {
           this.refreshMenuList();
-        }, 1000);
+        }, 200);
       } else {
         this.uiHelper.msgTipError('提交失败');
       }

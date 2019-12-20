@@ -164,6 +164,13 @@ export class RoleManageComponent implements OnInit {
   }
 
   /**
+   * 单个删除角色。
+   * @param id 角色id
+   */
+  delRoleSingle(id: string): void {
+  }
+
+  /**
    * 确定新增或编辑角色。提交表单数据。
    * @param dialogType 1-新增；2-修改
    */
