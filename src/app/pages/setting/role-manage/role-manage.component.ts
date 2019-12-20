@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, AfterViewInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {CommonService} from '../../../helpers/common.service';
 import {VAppInfoResp} from '../../../helpers/vo/resp/v-appInfo-resp';
 import {Utils} from '../../../helpers/utils';
@@ -6,12 +6,12 @@ import {JwtKvEnum} from '../../../helpers/enum/jwt-kv-enum';
 import {RoleManageService} from './role-manage.service';
 import {VRoleReq} from '../../../helpers/vo/req/v-role-req';
 import {UIHelper} from '../../../helpers/ui-helper';
-import {VRoleResp} from '../../../helpers/vo/resp/v-role-resp';
-import {FormGroup, FormBuilder, Validators} from '@angular/forms';
-import {NzTreeComponent, NzTreeNodeOptions, NzFormatEmitEvent, NzTreeNode} from 'ng-zorro-antd';
+import {VRoleMenuResp, VRoleResp} from '../../../helpers/vo/resp/v-role-resp';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {NzFormatEmitEvent, NzTreeComponent, NzTreeNodeOptions} from 'ng-zorro-antd';
 import {MenuManageService} from '../menu-manage/menu-manage.service';
-import {VMenuResp} from '../../../helpers/vo/resp/v-menu-resp';
 import {DefaultBusService} from '../../../helpers/event-bus/default-bus.service';
+import {VMenuResp} from '../../../helpers/vo/resp/v-menu-resp';
 
 @Component({
   selector: 'app-role-manage',
@@ -48,7 +48,8 @@ export class RoleManageComponent implements OnInit {
   dialogType = 1; // 1-新增；2-编辑
   isAddOkLoading = false;
   addOrEditForm: FormGroup;
-  checkedKeys = []; // 选中的key
+  @ViewChild('nzTreeComponent', { static: false }) nzTreeComponent: NzTreeComponent;
+  checkedKeys = ['1', '22']; // 选中的key
   checkedMenuIds = []; // 选中的菜单的id
   expandedKeys = []; // 展开的
   nzTreeMenusData: VMenuResp[] = [];
@@ -87,14 +88,17 @@ export class RoleManageComponent implements OnInit {
   nzTreeMenusCheck(event: NzFormatEmitEvent): void {
     console.log(event);
     if (event.checkedKeys) {
+      console.log(event.checkedKeys);
       this.checkedKeys = [];
       this.checkedMenuIds = [];
       event.checkedKeys.forEach(value => {
         this.uiHelper.dealNzTreeCheck(value, this.checkedKeys, this.checkedMenuIds);
       });
       // 去重
-      this.checkedKeys = this.utils.removeRepeatOfArray<number>(this.checkedKeys);
+      this.checkedKeys = this.utils.removeRepeatOfArray<string>(this.checkedKeys);
       this.checkedMenuIds = this.utils.removeRepeatOfArray<string>(this.checkedMenuIds);
+      console.log(this.checkedKeys);
+      console.log(this.checkedMenuIds);
     }
   }
 
@@ -123,7 +127,6 @@ export class RoleManageComponent implements OnInit {
     this.defaultBusService.showLoading(true);
     this.roleManageService.getRoleInfo(id)
       .ok(data => {
-        console.log(data);
         this.isShowDialog = true;
         this.roleInfo = data;
         this.addOrEditForm.patchValue({
@@ -134,7 +137,17 @@ export class RoleManageComponent implements OnInit {
         this.menuManageService.getMenusByClientId(this.appSelected, 0)
           .ok(data1 => {
             this.nzTreeMenusData = data1;
+            // 设置选中
+            this.checkedKeys = [];
+            this.roleInfo.roleMenu.forEach(value => {
+              if (value.checked) {
+                this.checkedKeys.push(value.menuKey);
+              }
+              this.checkedMenuIds.push(value.menuId);
+            });
             this.uiHelper.setMenuPerDataLeaf(this.nzTreeMenusData);
+            console.log(this.checkedKeys);
+            console.log(this.checkedMenuIds);
           })
           .fail(error1 => {
             this.uiHelper.msgTipError('加载授权菜单失败');
@@ -164,23 +177,44 @@ export class RoleManageComponent implements OnInit {
       clientId: this.appSelected,
       roleName: this.addOrEditForm.value.roleName,
       description: this.addOrEditForm.value.roleDesc,
-      menuIds: this.checkedMenuIds
+      menuIds: this.checkedMenuIds,
+      roleId: this.roleInfo.id
     };
     this.isAddOkLoading = true;
-    this.roleManageService.saveRole(vRoleReq).ok(data => {
-      this.uiHelper.msgTipSuccess('添加角色成功');
-      this.isShowDialog = false;
-      this.reInitDialog();
-      setTimeout(() => {
-        this.search();
-      }, 100);
-    })
-      .fail(error => {
-        this.uiHelper.msgTipError(error.msg);
+    if (dialogType === 1) { // 新增
+      this.roleManageService.saveRole(vRoleReq).ok(data => {
+        this.uiHelper.msgTipSuccess('添加角色成功');
+        this.isShowDialog = false;
+        this.reInitDialog();
+        setTimeout(() => {
+          this.search();
+        }, 100);
       })
-      .final(b => {
-        this.isAddOkLoading = false;
-      });
+        .fail(error => {
+          this.uiHelper.msgTipError(error.msg);
+        })
+        .final(b => {
+          this.isAddOkLoading = false;
+        });
+    } else { // 修改
+      this.roleManageService.updateRole(vRoleReq)
+        .ok(data => {
+          if (data) {
+            this.uiHelper.msgTipSuccess('修改成功');
+            this.isShowDialog = false;
+            this.reInitDialog();
+            setTimeout(() => {
+              this.search();
+            }, 100);
+          }
+        })
+        .fail(error => {
+          this.uiHelper.msgTipError(error.msg);
+        })
+        .final(b => {
+          this.isAddOkLoading = false;
+        });
+    }
   }
 
   /**
@@ -266,17 +300,4 @@ export class RoleManageComponent implements OnInit {
     this.listOfDisplayData.filter(item => !item.disabled).forEach(item => (this.mapOfCheckedId[item.id] = value));
     this.refreshStatus();
   }
-
-  /* ngAfterViewInit(): void {
-     console.log('>>>>>>>>>>>>>>>>>>after:');
-     // get node by key: '10011'
-     console.log(this.nzTreeComponent.getTreeNodeByKey('10011'));
-     // use tree methods
-     console.log(
-       this.nzTreeComponent.getTreeNodes(),
-       this.nzTreeComponent.getCheckedNodeList(),
-       this.nzTreeComponent.getSelectedNodeList(),
-       this.nzTreeComponent.getExpandedNodeList()
-     );
-   }*/
 }

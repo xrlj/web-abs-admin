@@ -27,6 +27,14 @@ export class RoleManageService {
   }
 
   /**
+   * 更新角色信息。
+   * @param vRoleReq 参数对象
+   */
+  updateRole(vRoleReq: VRoleReq): any {
+    return this.api.post(ApiPath.usercentral.roleApi.update, vRoleReq);
+  }
+
+  /**
    * 获取角色详情。包含其菜单授权列表，接口授权列表。
    * @param roleId 菜单id
    */

@@ -4,14 +4,15 @@ export interface VRoleResp {
   description: string;
   dateCreated: string;
   disabled?: boolean;
-  roleMenu?: VRoleMenuResp;
-  rolePermission?: VRolePermissionResp;
+  roleMenu?: VRoleMenuResp[];
+  rolePermission?: VRolePermissionResp[];
 }
 
 export interface VRoleMenuResp {
   roleId: string; // 角色id
   menuId: string;
   menuKey: string;
+  checked: boolean;
 }
 
 export interface VRolePermissionResp {

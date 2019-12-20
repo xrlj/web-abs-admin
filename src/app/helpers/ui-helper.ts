@@ -7,7 +7,7 @@ import {Utils} from './utils';
 import { Router } from '@angular/router';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import {VMenuResp} from './vo/resp/v-menu-resp';
-import { NzTreeNode } from 'ng-zorro-antd';
+import { NzTreeNode, NzTreeNodeOptions } from 'ng-zorro-antd';
 
 @Injectable({
   providedIn: 'root'
@@ -202,26 +202,26 @@ export class UIHelper {
    * @param checkedKeys 保存的选中key。注意去重
    * @param checkIds 保存的选中对象的id。包括父节点的。注意去重
    */
-  dealNzTreeCheck(node: NzTreeNode, checkedKeys: number[], checkIds: string[]): void {
+  dealNzTreeCheck(node: NzTreeNode, checkedKeys: string[], checkIds: string[]): void {
     if (!node) {
       return;
     }
-    const parentNode = node.parentNode;
+    let parentNode = node.parentNode;
     const childrenNode = node.children;
-    checkedKeys.push(Number(node.origin.key));
+    checkedKeys.push(node.origin.key);
     checkIds.push(node.origin.id);
-    if (parentNode) {
-      const pKey = Number(parentNode.origin.key);
+    while (parentNode) { // 向上找到所有父节点
+      const pKey = parentNode.origin.key;
       if (parentNode.origin.checked) {
         checkedKeys.push(pKey);
       }
       checkIds.push(parentNode.origin.id);
-      this.dealNzTreeCheck(parentNode.parentNode, checkedKeys, checkIds);
+      parentNode = parentNode.getParentNode();
     }
-    if (childrenNode && childrenNode.length > 0) {
+    if (childrenNode && childrenNode.length > 0) { // 向下找到所有子节点
       childrenNode.forEach(value => {
         if (value.origin.checked) {
-          checkedKeys.push(Number(value.origin.key));
+          checkedKeys.push(value.origin.key);
         }
         checkIds.push(value.origin.id);
         this.dealNzTreeCheck(value, checkedKeys, checkIds);

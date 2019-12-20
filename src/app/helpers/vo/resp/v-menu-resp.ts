@@ -7,7 +7,7 @@ export interface VMenuResp {
   show: boolean;
   title: string;
   type: number;
-  key: number;
+  key: string;
   isLeaf?: boolean;
   parentId?: string;
   parent?: VMenuResp;

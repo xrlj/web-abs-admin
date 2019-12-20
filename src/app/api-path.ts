@@ -20,6 +20,7 @@ export const ApiPath = {
     roleApi: {
       getAll: `/${usercentral}/role/getAll`,
       save: `/${usercentral}/role/save`,
+      update: `/${usercentral}/role/update`,
       getById: `/${usercentral}/role/getById`
     }
   }
