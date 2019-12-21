@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import {VMenuResp} from './vo/resp/v-menu-resp';
 import { NzTreeNode, NzTreeNodeOptions } from 'ng-zorro-antd';
+import {VDeptResp} from './vo/resp/v-dept-resp';
 
 @Injectable({
   providedIn: 'root'
@@ -197,6 +198,24 @@ export class UIHelper {
   }
 
   /**
+   * 通用方法，所有选择树可以。递归遍历树节点。当节点没有子节点的时候，添加isLeaf=true。目的，去掉箭头展开按钮。
+   * @param dataList 整棵树数据列表。
+   */
+  setSelectTreeLeaf(dataList: any): void {
+    if (!dataList) {
+      return;
+    }
+    dataList.forEach(value => {
+      const children = value.children;
+      if (children === null || children === undefined || children.length === 0) {
+        value.isLeaf = true;
+      } else {
+        this.setSelectTreeLeaf(children);
+      }
+    });
+  }
+
+  /**
    * 通用方法。递归收集树选择（checked）的key以及对象id。注意去重。在多选树中的checked回调方法中调用改该方法。
    * @param node 节点。
    * @param checkedKeys 保存的选中key。注意去重
@@ -227,5 +246,28 @@ export class UIHelper {
         this.dealNzTreeCheck(value, checkedKeys, checkIds);
       });
     }
+  }
+
+  /**
+   * TreeSelect，选择树，选定后根据key，获取节点对象中包含的id。通用
+   * @param dataList 整棵树数据列表。
+   * @param selectedKey 选定的节点的key
+   */
+  getSelectTreeIdByKey(dataList: any, selectedKey: string): string {
+    let selectedId: string = null;
+    if (dataList && dataList.length > 0) {
+      dataList.every((item) => {
+        if (item.key === selectedKey) {
+          selectedId = item.id;
+          return false;
+        } else {
+          if (item.children && item.children.length > 0) {
+            this.getSelectTreeIdByKey(item.children, selectedKey);
+          }
+        }
+        return true;
+      });
+    }
+    return selectedId;
   }
 }

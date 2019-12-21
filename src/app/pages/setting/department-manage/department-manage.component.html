@@ -1,1 +1,91 @@
-<p>department-manage works!</p>
+<!--菜单列表-->
+<nz-card class="dept-card" nzTitle="部门列表" [nzExtra]="extraTemplate">
+  <div class="dept-card-action">
+    <button nz-button nzType="primary" (click)="showAddModal()"><i nz-icon type="plus"></i>新增</button>
+  </div>
+  <!--列表-->
+  <nz-table #deptTable [nzData]="listData" [nzShowPagination]="false" [nzLoading]="isTableLoading" nzBordered>
+    <thead>
+    <tr>
+      <th nzWidth="50%" nzAlign="center">名称</th>
+      <th nzWidth="30%" nzAlign="center">上级部门</th>
+      <th nzWidth="10%" nzAlign="center">排序</th>
+      <th nzAlign="center">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <ng-container *ngFor="let data of deptTable.data">
+      <ng-container *ngFor="let item of listOfExpandedData[data.key]">
+        <tr *ngIf="(item.parent && item.parent.expand) || !item.parent">
+          <td
+            [nzIndentSize]="item.level * 20"
+            [nzShowExpand]="!!item.children"
+            [(nzExpand)]="item.expand"
+            (nzExpandChange)="uiTableHelper.collapse(listOfExpandedData[data.key], item, $event)"
+          >
+            {{ item.name }}
+          </td>
+          <td nzAlign="center">{{ item.parentName }}</td>
+          <td nzAlign="center">{{ item.sort }}</td>
+          <td nzAlign="center">
+            <a (click)="showEditModal(item.id)">修改</a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a (click)="showDelModal(item.id, item.name)">删除</a>
+          </td>
+        </tr>
+      </ng-container>
+    </ng-container>
+    </tbody>
+  </nz-table>
+</nz-card>
+
+<ng-template #extraTemplate>
+  <span style="cursor: pointer;" (click)="getDeptList()">
+    <i nz-icon [nzType]="'sync'" [nzSpin]="isRefreshList"></i><!--动态加载的，点击刷新的时候把false改成true-->
+    <span style="margin-left: 5px;">刷新数据</span>
+  </span>
+</ng-template>
+
+<!--新增菜单对话框-->
+<nz-modal *ngIf="isShowAddOrEditModal"
+          [(nzVisible)]="isShowAddOrEditModal"
+          nzWidth="800"
+          [nzTitle]="addOrEdit === 1 ? '新增' : '修改'"
+          (nzOnCancel)="addOrEditHandleCancel()"
+          (nzOnOk)="addOrEditHandleOk()"
+          [nzOkLoading]="addOrEditOkLoading">
+
+  <form nz-form [formGroup]="addOrEditForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="name" nzRequired>名称</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24">
+        <input nz-input id="name" formControlName="name" placeholder="部门名称"/>
+        <nz-form-explain *ngIf="addOrEditForm.get('name')?.dirty && addOrEditForm.get('name')?.errors">部门名称不为空!
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="parentDept" nzRequired>上级部门</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24">
+        <nz-tree-select id="parentDept" formControlName="parentDept"
+                        [nzNodes]="selectDeptList"
+                        nzShowSearch
+                        nzPlaceHolder="上级部门"
+                        [(ngModel)]="selectedDeptKey"
+                        (ngModelChange)="selectParentDeptOnChange($event)">
+        </nz-tree-select>
+        <nz-form-explain *ngIf="addOrEditForm.get('parentDept')?.dirty && addOrEditForm.get('parentDept')?.errors">请选择上级部门!
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="sort">排序</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24">
+        <nz-input-number id="sort" formControlName="sort" [nzMin]="1" [nzMax]="1000" [nzStep]="1" [ngModel]="1"
+                         style="width: 150px"></nz-input-number>
+        <nz-form-explain *ngIf="addOrEditForm.get('sort')?.dirty && addOrEditForm.get('sort')?.errors">请输入排序!</nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+
+</nz-modal>
