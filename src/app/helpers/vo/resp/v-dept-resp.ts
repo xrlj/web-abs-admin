@@ -9,6 +9,7 @@ export interface VDeptResp {
   key: string;
   isLeaf?: boolean;
   parentId?: string;
+  parentKey?: string;
   parentName?: string;
   parent?: VDeptResp;
   children?: VDeptResp[];

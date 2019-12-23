@@ -155,6 +155,38 @@ export class UIHelper {
     return result;
   }
 
+  /**
+   * 删除对话框。
+   * @param content 删除提醒内容。
+   * @param title 标题。
+   */
+  modalDel(content: string, title?: string) {
+    const handlers = {};
+    this.modalService.confirm({
+      nzTitle: '删除提示',
+      nzContent: content,
+      nzOkText: '确定',
+      nzOkType: 'danger',
+      nzOnOk: () => {
+        new Promise((resolve, reject) => {
+          const ok = handlers['ok'];
+          if (ok instanceof Function) {
+            ok();
+          }
+        }).catch(() => console.log('操作错误!'));
+      },
+      nzCancelText: '取消',
+      nzOnCancel: () => console.log('Cancel')
+    });
+    const result = {
+      ok: fn => {
+        handlers['ok'] = fn;
+        return result;
+      }
+    };
+    return result;
+  }
+
   // =================== 各种通用对话框 end ==================== //
 
   /**
@@ -253,8 +285,7 @@ export class UIHelper {
    * @param dataList 整棵树数据列表。
    * @param selectedKey 选定的节点的key
    */
-  getSelectTreeIdByKey(dataList: any, selectedKey: string): string {
-    let selectedId: string = null;
+  getSelectTreeIdByKey(dataList: any, selectedKey: string, selectedId: string): void {
     if (dataList && dataList.length > 0) {
       dataList.every((item) => {
         if (item.key === selectedKey) {
@@ -262,12 +293,11 @@ export class UIHelper {
           return false;
         } else {
           if (item.children && item.children.length > 0) {
-            this.getSelectTreeIdByKey(item.children, selectedKey);
+            this.getSelectTreeIdByKey(item.children, selectedKey, selectedId);
           }
         }
         return true;
       });
     }
-    return selectedId;
   }
 }

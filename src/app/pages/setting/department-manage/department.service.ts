@@ -28,4 +28,8 @@ export class DepartmentService {
   getAll(): any {
     return this.api.get(ApiPath.usercentral.dept.getAll);
   }
+
+  getById(id: string): any {
+    return this.api.get(`${ApiPath.usercentral.dept.getById}/${id}`);
+  }
 }

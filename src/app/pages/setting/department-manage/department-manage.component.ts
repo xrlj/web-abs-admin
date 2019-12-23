@@ -6,6 +6,7 @@ import {VDeptReq} from '../../../helpers/vo/req/v-dept-req';
 import {DepartmentService} from './department.service';
 import {UIHelper} from '../../../helpers/ui-helper';
 import {UiTableHelper} from '../../../helpers/ui-table-helper';
+import { NzModalService } from 'ng-zorro-antd';
 
 @Component({
   selector: 'app-department-manage',
@@ -33,7 +34,8 @@ export class DepartmentManageComponent implements OnInit {
   selectedDeptId: string; // 选定的上级部门的id
 
   constructor(private fb: FormBuilder, private departmentService: DepartmentService,
-              private uiHelper: UIHelper, private uiTableHelper: UiTableHelper) { }
+              private uiHelper: UIHelper, private uiTableHelper: UiTableHelper,
+              private modalService: NzModalService) { }
 
   ngOnInit() {
     this.addOrEditForm = this.fb.group({
@@ -55,6 +57,7 @@ export class DepartmentManageComponent implements OnInit {
       .ok(data => {
         this.listData = data;
         this.cutEmptyChildrenToNull(this.listData);
+        this.uiHelper.setSelectTreeLeaf(this.listData);
         this.listData.forEach((val) => {
           this.listOfExpandedData[val.key] = this.uiTableHelper.convertTreeToList(val);
         });
@@ -98,6 +101,17 @@ export class DepartmentManageComponent implements OnInit {
   showAddModal(): void {
     this.addOrEdit = 1;
     this.isShowAddOrEditModal = true;
+    this.departmentService.getAll()
+      .ok(data => {
+        this.selectDeptList = data;
+        // this.cutEmptyChildrenToNull(this.listData);
+        this.uiHelper.setSelectTreeLeaf(this.selectDeptList);
+      })
+      .fail(error => {
+        console.log(error.msg);
+      })
+      .final(b => {
+      });
   }
 
   /**
@@ -107,6 +121,26 @@ export class DepartmentManageComponent implements OnInit {
   showEditModal(id: string): void {
     this.addOrEdit = 2;
     this.isShowAddOrEditModal = true;
+    this.departmentService.getById(id)
+      .ok(data => {
+        this.deptInfo = data;
+        this.addOrEditForm.patchValue({
+          name: this.deptInfo.name,
+          parentDept: null,
+          sort: this.deptInfo.sort
+        });
+
+        this.departmentService.getAll()
+          .ok(data1 => {
+            this.selectedDeptKey = this.deptInfo.parentKey;
+            this.selectedDeptId = this.deptInfo.parentId;
+            this.selectDeptList = data1;
+          });
+      })
+      .fail(error => {
+        this.uiHelper.msgTipError('获取详情失败');
+      })
+      .final(b => {});
   }
 
   /**
@@ -114,7 +148,23 @@ export class DepartmentManageComponent implements OnInit {
    * @param id 部门id
    * @param deptName 部门名称
    */
-  showDelModal(id: string, deptName: string): void {
+  del(id: string, deptName: string): void {
+    this.uiHelper.modalDel(`确定要删除部门[${deptName}]吗？`).ok(() => {
+      this.departmentService.del(id)
+        .ok(data => {
+          if (data === true) {
+            this.uiHelper.msgTipSuccess(`已成功删除部门${deptName}`);
+            setTimeout(() => {
+              this.getDeptList();
+            }, 200);
+          } else {
+            this.uiHelper.msgTipError(`删除部门${deptName}失败`);
+          }
+        })
+        .fail(error => {
+          this.uiHelper.msgTipError(error.msg);
+        });
+    });
   }
 
   /**
@@ -130,7 +180,7 @@ export class DepartmentManageComponent implements OnInit {
     const par: VDeptReq = {
       id: this.addOrEdit === 1 ? null : this.deptInfo.id,
       name: this.addOrEditForm.value.name,
-      parentId: this.uiHelper.getSelectTreeIdByKey(this.selectDeptList, this.selectedDeptKey),
+      parentId: this.selectedDeptId,
       sort: this.addOrEditForm.value.sort
     };
     this.departmentService.saveOrUpdate(par)
@@ -138,6 +188,9 @@ export class DepartmentManageComponent implements OnInit {
         this.uiHelper.msgTipSuccess(this.addOrEdit === 1 ? '新增成功' : '修改成功');
         this.isShowAddOrEditModal = false;
         this.reInit();
+        setTimeout(() => {
+          this.getDeptList();
+        }, 200);
       })
       .fail(error => {
         this.uiHelper.msgTipError(error.msg);
@@ -161,6 +214,30 @@ export class DepartmentManageComponent implements OnInit {
    */
   selectParentDeptOnChange($event: string): void {
     console.log($event);
+    if ($event) {
+      this.getSelectTreeIdByKey(this.selectDeptList);
+    } else {
+      this.selectedDeptId = null;
+    }
+  }
+
+  /**
+   * TreeSelect，选择树，选定后根据key，获取节点对象中包含的id。通用
+   * @param dataList 整棵树数据列表。
+   */
+  getSelectTreeIdByKey(dataList: VDeptResp[]): void {
+    if (dataList && dataList.length > 0) {
+      dataList.forEach((item) => {
+        console.log(this.selectedDeptKey);
+        if (item.key === this.selectedDeptKey) {
+          this.selectedDeptId = item.id;
+        } else {
+          if (item.children && item.children.length > 0) {
+            this.getSelectTreeIdByKey(item.children);
+          }
+        }
+      });
+    }
   }
 
   /**
