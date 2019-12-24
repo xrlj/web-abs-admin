@@ -1,1 +1,112 @@
-<p>user-manage works!</p>
+<nz-card class="list" nzTitle="角色列表">
+  <div class="list-action">
+    <nz-input-group [nzSuffix]="usernameSuffixTemplate">
+      <input type="text" nz-input [(ngModel)]="username" placeholder="用户名称"/>
+    </nz-input-group>
+    <nz-select [(ngModel)]="sexSelected" style="min-width: 200px">
+      <nz-option [nzLabel]="'男'" [nzValue]="1"></nz-option>
+      <nz-option [nzLabel]="'女'" [nzValue]="2"></nz-option>
+      <nz-option [nzLabel]="'保密'" [nzValue]="0"></nz-option>
+    </nz-select>
+    <button nz-button nzType="default" (click)="search()"><i nz-icon nzType="search"></i>查询</button>
+    <button nz-button nzType="primary" (click)="addModalShow()"><i nz-icon type="plus"></i>新增</button>
+    <button nz-button nzType="danger"><i nz-icon type="delete"></i>删除</button>
+    <button nz-button nzType="primary" style="background: grey"><i nz-icon nzType="export" nzTheme="outline"></i>导出</button>
+  </div>
+  <!--<div class="list-table">
+    <nz-table
+      #userTable
+      nzShowPagination
+      nzShowSizeChanger
+      nzBordered
+      [nzFrontPagination]="false"
+      [nzData]="listOfAllData"
+      [nzLoading]="loading"
+      [nzTotal]="total"
+      [(nzPageIndex)]="pageIndex"
+      [(nzPageSize)]="pageSize"
+      (nzPageIndexChange)="search()"
+      (nzPageSizeChange)="search(true)"
+      (nzCurrentPageDataChange)="currentPageDataChange($event)"
+    >
+      <thead>
+      <tr>
+        <th
+          nzShowCheckbox
+          [(nzChecked)]="isAllDisplayDataChecked"
+          [nzIndeterminate]="isIndeterminate"
+          (nzCheckedChange)="checkAll($event)"
+        ></th>
+        <th nzWidth="30%" nzAlign="center">名称</th>
+        <th nzWidth="30%" nzAlign="center">备注</th>
+        <th nzWidth="20%" nzAlign="center"
+            nzShowSort
+        >
+          创建时间
+        </th>
+        <th nzWidth="20%" nzAlign="center">操作</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let data of roleTable.data">
+        <td
+          nzShowCheckbox
+          [(nzChecked)]="mapOfCheckedId[data.id]"
+          [nzDisabled]="data.disabled"
+          (nzCheckedChange)="refreshStatus()"
+        ></td>
+        <td nzAlign="center">{{ data.roleName }}</td>
+        <td nzAlign="center">{{ data.description }}</td>
+        <td nzAlign="center">{{ data.dateCreated }}</td>
+        <td nzAlign="center">
+          <a (click)="editRole(data.id)">编辑</a>
+          <nz-divider nzType="vertical"></nz-divider>
+          <a (click)="delRoleSingle(data.id)">删除</a>
+        </td>
+      </tr>
+      </tbody>
+    </nz-table>
+  </div>-->
+</nz-card>
+
+<ng-template #usernameSuffixTemplate
+><i
+  nz-icon
+  nz-tooltip
+  class="ant-input-clear-icon"
+  nzTheme="fill"
+  nzType="close-circle"
+  *ngIf="username"
+  (click)="username = null"
+></i
+></ng-template>
+
+<!--新增、编辑角色-->
+<!--<nz-modal *ngIf="isShowDialog"
+          [(nzVisible)]="isShowDialog"
+          nzWidth="800"
+          [nzTitle]="dialogType === 1 ? '新增' : '修改'"
+          (nzOnCancel)="handleCancelDialog(dialogType)"
+          (nzOnOk)="handleOkDialog(dialogType)"
+          [nzOkLoading]="isAddOkLoading">
+
+  <form nz-form [formGroup]="addOrEditForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="roleName" nzRequired>名称</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24">
+        <input nz-input id="roleName" formControlName="roleName" placeholder="角色名称"/>
+        <nz-form-explain *ngIf="addOrEditForm.get('roleName')?.dirty && addOrEditForm.get('roleName')?.errors">角色名称不为空!
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="roleDesc" nzRequired>备注</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24">
+        <input nz-input id="roleDesc" formControlName="roleDesc"
+               placeholder="备注"/>
+        <nz-form-explain *ngIf="addOrEditForm.get('roleDesc')?.dirty && addOrEditForm.get('roleDesc')?.errors">备注不能为空!</nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+
+</nz-modal>-->
