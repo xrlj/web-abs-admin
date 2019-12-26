@@ -105,19 +105,37 @@
       </nz-form-control>
     </nz-form-item>
   </form>
-  <div class="menu-per">
-    <label><span>菜单授权:</span></label>
-    <nz-tree  #nzTreeComponent class="menu-per-tree"
-      [nzData]="nzTreeMenusData"
-      nzCheckable
-      [nzCheckedKeys]="checkedKeys"
-      [nzExpandedKeys]="expandedKeys"
-      [nzSelectedKeys]="checkedKeys"
-      (nzClick)="nzTreeMenusClick($event)"
-      (nzCheckBoxChange)="nzTreeMenusCheck($event)"
-      (nzExpandChange)="nzTreeMenusCheck($event)"
-    >
-    </nz-tree>
+  <div class="per">
+    <div class="per-menu">
+      <label><span>菜单授权:</span></label>
+      <nz-tree  #nzTreeComponent class="per-menu-tree"
+                [nzData]="nzTreeMenusData"
+                nzCheckable
+                [nzCheckedKeys]="checkedKeys"
+                [nzExpandedKeys]="expandedKeys"
+                [nzSelectedKeys]="checkedKeys"
+                (nzClick)="nzTreeMenusClick($event)"
+                (nzCheckBoxChange)="nzTreeMenusCheck($event)"
+                (nzExpandChange)="nzTreeMenusCheck($event)"
+      >
+      </nz-tree>
+    </div>
+
+    <!--部门授权-->
+    <div class="per-dept">
+      <label><span>部门授权:</span></label>
+      <nz-tree  class="per-dept-tree"
+                [nzData]="nzTreeMenusData"
+                nzCheckable
+                [nzCheckedKeys]="checkedKeys"
+                [nzExpandedKeys]="expandedKeys"
+                [nzSelectedKeys]="checkedKeys"
+                (nzClick)="nzTreeMenusClick($event)"
+                (nzCheckBoxChange)="nzTreeMenusCheck($event)"
+                (nzExpandChange)="nzTreeMenusCheck($event)"
+      >
+      </nz-tree>
+    </div>
   </div>
 
 </nz-modal>

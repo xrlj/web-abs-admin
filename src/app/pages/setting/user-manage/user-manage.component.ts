@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import {VUserReq} from '../../../helpers/vo/req/v-user-req';
 import { FormGroup, FormBuilder, Validators, FormControl, ValidationErrors } from '@angular/forms';
 import { Observer, Observable } from '_rxjs@6.4.0@rxjs';
+import { NzFormatEmitEvent } from 'ng-zorro-antd';
+import {DepartmentService} from '../department-manage/department.service';
+import {UIHelper} from '../../../helpers/ui-helper';
 
 @Component({
   selector: 'app-user-manage',
@@ -21,25 +24,39 @@ export class UserManageComponent implements OnInit {
   isShowAddOrEditModal = false;
   modalType = 1; // 1-新增；2-编辑
   isModalOkLoading = false;
-  sexRadioValue = '1'; // 性别选择。1-男；2-女；0-保密
-  status = '-1'; // 用户状态。-1=停用；1-正常
 
-  constructor(private fb: FormBuilder) {
+  // 部门搜索对话框
+  isShowDeptSearchModal = false;
+  deptSearchValue = '';
+  deptSelectedId = '';
+  deptDataList = [];
+
+  constructor(private fb: FormBuilder, private departmentService: DepartmentService,
+              private uiHelper: UIHelper) {
     // 新增编辑对话框
     this.addOrEditForm = this.fb.group({
       username: [null, [Validators.required], [this.userNameAsyncValidator]],
       dept: [null, [Validators.required]],
       password: [null, [Validators.required]],
       confirm: [null, [this.confirmValidator]],
-      sex: [null, null],
+      realName: [null, [Validators.required]],
+      sex: ['1', null], // 性别选择。1-男；2-女；0-保密
       email: [null, [Validators.email]],
       mobile: [null, [Validators.maxLength(11)]],
       role: [null, null],
-      status: [null, null]
+      status: ['1', null] // 用户状态。-1=停用；1-正常
     });
   }
 
   ngOnInit() {
+  }
+
+  resetAddOrEditModal(): void {
+    this.addOrEditForm.reset();
+    this.isShowAddOrEditModal = false;
+    this.isModalOkLoading = false;
+    this.addOrEditForm.patchValue({sex: '1'});
+    this.addOrEditForm.patchValue({status: '1'});
   }
 
   search(): void {}
@@ -50,11 +67,7 @@ export class UserManageComponent implements OnInit {
   }
 
   handleCancel(modalType: number): void {
-    this.addOrEditForm.reset();
-    this.isShowAddOrEditModal = false;
-    this.isModalOkLoading = false;
-    this.sexRadioValue = '1';
-    this.status = '-1';
+    this.resetAddOrEditModal();
   }
 
   handleOk(modalType: number, value: any): void {
@@ -63,6 +76,10 @@ export class UserManageComponent implements OnInit {
       this.addOrEditForm.controls[key].updateValueAndValidity();
     }
     console.log(value);
+    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>');
+    console.log(this.addOrEditForm.dirty);
+    if (!this.addOrEditForm.dirty) { // 前端通过所有输入校验
+    }
   }
 
   /**
@@ -98,6 +115,40 @@ export class UserManageComponent implements OnInit {
       return { confirm: true, error: true };
     }
     return {};
+  }
+
+  /**
+   * 搜索并选定部门。
+   */
+  showDeptSearchModal(): void {
+    this.isShowDeptSearchModal = true;
+    this.departmentService.getAll()
+      .ok(data => {
+        this.deptDataList = data;
+        this.uiHelper.setSelectTreeLeaf(this.deptDataList);
+      });
+  }
+
+  deptSearchHandleCancel(): void {
+    this.isShowDeptSearchModal = false;
+    this.deptDataList = [];
+    this.deptSearchValue = '';
+  }
+
+  deptSearchEvent(event: NzFormatEmitEvent): void {
+    console.log('>>>>>>>>>deptSearchEvent');
+    console.log(event);
+  }
+
+  deptClickEvent(event: NzFormatEmitEvent): void {
+    console.log('>>>>>>>>>deptClickEvent');
+    console.log(event);
+    if (event.node.origin.selected) {
+      this.deptSelectedId = event.node.origin.id;
+      this.addOrEditForm.patchValue({dept: event.node.origin.title});
+      this.deptSearchHandleCancel();
+      console.log(this.deptSelectedId);
+    }
   }
 
 }

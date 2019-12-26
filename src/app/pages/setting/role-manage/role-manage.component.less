@@ -23,16 +23,41 @@ nz-form-control {
   min-width: 520px;
 }
 
-.menu-per {
-  &>label>span {
-    color: #262626;
-    font-size: 14px;
-  }
-  padding-left: 58px;
+.per {
+  min-height: 400px;
+  overflow-y: scroll;
 
-  .menu-per-tree {
-    position: relative;
-    left: 58px;
-    top: -26px;
+  &-menu {
+    float: left;
+    width: 45%;
+
+    &>label>span {
+      color: #262626;
+      font-size: 14px;
+    }
+    padding-left: 58px;
+
+    &-tree {
+      position: relative;
+      left: 58px;
+      top: -26px;
+    }
+  }
+
+  &-dept {
+    float: left;
+    width: 45%;
+
+    &>label>span {
+      color: #262626;
+      font-size: 14px;
+    }
+    padding-left: 58px;
+
+    &-tree {
+      position: relative;
+      left: 58px;
+      top: -26px;
+    }
   }
 }

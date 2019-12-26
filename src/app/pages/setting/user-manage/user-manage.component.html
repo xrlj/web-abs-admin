@@ -85,6 +85,7 @@
 <nz-modal *ngIf="isShowAddOrEditModal"
           [(nzVisible)]="isShowAddOrEditModal"
           nzWidth="800"
+          [nzMaskClosable]="false"
           [nzTitle]="modalType === 1 ? '新增' : '修改'"
           (nzOnCancel)="handleCancel(modalType)"
           (nzOnOk)="handleOk(modalType, addOrEditForm.value)"
@@ -111,7 +112,7 @@
       <nz-form-control [nzSm]="10" [nzXs]="24">
         <nz-input-group nzSearch [nzAddOnAfter]="suffixIconSearchDeptButton">
           <input nz-input id="dept" formControlName="dept"
-                 placeholder="选择部门"/>
+                 placeholder="选择部门" (click)="showDeptSearchModal()" readonly/>
         </nz-input-group>
         <nz-form-explain *ngIf="addOrEditForm.get('dept')?.dirty && addOrEditForm.get('dept')?.errors">请选择部门</nz-form-explain>
       </nz-form-control>
@@ -139,11 +140,20 @@
         </ng-template>
       </nz-form-control>
     </nz-form-item>
+    <!--真实姓名-->
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="realName" nzRequired>真实姓名</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24">
+        <input nz-input id="realName" formControlName="realName" placeholder="真实姓名"/>
+        <nz-form-explain *ngIf="addOrEditForm.get('realName')?.dirty && addOrEditForm.get('realName')?.errors">真实姓名不为空!
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
     <!--性别-->
     <nz-form-item>
       <nz-form-label [nzSm]="4" [nzXs]="24">性别</nz-form-label>
       <nz-form-control [nzSm]="10" [nzXs]="24">
-        <nz-radio-group formControlName="sex" [(ngModel)]="sexRadioValue">
+        <nz-radio-group formControlName="sex">
           <label nz-radio nzValue="1">男</label>
           <label nz-radio nzValue="2">女</label>
           <label nz-radio nzValue="0">保密</label>
@@ -165,15 +175,20 @@
     <!--手机号码-->
     <nz-form-item>
       <nz-form-label [nzSm]="4" [nzXs]="24">手机号码</nz-form-label>
-      <nz-form-control [nzSm]="10" [nzXs]="24">
+      <nz-form-control [nzSm]="10" [nzXs]="24" nzHasFeedback>
         <input nz-input id="mobile" formControlName="mobile" placeholder="11位手机号码"/>
+        <!--<ng-template #mobileErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('maxLength')">
+            11位手机号码!
+          </ng-container>
+        </ng-template>-->
       </nz-form-control>
     </nz-form-item>
     <!--角色-->
     <nz-form-item>
       <nz-form-label [nzSm]="4" [nzXs]="24">角色配置</nz-form-label>
       <nz-form-control [nzSm]="10" [nzXs]="24">
-        <nz-select id="role" formControlName="role" [ngModel]="1">
+        <nz-select id="role" formControlName="role">
           <nz-option nzLabel="管理员" nzValue="1"></nz-option>
         </nz-select>
       </nz-form-control>
@@ -182,7 +197,7 @@
     <nz-form-item>
       <nz-form-label [nzSm]="4" [nzXs]="24">状态</nz-form-label>
       <nz-form-control [nzSm]="10" [nzXs]="24">
-        <nz-radio-group formControlName="status" [(ngModel)]="status">
+        <nz-radio-group formControlName="status">
           <label nz-radio nzValue="-1">停用</label>
           <label nz-radio nzValue="1">正常</label>
         </nz-radio-group>
@@ -194,3 +209,28 @@
 <ng-template #suffixIconSearchDeptButton>
   <button nz-button nzType="primary" nzSearch><i nz-icon nzType="search"></i></button>
 </ng-template>
+
+<!--///// 部门搜索对话框 ////////-->
+<nz-modal *ngIf="isShowDeptSearchModal"
+          [(nzVisible)]="isShowDeptSearchModal"
+          [nzMask]="false"
+          [nzFooter]="null"
+          nzWidth="600"
+          [nzTitle]="'选择部门'"
+          (nzOnCancel)="deptSearchHandleCancel()" [nzStyle]="{ top: '160px' }">
+
+  <nz-input-group [nzSuffix]="suffixIcon">
+    <input type="text" nz-input placeholder="关键字" [(ngModel)]="deptSearchValue" />
+  </nz-input-group>
+  <ng-template #suffixIcon>
+    <i nz-icon nzType="search"></i>
+  </ng-template>
+  <nz-tree
+    [nzData]="deptDataList"
+    [nzSearchValue]="deptSearchValue"
+    (nzClick)="deptClickEvent($event)"
+    (nzExpandChange)="deptSearchEvent($event)"
+    (nzSearchValueChange)="deptSearchEvent($event)"
+  >
+  </nz-tree>
+</nz-modal>
