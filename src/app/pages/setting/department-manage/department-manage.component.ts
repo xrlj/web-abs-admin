@@ -240,25 +240,4 @@ export class DepartmentManageComponent implements OnInit {
     }
   }
 
-  /**
-   * 根据selected key获取id。
-   * @param key 部门id
-   */
-  /*getSelectMenuIdByKey(deptList: VDeptResp[]): string {
-    if (deptList && deptList.length > 0) {
-      deptList.every((item) => {
-        if (item.key === this.selectedDeptKey) {
-          this.selectedDeptId = item.id;
-          return false;
-        } else {
-          if (item.children && item.children.length > 0) {
-            this.getSelectMenuIdByKey(item.children);
-          }
-        }
-        return true;
-      });
-    }
-    return this.selectedDeptId;
-  }*/
-
 }

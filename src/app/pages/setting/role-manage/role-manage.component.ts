@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {CommonService} from '../../../helpers/common.service';
 import {VAppInfoResp} from '../../../helpers/vo/resp/v-appInfo-resp';
 import {Utils} from '../../../helpers/utils';
@@ -6,12 +6,14 @@ import {JwtKvEnum} from '../../../helpers/enum/jwt-kv-enum';
 import {RoleManageService} from './role-manage.service';
 import {VRoleReq} from '../../../helpers/vo/req/v-role-req';
 import {UIHelper} from '../../../helpers/ui-helper';
-import {VRoleMenuResp, VRoleResp} from '../../../helpers/vo/resp/v-role-resp';
+import {VRoleResp} from '../../../helpers/vo/resp/v-role-resp';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {NzFormatEmitEvent, NzTreeComponent, NzTreeNodeOptions} from 'ng-zorro-antd';
+import {NzFormatEmitEvent} from 'ng-zorro-antd';
 import {MenuManageService} from '../menu-manage/menu-manage.service';
 import {DefaultBusService} from '../../../helpers/event-bus/default-bus.service';
 import {VMenuResp} from '../../../helpers/vo/resp/v-menu-resp';
+import {VDeptResp} from '../../../helpers/vo/resp/v-dept-resp';
+import {DepartmentService} from '../department-manage/department.service';
 
 @Component({
   selector: 'app-role-manage',
@@ -23,7 +25,7 @@ export class RoleManageComponent implements OnInit {
   constructor(private commonService: CommonService, private utils: Utils,
               private roleManageService: RoleManageService, private uiHelper: UIHelper,
               private fb: FormBuilder, private menuManageService: MenuManageService,
-              private defaultBusService: DefaultBusService) {
+              private defaultBusService: DefaultBusService, private departmentService: DepartmentService) {
   }
 
   // 搜索条件
@@ -48,11 +50,15 @@ export class RoleManageComponent implements OnInit {
   dialogType = 1; // 1-新增；2-编辑
   isAddOkLoading = false;
   addOrEditForm: FormGroup;
-  @ViewChild('nzTreeComponent', { static: false }) nzTreeComponent: NzTreeComponent;
-  checkedKeys = ['1', '22']; // 选中的key
+  checkedKeys = []; // 选中的key
   checkedMenuIds = []; // 选中的菜单的id
   expandedKeys = []; // 展开的
   nzTreeMenusData: VMenuResp[] = [];
+  // 部门选择
+  deptList: VDeptResp[] = []; // 部门选择列表数据
+  deptCheckedKeys = [];
+  deptExpandedKeys = [];
+  deptCheckedIds = [];
 
   // 详情
   roleInfo: VRoleResp;
@@ -74,6 +80,9 @@ export class RoleManageComponent implements OnInit {
     this.expandedKeys = [];
     this.checkedMenuIds = [];
     this.nzTreeMenusData = [];
+    this.deptList = [];
+    this.deptCheckedKeys = [];
+    this.deptCheckedIds = [];
   }
 
   nzTreeMenusClick(event: NzFormatEmitEvent): void {
@@ -86,7 +95,6 @@ export class RoleManageComponent implements OnInit {
    * @param event 对象
    */
   nzTreeMenusCheck(event: NzFormatEmitEvent): void {
-    console.log(event);
     if (event.checkedKeys) {
       console.log(event.checkedKeys);
       this.checkedKeys = [];
@@ -97,9 +105,10 @@ export class RoleManageComponent implements OnInit {
       // 去重
       this.checkedKeys = this.utils.removeRepeatOfArray<string>(this.checkedKeys);
       this.checkedMenuIds = this.utils.removeRepeatOfArray<string>(this.checkedMenuIds);
-      console.log(this.checkedKeys);
-      console.log(this.checkedMenuIds);
     }
+  }
+
+  deptTreeCheckEvent(event: NzFormatEmitEvent): void {
   }
 
   /**
@@ -116,6 +125,8 @@ export class RoleManageComponent implements OnInit {
       this.uiHelper.msgTipError('加载授权菜单失败');
     }).final(() => {
     });
+
+    // this.departmentService.getAll()
   }
 
   /**

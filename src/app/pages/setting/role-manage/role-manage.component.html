@@ -125,14 +125,13 @@
     <div class="per-dept">
       <label><span>部门授权:</span></label>
       <nz-tree  class="per-dept-tree"
-                [nzData]="nzTreeMenusData"
+                [nzData]="deptList"
                 nzCheckable
-                [nzCheckedKeys]="checkedKeys"
-                [nzExpandedKeys]="expandedKeys"
-                [nzSelectedKeys]="checkedKeys"
-                (nzClick)="nzTreeMenusClick($event)"
-                (nzCheckBoxChange)="nzTreeMenusCheck($event)"
-                (nzExpandChange)="nzTreeMenusCheck($event)"
+                [nzCheckedKeys]="deptCheckedKeys"
+                [nzExpandedKeys]="deptExpandedKeys"
+                [nzSelectedKeys]="deptCheckedKeys"
+                (nzCheckBoxChange)="deptTreeCheckEvent($event)"
+                (nzExpandChange)="deptTreeCheckEvent($event)"
       >
       </nz-tree>
     </div>
