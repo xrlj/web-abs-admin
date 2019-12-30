@@ -238,7 +238,6 @@ export class RoleManageComponent implements OnInit {
       this.uiHelper.msgTipWarning('请选择角色!');
       return;
     }
-    debugger;
     // 请求接口批量删除
     this.uiHelper.modalDel('确定要删除已选角色?').ok(() => {
       this.defaultBusService.showLoading(true);
