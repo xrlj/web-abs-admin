@@ -210,6 +210,76 @@ export class Api {
     return result;
   }
 
+  delete(path: string, version?: number): any {
+    if (!path) {
+      throw new Error('url缺少path');
+    }
+    const httpOptions = httpOptionsCommon;
+    if (version) {
+      httpOptions.headers = httpOptions.headers.set('Content-Version', version.toString());
+    }
+    let client: Observable<any>;
+    httpOptions.headers = httpOptions.headers.set('Content-Type', 'application/json');
+    client = this.http.delete(environment.apiUrl.concat(path));
+
+    // 定义处理器
+    const handlers = {};
+    client.pipe(retry(Constants.apiRequest.retryTime), catchError(this.handleError))
+      .subscribe(resp => {
+        const success = resp.success;
+        const code = resp.code;
+        const msg = resp.msg;
+        const ok = handlers['ok'];
+        const fail = handlers['fail'];
+        const final = handlers['final'];
+        if (code === 200 && success) {
+          if (ok instanceof Function) {
+            ok(resp.data);
+          }
+          if (final instanceof Function) {
+            final(true);
+          }
+        } else {
+          if (!this.dealError(code, msg)) {
+            if (fail instanceof Function) {
+              fail(resp);
+            }
+          }
+          if (final instanceof Function) {
+            final(false);
+          }
+        }
+      }, error => {
+        const fail = handlers['fail'];
+        const final = handlers['final'];
+        if (!this.dealError(error.code, error.msg)) {
+          if (fail instanceof Function) {
+            fail(error);
+          }
+        }
+        if (final instanceof Function) {
+          final(false);
+        }
+      });
+
+    // 拟态返回器
+    const result = {
+      ok: fn => {
+        handlers['ok'] = fn;
+        return result;
+      },
+      fail: fn => {
+        handlers['fail'] = fn;
+        return result;
+      },
+      final: fn => {
+        handlers['final'] = fn;
+        return result;
+      }
+    };
+    return result;
+  }
+
   /**
    * 请求异常处理。
    * @param error 错误信息体。

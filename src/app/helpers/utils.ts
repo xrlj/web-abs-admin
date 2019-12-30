@@ -89,6 +89,9 @@ export class Utils {
       case JwtKvEnum.UserId:
         return decodeToken.userId;
         break;
+      case JwtKvEnum.EnterpriseId:
+        return decodeToken.etpId;
+        break;
       case JwtKvEnum.UserType:
         return decodeToken.userType;
         break;

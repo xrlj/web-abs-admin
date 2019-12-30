@@ -24,9 +24,10 @@ export class DepartmentService {
 
   /**
    * 获取全部部门列表。
+   * @param etpId 企业id.
    */
-  getAll(): any {
-    return this.api.get(ApiPath.usercentral.dept.getAll);
+  getAll(etpId: string): any {
+    return this.api.get(`${ApiPath.usercentral.dept.getAll}/${etpId}`);
   }
 
   getById(id: string): any {

@@ -41,4 +41,19 @@ export class RoleManageService {
   getRoleInfo(roleId: string): any {
     return this.api.get(`${ApiPath.usercentral.roleApi.getById}/${roleId}`);
   }
+
+  /**
+   * 批量删除角色。
+   * @param ids 角色id。
+   */
+  del(...ids: any[]): any {
+    let idsPar  = '';
+    ids.forEach((value, index) => {
+      idsPar = idsPar.concat(value);
+      if (index !== ids.length - 1) {
+        idsPar = idsPar.concat(',');
+      }
+    });
+    return this.api.delete(`${ApiPath.usercentral.roleApi.del}/${idsPar}`);
+  }
 }

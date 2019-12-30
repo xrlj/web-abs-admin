@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {CommonService} from '../../../helpers/common.service';
-import {VAppInfoResp} from '../../../helpers/vo/resp/v-appInfo-resp';
 import {Utils} from '../../../helpers/utils';
 import {JwtKvEnum} from '../../../helpers/enum/jwt-kv-enum';
 import {RoleManageService} from './role-manage.service';
@@ -29,8 +28,6 @@ export class RoleManageComponent implements OnInit {
   }
 
   // 搜索条件
-  appSelected: string = this.utils.getJwtTokenClaim(JwtKvEnum.ClientId);
-  appDataList: VAppInfoResp[];
   roleName: string | null;
 
   // 表格
@@ -38,7 +35,7 @@ export class RoleManageComponent implements OnInit {
   isIndeterminate = false;
   listOfDisplayData: VRoleResp[] = [];
   listOfAllData: VRoleResp[] = []; // 列表数据
-  mapOfCheckedId: { [key: string]: boolean } = {};
+  mapOfCheckedId: { [key: string]: boolean } = {}; // 记录选择角色
   numberOfChecked = 0;
   loading = false;
   pageIndex = 1;
@@ -69,7 +66,6 @@ export class RoleManageComponent implements OnInit {
       roleName: [null, [Validators.required]],
       roleDesc: [null, [Validators.required]]
     });
-    this.getAppList();
     this.search();
   }
 
@@ -108,7 +104,21 @@ export class RoleManageComponent implements OnInit {
     }
   }
 
+  /**
+   * 部门选择处理。
+   * @param event 选择事件
+   */
   deptTreeCheckEvent(event: NzFormatEmitEvent): void {
+    if (event.checkedKeys) {
+      this.deptCheckedKeys = [];
+      this.deptCheckedIds = [];
+      event.checkedKeys.forEach(value => {
+        this.uiHelper.dealNzTreeCheck(value, this.deptCheckedKeys, this.deptCheckedIds);
+      });
+      // 去重
+      this.deptCheckedKeys = this.utils.removeRepeatOfArray<string>(this.deptCheckedKeys);
+      this.deptCheckedIds = this.utils.removeRepeatOfArray<string>(this.deptCheckedIds);
+    }
   }
 
   /**
@@ -117,7 +127,7 @@ export class RoleManageComponent implements OnInit {
   addRole(): void {
     this.dialogType = 1;
     this.isShowDialog = true;
-    this.menuManageService.getMenusByClientId(this.appSelected, 0).ok(data => {
+    this.menuManageService.getMenusByClientId(this.utils.getJwtTokenClaim(JwtKvEnum.ClientId), 0).ok(data => {
       this.nzTreeMenusData = data;
       this.uiHelper.setMenuPerDataLeaf(this.nzTreeMenusData);
     }).fail(error => {
@@ -126,7 +136,12 @@ export class RoleManageComponent implements OnInit {
     }).final(() => {
     });
 
-    // this.departmentService.getAll()
+    // 获取部门信息
+    this.departmentService.getAll(this.utils.getJwtTokenClaim(JwtKvEnum.EnterpriseId))
+      .ok(data => {
+        this.deptList = data;
+        this.uiHelper.setSelectTreeLeaf(this.deptList);
+      });
   }
 
   /**
@@ -145,7 +160,7 @@ export class RoleManageComponent implements OnInit {
           roleDesc: this.roleInfo.description
         });
         // 设置菜单授权
-        this.menuManageService.getMenusByClientId(this.appSelected, 0)
+        this.menuManageService.getMenusByClientId(this.utils.getJwtTokenClaim(JwtKvEnum.ClientId), 0)
           .ok(data1 => {
             this.nzTreeMenusData = data1;
             // 设置选中
@@ -157,13 +172,21 @@ export class RoleManageComponent implements OnInit {
               this.checkedMenuIds.push(value.menuId);
             });
             this.uiHelper.setMenuPerDataLeaf(this.nzTreeMenusData);
-            console.log(this.checkedKeys);
-            console.log(this.checkedMenuIds);
-          })
-          .fail(error1 => {
-            this.uiHelper.msgTipError('加载授权菜单失败');
-          })
-          .final(b => {
+          });
+
+        // 设置部门
+        this.departmentService.getAll(this.utils.getJwtTokenClaim(JwtKvEnum.EnterpriseId))
+          .ok(data2 => {
+            this.deptList = data2;
+            this.uiHelper.setSelectTreeLeaf(this.deptList);
+            this.deptCheckedKeys = [];
+            this.deptCheckedIds = [];
+            this.roleInfo.roleDept.forEach(value => {
+              if (value.checked) {
+                this.deptCheckedKeys.push(value.deptKey);
+              }
+              this.deptCheckedIds.push(value.deptId);
+            });
           });
       })
       .fail(error => {
@@ -178,7 +201,65 @@ export class RoleManageComponent implements OnInit {
    * 单个删除角色。
    * @param id 角色id
    */
-  delRoleSingle(id: string): void {
+  delRoleSingle(id: string, roleName: string): void {
+    this.uiHelper.modalDel(`确定删除角色[${roleName}]?`)
+      .ok(() => {
+        this.defaultBusService.showLoading(true);
+        this.roleManageService.del(id)
+          .ok(data => {
+            if (data) {
+              this.uiHelper.msgTipSuccess('删除成功');
+              // 刷新列表
+              setTimeout(() => {
+                this.search(false);
+              }, 100);
+            } else {
+              this.uiHelper.msgTipError('删除失败');
+            }
+          }).fail(error => {
+            this.uiHelper.msgTipError('删除失败');
+        }).final(() => {
+          this.defaultBusService.showLoading(false);
+        });
+      });
+  }
+
+  /**
+   * 批量删除.
+   */
+  delBatch(): void {
+    const checkIds = []; // 待删除角色
+    for (const key in this.mapOfCheckedId) {
+      if (this.mapOfCheckedId[key]) {
+        checkIds.push(key);
+      }
+    }
+    if (checkIds.length === 0) {
+      this.uiHelper.msgTipWarning('请选择角色!');
+      return;
+    }
+    debugger;
+    // 请求接口批量删除
+    this.uiHelper.modalDel('确定要删除已选角色?').ok(() => {
+      this.defaultBusService.showLoading(true);
+      this.roleManageService.del(checkIds)
+        .ok(data => {
+          if (data) {
+            this.uiHelper.msgTipSuccess('批量删除角色成功');
+            this.mapOfCheckedId = {};
+            // 刷新列表
+            setTimeout(() => {
+              this.search(false);
+            }, 100);
+          } else {
+            this.uiHelper.msgTipError('批量删除失败');
+          }
+        }).fail(error => {
+          this.uiHelper.msgTipError(error.msg);
+      }).final(() => {
+        this.defaultBusService.showLoading(false);
+      });
+    });
   }
 
   /**
@@ -192,11 +273,13 @@ export class RoleManageComponent implements OnInit {
       this.addOrEditForm.controls[i].updateValueAndValidity();
     }
     const vRoleReq: VRoleReq = {
-      clientId: this.appSelected,
+      enterpriseId: this.utils.getJwtTokenClaim(JwtKvEnum.EnterpriseId),
+      clientId: this.utils.getJwtTokenClaim(JwtKvEnum.ClientId),
       roleName: this.addOrEditForm.value.roleName,
       description: this.addOrEditForm.value.roleDesc,
       menuIds: this.checkedMenuIds,
-      roleId: this.roleInfo.id
+      deptIds: this.deptCheckedIds,
+      roleId: this.roleInfo ? this.roleInfo.id : null
     };
     this.isAddOkLoading = true;
     if (dialogType === 1) { // 新增
@@ -245,26 +328,6 @@ export class RoleManageComponent implements OnInit {
   }
 
   /**
-   * 获取应用列表。
-   */
-  getAppList() {
-    this.commonService.getAllAppList(0).ok((data) => {
-      this.appDataList = data;
-      // 默认选定本系统的
-      this.appDataList.every(value => {
-        if (value.appId === this.utils.getJwtTokenClaim(JwtKvEnum.ClientId)) {
-          this.appSelected = value.appId;
-          return false;
-        }
-        return true;
-      });
-    }).fail((error) => {
-      console.log(`获取应用列表失败:${error.code}`);
-      this.appSelected = this.utils.getJwtTokenClaim(JwtKvEnum.ClientId);
-    });
-  }
-
-  /**
    * 搜索列表。
    * @param reset 是否重置列表。第一页
    */
@@ -272,7 +335,8 @@ export class RoleManageComponent implements OnInit {
     const body: VRoleReq = {
       pageIndex: reset ? 1 : this.pageIndex,
       pageSize: this.pageSize,
-      clientId: this.appSelected,
+      clientId: this.utils.getJwtTokenClaim(JwtKvEnum.ClientId),
+      enterpriseId: this.utils.getJwtTokenClaim(JwtKvEnum.EnterpriseId),
       roleName: this.roleName
     };
     this.loading = true;

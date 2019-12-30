@@ -6,7 +6,8 @@ import {VDeptReq} from '../../../helpers/vo/req/v-dept-req';
 import {DepartmentService} from './department.service';
 import {UIHelper} from '../../../helpers/ui-helper';
 import {UiTableHelper} from '../../../helpers/ui-table-helper';
-import { NzModalService } from 'ng-zorro-antd';
+import {Utils} from '../../../helpers/utils';
+import {JwtKvEnum} from '../../../helpers/enum/jwt-kv-enum';
 
 @Component({
   selector: 'app-department-manage',
@@ -35,7 +36,7 @@ export class DepartmentManageComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private departmentService: DepartmentService,
               private uiHelper: UIHelper, private uiTableHelper: UiTableHelper,
-              private modalService: NzModalService) { }
+              private utils: Utils) { }
 
   ngOnInit() {
     this.addOrEditForm = this.fb.group({
@@ -53,7 +54,7 @@ export class DepartmentManageComponent implements OnInit {
   getDeptList(): void {
     this.isTableLoading = true;
     this.isRefreshList = true;
-    this.departmentService.getAll()
+    this.departmentService.getAll(this.utils.getJwtTokenClaim(JwtKvEnum.EnterpriseId))
       .ok(data => {
         this.listData = data;
         this.cutEmptyChildrenToNull(this.listData);
@@ -101,7 +102,7 @@ export class DepartmentManageComponent implements OnInit {
   showAddModal(): void {
     this.addOrEdit = 1;
     this.isShowAddOrEditModal = true;
-    this.departmentService.getAll()
+    this.departmentService.getAll(this.utils.getJwtTokenClaim(JwtKvEnum.EnterpriseId))
       .ok(data => {
         this.selectDeptList = data;
         // this.cutEmptyChildrenToNull(this.listData);
@@ -130,7 +131,7 @@ export class DepartmentManageComponent implements OnInit {
           sort: this.deptInfo.sort
         });
 
-        this.departmentService.getAll()
+        this.departmentService.getAll(this.utils.getJwtTokenClaim(JwtKvEnum.EnterpriseId))
           .ok(data1 => {
             this.selectedDeptKey = this.deptInfo.parentKey;
             this.selectedDeptId = this.deptInfo.parentId;

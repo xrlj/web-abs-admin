@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {VUserReq} from '../../../helpers/vo/req/v-user-req';
-import { FormGroup, FormBuilder, Validators, FormControl, ValidationErrors } from '@angular/forms';
-import { Observer, Observable } from '_rxjs@6.4.0@rxjs';
-import { NzFormatEmitEvent } from 'ng-zorro-antd';
+import {FormBuilder, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
+import {Observable, Observer} from '_rxjs@6.4.0@rxjs';
+import {NzFormatEmitEvent} from 'ng-zorro-antd';
 import {DepartmentService} from '../department-manage/department.service';
 import {UIHelper} from '../../../helpers/ui-helper';
+import {Utils} from '../../../helpers/utils';
+import {JwtKvEnum} from '../../../helpers/enum/jwt-kv-enum';
 
 @Component({
   selector: 'app-user-manage',
@@ -32,7 +34,7 @@ export class UserManageComponent implements OnInit {
   deptDataList = [];
 
   constructor(private fb: FormBuilder, private departmentService: DepartmentService,
-              private uiHelper: UIHelper) {
+              private uiHelper: UIHelper, private utils: Utils) {
     // 新增编辑对话框
     this.addOrEditForm = this.fb.group({
       username: [null, [Validators.required], [this.userNameAsyncValidator]],
@@ -122,7 +124,7 @@ export class UserManageComponent implements OnInit {
    */
   showDeptSearchModal(): void {
     this.isShowDeptSearchModal = true;
-    this.departmentService.getAll()
+    this.departmentService.getAll(this.utils.getJwtTokenClaim(JwtKvEnum.EnterpriseId))
       .ok(data => {
         this.deptDataList = data;
         this.uiHelper.setSelectTreeLeaf(this.deptDataList);

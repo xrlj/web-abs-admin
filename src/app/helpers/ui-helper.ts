@@ -163,7 +163,7 @@ export class UIHelper {
   modalDel(content: string, title?: string) {
     const handlers = {};
     this.modalService.confirm({
-      nzTitle: '删除提示',
+      nzTitle: title ? title : '删除提示',
       nzContent: content,
       nzOkText: '确定',
       nzOkType: 'danger',
@@ -176,11 +176,21 @@ export class UIHelper {
         }).catch(() => console.log('操作错误!'));
       },
       nzCancelText: '取消',
-      nzOnCancel: () => console.log('Cancel')
+      nzOnCancel: () => {
+        console.log('cancel');
+        const cancel = handlers['cancel'];
+        if (cancel instanceof Function) {
+          cancel();
+        }
+      }
     });
     const result = {
       ok: fn => {
         handlers['ok'] = fn;
+        return result;
+      },
+      cancel: fn => {
+        handlers['cancel'] = fn;
         return result;
       }
     };
