@@ -18,6 +18,10 @@ export class DepartmentService {
     return this.api.post(ApiPath.usercentral.dept.saveOrUpdate, body);
   }
 
+  /**
+   * 删除部门。
+   * @param deptId 部门id。
+   */
   del(deptId: string): any {
     return this.api.post(`${ApiPath.usercentral.dept.del}/${deptId}`);
   }
@@ -30,6 +34,10 @@ export class DepartmentService {
     return this.api.get(`${ApiPath.usercentral.dept.getAll}/${etpId}`);
   }
 
+  /**
+   * 获取部门详情。
+   * @param id 部门id。
+   */
   getById(id: string): any {
     return this.api.get(`${ApiPath.usercentral.dept.getById}/${id}`);
   }

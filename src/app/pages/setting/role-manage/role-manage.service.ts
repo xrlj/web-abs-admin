@@ -56,4 +56,12 @@ export class RoleManageService {
     });
     return this.api.delete(`${ApiPath.usercentral.roleApi.del}/${idsPar}`);
   }
+
+  /**
+   * 获取部门下所有的角色，包括部门下子部门的角色。
+   * @param deptId 部门id。
+   */
+  getAllRoleByDeptId(deptId: string): any {
+    return this.api.get(`${ApiPath.usercentral.roleApi.getAllRoleByDeptId}/${deptId}`);
+  }
 }

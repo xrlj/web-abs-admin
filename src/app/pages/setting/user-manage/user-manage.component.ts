@@ -7,6 +7,8 @@ import {DepartmentService} from '../department-manage/department.service';
 import {UIHelper} from '../../../helpers/ui-helper';
 import {Utils} from '../../../helpers/utils';
 import {JwtKvEnum} from '../../../helpers/enum/jwt-kv-enum';
+import {RoleManageService} from '../role-manage/role-manage.service';
+import {VRoleResp} from '../../../helpers/vo/resp/v-role-resp';
 
 @Component({
   selector: 'app-user-manage',
@@ -33,8 +35,12 @@ export class UserManageComponent implements OnInit {
   deptSelectedId = '';
   deptDataList = [];
 
+  // 部门下角色
+  roleList: VRoleResp[] = [];
+
   constructor(private fb: FormBuilder, private departmentService: DepartmentService,
-              private uiHelper: UIHelper, private utils: Utils) {
+              private uiHelper: UIHelper, private utils: Utils,
+              private roleManageService: RoleManageService) {
     // 新增编辑对话框
     this.addOrEditForm = this.fb.group({
       username: [null, [Validators.required], [this.userNameAsyncValidator]],
@@ -53,6 +59,9 @@ export class UserManageComponent implements OnInit {
   ngOnInit() {
   }
 
+  /**
+   * 重新初始化。
+   */
   resetAddOrEditModal(): void {
     this.addOrEditForm.reset();
     this.isShowAddOrEditModal = false;
@@ -142,6 +151,10 @@ export class UserManageComponent implements OnInit {
     console.log(event);
   }
 
+  /**
+   * 选择部门。
+   * @param event 选择对象。
+   */
   deptClickEvent(event: NzFormatEmitEvent): void {
     console.log('>>>>>>>>>deptClickEvent');
     console.log(event);
@@ -150,6 +163,12 @@ export class UserManageComponent implements OnInit {
       this.addOrEditForm.patchValue({dept: event.node.origin.title});
       this.deptSearchHandleCancel();
       console.log(this.deptSelectedId);
+
+      // 获取部门角色
+      this.roleManageService.getAllRoleByDeptId(this.deptSelectedId)
+        .ok(data => {
+          this.roleList = data;
+        });
     }
   }
 

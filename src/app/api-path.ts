@@ -22,7 +22,8 @@ export const ApiPath = {
       save: `/${usercentral}/role/save`,
       update: `/${usercentral}/role/update`,
       getById: `/${usercentral}/role/getById`,
-      del: `/${usercentral}/role/del`
+      del: `/${usercentral}/role/del`,
+      getAllRoleByDeptId: `/${usercentral}/role/getAllRoleByDeptId`
     },
     dept: {
       saveOrUpdate: `/${usercentral}/dept/saveOrUpdate`,
