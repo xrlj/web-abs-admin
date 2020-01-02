@@ -9,6 +9,7 @@ import {Utils} from '../../../helpers/utils';
 import {JwtKvEnum} from '../../../helpers/enum/jwt-kv-enum';
 import {RoleManageService} from '../role-manage/role-manage.service';
 import {VRoleResp} from '../../../helpers/vo/resp/v-role-resp';
+import {UserManageService} from './user-manage.service';
 
 @Component({
   selector: 'app-user-manage',
@@ -37,10 +38,11 @@ export class UserManageComponent implements OnInit {
 
   // 部门下角色
   roleList: VRoleResp[] = [];
+  selectedRole: any;
 
   constructor(private fb: FormBuilder, private departmentService: DepartmentService,
               private uiHelper: UIHelper, private utils: Utils,
-              private roleManageService: RoleManageService) {
+              private roleManageService: RoleManageService, private userManageService: UserManageService) {
     // 新增编辑对话框
     this.addOrEditForm = this.fb.group({
       username: [null, [Validators.required], [this.userNameAsyncValidator]],
@@ -82,31 +84,36 @@ export class UserManageComponent implements OnInit {
   }
 
   handleOk(modalType: number, value: any): void {
+    if (this.addOrEditForm.valid) { // 前端通过所有输入校验
+      console.log(value);
+      if (this.modalType === 1) { // 新增
+      } else { // 编辑
+      }
+    }
+
     for (const key in this.addOrEditForm.controls) {
       this.addOrEditForm.controls[key].markAsDirty();
       this.addOrEditForm.controls[key].updateValueAndValidity();
     }
-    console.log(value);
-    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>');
-    console.log(this.addOrEditForm.dirty);
-    if (!this.addOrEditForm.dirty) { // 前端通过所有输入校验
-    }
   }
 
   /**
-   * 检查用户名
+   * 检查用户名。频繁请求，代价高昂。//TODO 需要做请求抖动处理
    */
   userNameAsyncValidator = (control: FormControl) =>
     new Observable((observer: Observer<ValidationErrors | null>) => {
-      setTimeout(() => {
-        if (control.value === 'JasonWood') {
-          // you have to return `{error: true}` to mark it as an error event
-          observer.next({ error: true, duplicated: true });
-        } else {
-          observer.next(null);
-        }
+      this.userManageService.exitUsername(control.value)
+        .ok(data => {
+          if (data) {
+            observer.next({ error: true, duplicated: true });
+          } else {
+            observer.next(null);
+          }
+        }).fail(error => {
+        observer.next(null);
+      }).final(() => {
         observer.complete();
-      }, 1000);
+      });
     })
 
   /**

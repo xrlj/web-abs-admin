@@ -7,6 +7,7 @@ export const ApiPath = {
   usercentral: {
     userApi: {
       getUserMenus: `/${usercentral}/user/getUserMenus`,
+      exitUsername: `/${usercentral}/user/exitUsername`
     },
     menuApi: {
       saveOrUpdate: `/${usercentral}/menu/saveOrUpdate`,

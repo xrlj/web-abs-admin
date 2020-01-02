@@ -188,7 +188,7 @@
     <nz-form-item>
       <nz-form-label [nzSm]="4" [nzXs]="24">角色配置</nz-form-label>
       <nz-form-control [nzSm]="10" [nzXs]="24">
-        <nz-select id="role" formControlName="role">
+        <nz-select id="role" formControlName="role" nzPlaceHolder="请选择角色" [ngModel]="selectedRole">
           <nz-option *ngFor="let role of roleList" [nzLabel]="role.roleName" [nzValue]="role.id"></nz-option>
         </nz-select>
       </nz-form-control>
