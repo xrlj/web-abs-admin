@@ -22,17 +22,17 @@ export interface VUserReq {
   /**
    * 邮箱
    */
-  email: string;
+  email?: string;
   /**
    * 手机号码
    */
-  mobile: string;
+  mobile?: string;
   /**
    * 角色
    */
-  roleId: string;
+  roleId?: string;
   /**
    * 状态
    */
-  status: number;
+  status?: number;
 }

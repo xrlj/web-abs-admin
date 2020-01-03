@@ -10,6 +10,7 @@ import {JwtKvEnum} from '../../../helpers/enum/jwt-kv-enum';
 import {RoleManageService} from '../role-manage/role-manage.service';
 import {VRoleResp} from '../../../helpers/vo/resp/v-role-resp';
 import {UserManageService} from './user-manage.service';
+import {VUserSearchReq} from '../../../helpers/vo/req/v-user-search-req';
 
 @Component({
   selector: 'app-user-manage',
@@ -18,11 +19,19 @@ import {UserManageService} from './user-manage.service';
 })
 export class UserManageComponent implements OnInit {
 
+  // 表格
+  isAllDisplayDataChecked = false;
+  isIndeterminate = false;
+  listOfDisplayData: VRoleResp[] = [];
+  listOfAllData: VRoleResp[] = []; // 列表数据
+  mapOfCheckedId: { [key: string]: boolean } = {}; // 记录选择角色
+  numberOfChecked = 0;
+  loading = false;
+  pageIndex = 1;
+  pageSize = 10;
+  total = 0;
   // 查询
-  username: string;
-  sexSelected: number;
-
-  userInfo: VUserReq;
+  vUserSearchReq: VUserSearchReq = {pageIndex: this.pageIndex, pageSize: this.pageSize};
 
   // 新增编辑对话框
   addOrEditForm: FormGroup;
@@ -33,12 +42,11 @@ export class UserManageComponent implements OnInit {
   // 部门搜索对话框
   isShowDeptSearchModal = false;
   deptSearchValue = '';
-  deptSelectedId = '';
+  deptSelectedId = null;
   deptDataList = [];
 
   // 部门下角色
   roleList: VRoleResp[] = [];
-  selectedRole: any;
 
   constructor(private fb: FormBuilder, private departmentService: DepartmentService,
               private uiHelper: UIHelper, private utils: Utils,
@@ -46,19 +54,20 @@ export class UserManageComponent implements OnInit {
     // 新增编辑对话框
     this.addOrEditForm = this.fb.group({
       username: [null, [Validators.required], [this.userNameAsyncValidator]],
-      dept: [null, [Validators.required]],
+      deptId: [null, [Validators.required]],
       password: [null, [Validators.required]],
       confirm: [null, [this.confirmValidator]],
       realName: [null, [Validators.required]],
       sex: ['1', null], // 性别选择。1-男；2-女；0-保密
       email: [null, [Validators.email]],
-      mobile: [null, [Validators.maxLength(11)]],
-      role: [null, null],
+      mobile: [null, [Validators.required]],
+      roleId: [null, null],
       status: ['1', null] // 用户状态。-1=停用；1-正常
     });
   }
 
   ngOnInit() {
+    this.search();
   }
 
   /**
@@ -72,7 +81,23 @@ export class UserManageComponent implements OnInit {
     this.addOrEditForm.patchValue({status: '1'});
   }
 
-  search(): void {}
+  search(reset: boolean = false): void {
+    if (reset) {
+      this.pageIndex = 1;
+    }
+    this.loading = true;
+    this.userManageService.getEtpUsers(this.vUserSearchReq)
+      .ok(data => {
+        this.pageIndex = data.pageIndex;
+        this.pageSize = data.pageSize;
+        this.total = data.total;
+        this.listOfAllData = data.list;
+      }).fail(error => {
+        this.uiHelper.msgTipError(error.msg);
+    }).final(() => {
+      this.loading = false;
+    });
+  }
 
   addModalShow(): void {
     this.modalType = 1;
@@ -83,17 +108,48 @@ export class UserManageComponent implements OnInit {
     this.resetAddOrEditModal();
   }
 
-  handleOk(modalType: number, value: any): void {
+  /**
+   * 保存或编辑用户。
+   */
+  handleOk(): void {
     if (this.addOrEditForm.valid) { // 前端通过所有输入校验
-      console.log(value);
+      this.isModalOkLoading = true;
+      // 表单参数
+      const par: VUserReq = {
+        username: this.addOrEditForm.value.username,
+        deptId: this.deptSelectedId,
+        password: this.addOrEditForm.value.password,
+        sex: this.addOrEditForm.value.sex,
+        realName: this.addOrEditForm.value.realName,
+        email: this.addOrEditForm.value.email,
+        mobile: this.addOrEditForm.value.mobile,
+        roleId: this.addOrEditForm.value.roleId,
+        status: this.addOrEditForm.value.status
+      };
       if (this.modalType === 1) { // 新增
+        this.userManageService.addSystemUser(par)
+          .ok(data => {
+            if (data) {
+              this.uiHelper.msgTipSuccess('保存成功');
+              this.resetAddOrEditModal();
+              setTimeout(() => {
+                this.search();
+              }, 100);
+            } else {
+              this.uiHelper.msgTipError('保存失败');
+            }
+          }).fail(error => {
+            this.uiHelper.msgTipError(error.msg);
+        }).final((b) => {
+          this.isModalOkLoading = false;
+        });
       } else { // 编辑
       }
-    }
-
-    for (const key in this.addOrEditForm.controls) {
-      this.addOrEditForm.controls[key].markAsDirty();
-      this.addOrEditForm.controls[key].updateValueAndValidity();
+    } else {
+      for (const key in this.addOrEditForm.controls) {
+        this.addOrEditForm.controls[key].markAsDirty();
+        this.addOrEditForm.controls[key].updateValueAndValidity();
+      }
     }
   }
 
@@ -163,11 +219,9 @@ export class UserManageComponent implements OnInit {
    * @param event 选择对象。
    */
   deptClickEvent(event: NzFormatEmitEvent): void {
-    console.log('>>>>>>>>>deptClickEvent');
-    console.log(event);
     if (event.node.origin.selected) {
       this.deptSelectedId = event.node.origin.id;
-      this.addOrEditForm.patchValue({dept: event.node.origin.title});
+      this.addOrEditForm.patchValue({deptId: event.node.origin.title});
       this.deptSearchHandleCancel();
       console.log(this.deptSelectedId);
 
@@ -177,6 +231,50 @@ export class UserManageComponent implements OnInit {
           this.roleList = data;
         });
     }
+  }
+
+  editRole(id: string): void {
+  }
+
+  /**
+   * 单个删除角色。
+   * @param id 角色id
+   */
+  delRoleSingle(id: string, name?: string): void {
+    this.uiHelper.modalDel(`确定删除角色[${name}]?`)
+      .ok(() => {
+      });
+  }
+
+  /**
+   * 表格数据更改时候设定选择信息。保持选择或者取消
+   * @param $event 选择事件
+   */
+  currentPageDataChange($event: VRoleResp[]): void {
+    this.listOfDisplayData = $event;
+    this.refreshStatus();
+  }
+
+  /**
+   * 表格刷新选择信息。
+   */
+  refreshStatus(): void {
+    this.isAllDisplayDataChecked = this.listOfDisplayData
+      .filter(item => !item.disabled)
+      .every(item => this.mapOfCheckedId[item.id]);
+    this.isIndeterminate =
+      this.listOfDisplayData.filter(item => !item.disabled).some(item => this.mapOfCheckedId[item.id]) &&
+      !this.isAllDisplayDataChecked;
+    this.numberOfChecked = this.listOfAllData.filter(item => this.mapOfCheckedId[item.id]).length;
+  }
+
+  /**
+   * 选择所有。
+   * @param value 选择事件
+   */
+  checkAll(value: boolean): void {
+    this.listOfDisplayData.filter(item => !item.disabled).forEach(item => (this.mapOfCheckedId[item.id] = value));
+    this.refreshStatus();
   }
 
 }
