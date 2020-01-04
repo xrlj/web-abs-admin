@@ -14,7 +14,7 @@
     </tr>
     </thead>
     <tbody>
-    <ng-container *ngFor="let data of deptTable.data">
+    <ng-container *ngFor="let data of deptTable['data']">
       <ng-container *ngFor="let item of listOfExpandedData[data.key]">
         <tr *ngIf="(item.parent && item.parent.expand) || !item.parent">
           <td

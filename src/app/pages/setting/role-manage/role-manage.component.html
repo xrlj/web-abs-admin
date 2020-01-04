@@ -42,7 +42,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let data of roleTable.data">
+        <tr *ngFor="let data of roleTable['data']">
           <td
             nzShowCheckbox
             [(nzChecked)]="mapOfCheckedId[data.id]"

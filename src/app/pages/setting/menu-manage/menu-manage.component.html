@@ -22,7 +22,7 @@
     </tr>
     </thead>
     <tbody>
-      <ng-container *ngFor="let data of expandTable.data">
+      <ng-container *ngFor="let data of expandTable['data']">
         <ng-container *ngFor="let item of menuListOfExpandedData[data.key]">
           <tr *ngIf="(item.parent && item.parent.expand) || !item.parent">
             <td

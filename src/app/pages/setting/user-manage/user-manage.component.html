@@ -52,7 +52,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let data of userTable.data">
+      <tr *ngFor="let data of userTable['data']">
         <td
           nzShowCheckbox
           [(nzChecked)]="mapOfCheckedId[data.id]"
@@ -66,10 +66,24 @@
         <td nzAlign="center">{{ data.sexTypeName }}</td>
         <td nzAlign="center">{{ data.statusName}}</td>
         <td nzAlign="center">{{ data.dateCreated }}</td>
-        <td nzAlign="center">
-          <a (click)="editRole(data.id)">编辑</a>
-          <nz-divider nzType="vertical"></nz-divider>
-          <a (click)="delRoleSingle(data.id)">删除</a>
+        <td nzAlign="center" [ngSwitch]="data?.status">
+          <div *ngSwitchCase="4">
+            <a (click)="editRole(data.id)">编辑</a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a (click)="delRoleSingle(data.id)">启用</a>
+          </div>
+          <div *ngSwitchCase="5">
+            <a (click)="editRole(data.id)">编辑</a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a (click)="delRoleSingle(data.id)">解除黑名单</a>
+          </div>
+          <div *ngSwitchDefault>
+            <a (click)="editRole(data.id)">编辑</a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a (click)="delRoleSingle(data.id)">禁用</a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a (click)="delRoleSingle(data.id)">拉黑</a>
+          </div>
         </td>
       </tr>
       </tbody>
