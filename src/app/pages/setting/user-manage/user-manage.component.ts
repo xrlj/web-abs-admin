@@ -25,8 +25,8 @@ export class UserManageComponent implements OnInit {
   // 表格
   isAllDisplayDataChecked = false;
   isIndeterminate = false;
-  listOfDisplayData: VRoleResp[] = [];
-  listOfAllData: VRoleResp[] = []; // 列表数据
+  listOfDisplayData = [];
+  listOfAllData = []; // 列表数据
   mapOfCheckedId: { [key: string]: boolean } = {}; // 记录选择角色
   numberOfChecked = 0;
   loading = false;
@@ -265,13 +265,21 @@ export class UserManageComponent implements OnInit {
   }
 
   /**
-   * 单个删除角色。
+   * 删除角色。
    * @param id 角色id
    */
-  delRoleSingle(id: string, name?: string): void {
-    this.uiHelper.modalDel(`确定删除角色[${name}]?`)
+  delRole(id?: string, name?: string): void {
+    this.uiHelper.modalDel(`确定删除角色${name ? `[${name}]` : ''}?`)
       .ok(() => {
       });
+  }
+
+  /**
+   * 更改用户状态。审核、启用、禁用，拉黑
+   * @param id 用户id
+   * @param status 用户状态
+   */
+  updateUserStatus(userId: string, status: number): void {
   }
 
   /**
