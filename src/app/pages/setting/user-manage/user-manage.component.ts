@@ -11,6 +11,7 @@ import {RoleManageService} from '../role-manage/role-manage.service';
 import {VRoleResp} from '../../../helpers/vo/resp/v-role-resp';
 import {UserManageService} from './user-manage.service';
 import {VUserSearchReq} from '../../../helpers/vo/req/v-user-search-req';
+import {UserStatusEnum} from '../../../helpers/enum/user-status-enum';
 
 @Component({
   selector: 'app-user-manage',
@@ -18,6 +19,8 @@ import {VUserSearchReq} from '../../../helpers/vo/req/v-user-search-req';
   styleUrls: ['./user-manage.component.less']
 })
 export class UserManageComponent implements OnInit {
+
+  userStatus: typeof  UserStatusEnum = UserStatusEnum; // 用户状态
 
   // 表格
   isAllDisplayDataChecked = false;
@@ -97,6 +100,31 @@ export class UserManageComponent implements OnInit {
     }).final(() => {
       this.loading = false;
     });
+  }
+
+  setUserStatusNameColor(status: number): string {
+    let color = '';
+    switch (status) {
+      case UserStatusEnum.BLACK:
+        color = 'red';
+        break;
+      case UserStatusEnum.DISABLE:
+        color = 'red';
+        break;
+      case UserStatusEnum.CHECK_FAILURE:
+        color = 'red';
+        break;
+      case UserStatusEnum.CHECK_PASS:
+        color = 'green';
+        break;
+      case UserStatusEnum.VERIFIED_PASS:
+        color = 'green';
+        break;
+      default:
+        color = 'gray';
+        break;
+    }
+    return color;
   }
 
   addModalShow(): void {

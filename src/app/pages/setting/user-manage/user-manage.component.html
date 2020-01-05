@@ -1,4 +1,4 @@
-<nz-card class="list" nzTitle="角色列表">
+<nz-card class="list" nzTitle="用户列表">
   <div class="list-action">
     <nz-input-group [nzSuffix]="usernameSuffixTemplate">
       <input type="text" nz-input [(ngModel)]="vUserSearchReq.username" placeholder="用户名称"/>
@@ -64,18 +64,22 @@
         <td nzAlign="center">{{ data.email }}</td>
         <td nzAlign="center">{{ data.mobile }}</td>
         <td nzAlign="center">{{ data.sexTypeName }}</td>
-        <td nzAlign="center">{{ data.statusName}}</td>
+        <td nzAlign="center"><span [style.color]="setUserStatusNameColor(data.status)">{{ data.statusName}}</span></td>
         <td nzAlign="center">{{ data.dateCreated }}</td>
         <td nzAlign="center" [ngSwitch]="data?.status">
-          <div *ngSwitchCase="4">
-            <a (click)="editRole(data.id)">编辑</a>
-            <nz-divider nzType="vertical"></nz-divider>
+          <div *ngSwitchCase="userStatus.DISABLE">
             <a (click)="delRoleSingle(data.id)">启用</a>
           </div>
-          <div *ngSwitchCase="5">
+          <div *ngSwitchCase="userStatus.BLACK">
+            <a (click)="delRoleSingle(data.id)">解除黑名单</a>
+          </div>
+          <div *ngSwitchCase="userStatus.CHECK_WAIT">
+            <a (click)="delRoleSingle(data.id)">审核</a>
+          </div>
+          <div *ngSwitchCase="userStatus.CHECK_FAILURE">
             <a (click)="editRole(data.id)">编辑</a>
             <nz-divider nzType="vertical"></nz-divider>
-            <a (click)="delRoleSingle(data.id)">解除黑名单</a>
+            <a (click)="delRoleSingle(data.id)">重新审核</a>
           </div>
           <div *ngSwitchDefault>
             <a (click)="editRole(data.id)">编辑</a>
