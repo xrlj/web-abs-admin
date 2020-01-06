@@ -13,6 +13,8 @@ import {UserManageService} from './user-manage.service';
 import {VUserSearchReq} from '../../../helpers/vo/req/v-user-search-req';
 import {UserStatusEnum} from '../../../helpers/enum/user-status-enum';
 import {DefaultBusService} from '../../../helpers/event-bus/default-bus.service';
+import {VUserResp} from '../../../helpers/vo/resp/v-user-resp';
+import {UserSexEnum} from '../../../helpers/enum/user-sex-enum';
 
 @Component({
   selector: 'app-user-manage',
@@ -22,12 +24,13 @@ import {DefaultBusService} from '../../../helpers/event-bus/default-bus.service'
 export class UserManageComponent implements OnInit {
 
   userStatus: typeof  UserStatusEnum = UserStatusEnum; // 用户状态
+  userSexEnum: typeof  UserSexEnum = UserSexEnum; // 用户性别
 
   // 表格
   isAllDisplayDataChecked = false;
   isIndeterminate = false;
-  listOfDisplayData = [];
-  listOfAllData = []; // 列表数据
+  listOfDisplayData: VUserResp[] = [];
+  listOfAllData: VUserResp[] = []; // 列表数据
   mapOfCheckedId: { [key: string]: boolean } = {}; // 记录选择角色
   numberOfChecked = 0;
   loading = false;
@@ -67,7 +70,7 @@ export class UserManageComponent implements OnInit {
       email: [null, [Validators.email]],
       mobile: [null, [Validators.required]],
       roleId: [null, null],
-      status: ['1', null] // 用户状态。-1=停用；1-正常
+      status: ['1', null] // 用户状态。0=停用；1-正常
     });
   }
 
@@ -271,9 +274,38 @@ export class UserManageComponent implements OnInit {
    * @param id 角色id
    */
   delRole(id?: string, name?: string): void {
+    const checkIds: string[] = []; // 待删除角色
+    for (const key in this.mapOfCheckedId) {
+      if (this.mapOfCheckedId[key]) {
+        checkIds.push(key);
+      }
+    }
+    if (checkIds.length === 0) {
+      this.uiHelper.msgTipWarning('请选择用户!');
+      return;
+    }
+    this.defaultBusService.showLoading(true);
     this.uiHelper.modalDel(`确定删除角色${name ? `[${name}]` : ''}?`)
       .ok(() => {
+        this.userManageService.delUser(checkIds)
+          .ok(data => {
+            if (data) {
+              this.uiHelper.msgTipSuccess('批量删除用户成功！');
+              setTimeout(() => {
+                this.search();
+              }, 100);
+            } else {
+              this.uiHelper.modalError('删除用户失败');
+            }
+          }).fail(error => {
+            this.uiHelper.msgTipError(error.msg);
+        }).final(() => {
+          this.defaultBusService.showLoading(false);
+        });
       });
+  }
+
+  showSetUserRole(): void {
   }
 
   /**
@@ -334,7 +366,9 @@ export class UserManageComponent implements OnInit {
       .ok(data => {
         if (data) {
           this.uiHelper.msgTipSuccess('请求成功!');
-          setTimeout(() => {this.search()}, 100);
+          setTimeout(() => {
+            this.search();
+          }, 100);
         } else {
           this.uiHelper.msgTipError('请求失败!');
         }
@@ -349,7 +383,7 @@ export class UserManageComponent implements OnInit {
    * 表格数据更改时候设定选择信息。保持选择或者取消
    * @param $event 选择事件
    */
-  currentPageDataChange($event: VRoleResp[]): void {
+  currentPageDataChange($event: VUserResp[]): void {
     this.listOfDisplayData = $event;
     this.refreshStatus();
   }
@@ -360,11 +394,11 @@ export class UserManageComponent implements OnInit {
   refreshStatus(): void {
     this.isAllDisplayDataChecked = this.listOfDisplayData
       .filter(item => !item.disabled)
-      .every(item => this.mapOfCheckedId[item.id]);
+      .every(item => this.mapOfCheckedId[item.userId]);
     this.isIndeterminate =
-      this.listOfDisplayData.filter(item => !item.disabled).some(item => this.mapOfCheckedId[item.id]) &&
+      this.listOfDisplayData.filter(item => !item.disabled).some(item => this.mapOfCheckedId[item.userId]) &&
       !this.isAllDisplayDataChecked;
-    this.numberOfChecked = this.listOfAllData.filter(item => this.mapOfCheckedId[item.id]).length;
+    this.numberOfChecked = this.listOfAllData.filter(item => this.mapOfCheckedId[item.userId]).length;
   }
 
   /**
@@ -372,7 +406,7 @@ export class UserManageComponent implements OnInit {
    * @param value 选择事件
    */
   checkAll(value: boolean): void {
-    this.listOfDisplayData.filter(item => !item.disabled).forEach(item => (this.mapOfCheckedId[item.id] = value));
+    this.listOfDisplayData.filter(item => !item.disabled).forEach(item => (this.mapOfCheckedId[item.userId] = value));
     this.refreshStatus();
   }
 

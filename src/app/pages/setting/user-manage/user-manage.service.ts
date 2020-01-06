@@ -45,4 +45,19 @@ export class UserManageService {
     const path = ApiPath.usercentral.userApi.updateUserStatus;
     return this.api.post(path, par);
   }
+
+  /**
+   * 批量删除用户。
+   * @param userIds 用户id。
+   */
+  delUser(...userIds: any[]): any {
+    let idsPar  = '';
+    userIds.forEach((value, index) => {
+      idsPar = idsPar.concat(value);
+      if (index !== userIds.length - 1) {
+        idsPar = idsPar.concat(',');
+      }
+    });
+    return this.api.delete(`${ApiPath.usercentral.userApi.delUser}/${idsPar}`);
+  }
 }
