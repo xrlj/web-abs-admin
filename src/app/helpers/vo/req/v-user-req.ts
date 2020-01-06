@@ -1,5 +1,9 @@
 export interface VUserReq {
   /**
+   * 用户id。
+   */
+  userId?: string;
+  /**
    * 用户名称
    */
   username?: string;

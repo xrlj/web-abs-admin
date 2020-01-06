@@ -12,6 +12,7 @@ import {VRoleResp} from '../../../helpers/vo/resp/v-role-resp';
 import {UserManageService} from './user-manage.service';
 import {VUserSearchReq} from '../../../helpers/vo/req/v-user-search-req';
 import {UserStatusEnum} from '../../../helpers/enum/user-status-enum';
+import {DefaultBusService} from '../../../helpers/event-bus/default-bus.service';
 
 @Component({
   selector: 'app-user-manage',
@@ -53,7 +54,8 @@ export class UserManageComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private departmentService: DepartmentService,
               private uiHelper: UIHelper, private utils: Utils,
-              private roleManageService: RoleManageService, private userManageService: UserManageService) {
+              private roleManageService: RoleManageService, private userManageService: UserManageService,
+              private defaultBusService: DefaultBusService) {
     // 新增编辑对话框
     this.addOrEditForm = this.fb.group({
       username: [null, [Validators.required], [this.userNameAsyncValidator]],
@@ -275,11 +277,72 @@ export class UserManageComponent implements OnInit {
   }
 
   /**
+   * 审核用户。
+   */
+  checkUser(userId: string): void {
+    this.updateUserStatus(userId, UserStatusEnum.CHECK_PASS);
+  }
+
+  /**
+   * 启用用户账号。
+   */
+  enableUser(userId: string, accoutId: string): void {
+    let newStatus;
+    if (accoutId) { // 已经实名认证过
+      newStatus = UserStatusEnum.VERIFIED_PASS;
+    } else {
+      newStatus = UserStatusEnum.CHECK_PASS;
+    }
+    this.updateUserStatus(userId, newStatus);
+  }
+
+  /**
+   * 用户解除黑名单
+   */
+  rmUserBlack(userId: string, accoutId: string): void {
+    let newStatus;
+    if (accoutId) { // 已经实名认证过
+      newStatus = UserStatusEnum.VERIFIED_PASS;
+    } else {
+      newStatus = UserStatusEnum.CHECK_PASS;
+    }
+    this.updateUserStatus(userId, newStatus);
+  }
+
+  /**
+   * 拉黑用户。
+   */
+  addUserBlack(userId: string): void {
+    this.updateUserStatus(userId, UserStatusEnum.BLACK);
+  }
+
+  /**
+   * 禁用用户账号。
+   */
+  disableUser(userId: string): void {
+    this.updateUserStatus(userId, UserStatusEnum.DISABLE);
+  }
+
+  /**
    * 更改用户状态。审核、启用、禁用，拉黑
    * @param id 用户id
    * @param status 用户状态
    */
   updateUserStatus(userId: string, status: number): void {
+    this.defaultBusService.showLoading(true);
+    this.userManageService.updateUserStatus(userId, status)
+      .ok(data => {
+        if (data) {
+          this.uiHelper.msgTipSuccess('请求成功!');
+          setTimeout(() => {this.search()}, 100);
+        } else {
+          this.uiHelper.msgTipError('请求失败!');
+        }
+      }).fail(error => {
+        this.uiHelper.msgTipError(error.msg);
+    }).final(() => {
+      this.defaultBusService.showLoading(false);
+    });
   }
 
   /**

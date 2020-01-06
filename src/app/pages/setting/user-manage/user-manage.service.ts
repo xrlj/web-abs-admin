@@ -26,7 +26,23 @@ export class UserManageService {
     return this.api.post(ApiPath.usercentral.userApi.addSystemUser, vUserReq);
   }
 
+  /**
+   * 获取企业下所有用户。
+   * @param body 请求体。
+   */
   getEtpUsers(body: any): any {
     return this.api.post(ApiPath.usercentral.userApi.getEtpUsers, body);
+  }
+
+  /**
+   * 更新用户状态
+   */
+  updateUserStatus(id: string, userStatus: number): any {
+    const par: VUserReq = {
+      userId: id,
+      status: userStatus
+    };
+    const path = ApiPath.usercentral.userApi.updateUserStatus;
+    return this.api.post(path, par);
   }
 }
