@@ -7,7 +7,8 @@ export const ApiPath = {
   usercentral: {
     userApi: {
       getUserMenus: `/${usercentral}/user/getUserMenus`,
-      addSystemUser: `/${usercentral}/user/addOrUpdateSystemUser`,
+      addSystemUser: `/${usercentral}/user/addSystemUser`,
+      updateSystemUser: `/${usercentral}/user/updateSystemUser`,
       getEtpUsers: `/${usercentral}/user/getEtpUsers`,
       exitUsername: `/${usercentral}/user/exitUsername`,
       updateUserStatus: `/${usercentral}/user/updateUserStatus`,

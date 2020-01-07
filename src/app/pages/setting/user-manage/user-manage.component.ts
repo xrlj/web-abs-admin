@@ -99,6 +99,8 @@ export class UserManageComponent implements OnInit {
     this.isModalOkLoading = false;
     this.addOrEditForm.patchValue({sex: '1'});
     this.addOrEditForm.patchValue({status: '1'});
+    this.modalType = 1;
+    this.userInfo = null;
   }
 
   search(reset: boolean = false): void {
@@ -157,6 +159,7 @@ export class UserManageComponent implements OnInit {
    * 保存或编辑用户。
    */
   handleOk(): void {
+    console.log(this.addOrEditForm.value.username);
     if (this.addOrEditForm.valid) { // 前端通过所有输入校验
       this.isModalOkLoading = true;
       // 表单参数
@@ -168,24 +171,44 @@ export class UserManageComponent implements OnInit {
         realName: this.addOrEditForm.value.realName,
         email: this.addOrEditForm.value.email,
         mobile: this.addOrEditForm.value.mobile,
-        status: this.addOrEditForm.value.status
+        status: this.addOrEditForm.value.status,
+        userId: this.modalType === 2 ? this.userInfo.userId : null
       };
-      this.userManageService.addOrUpdateSystemUser(par)
-        .ok(data => {
-          if (data) {
-            this.uiHelper.msgTipSuccess('保存成功');
-            this.resetAddOrEditModal();
-            setTimeout(() => {
-              this.search();
-            }, 100);
-          } else {
-            this.uiHelper.msgTipError('保存失败');
-          }
-        }).fail(error => {
-        this.uiHelper.msgTipError(error.msg);
-      }).final((b) => {
-        this.isModalOkLoading = false;
-      });
+      if (this.modalType === 1) { // 新增
+        this.userManageService.addSystemUser(par)
+          .ok(data => {
+            if (data) {
+              this.uiHelper.msgTipSuccess('保存成功');
+              this.resetAddOrEditModal();
+              setTimeout(() => {
+                this.search();
+              }, 100);
+            } else {
+              this.uiHelper.msgTipError('保存失败');
+            }
+          }).fail(error => {
+          this.uiHelper.msgTipError(error.msg);
+        }).final((b) => {
+          this.isModalOkLoading = false;
+        });
+      } else { // 编辑
+        this.userManageService.updateSystemUser(par)
+          .ok(data => {
+            if (data) {
+              this.uiHelper.msgTipSuccess('编辑成功');
+              this.resetAddOrEditModal();
+              setTimeout(() => {
+                this.search();
+              }, 100);
+            } else {
+              this.uiHelper.msgTipError('编辑失败');
+            }
+          }).fail(error => {
+          this.uiHelper.msgTipError(error.msg);
+        }).final((b) => {
+          this.isModalOkLoading = false;
+        });
+      }
     } else {
       for (const key in this.addOrEditForm.controls) {
         this.addOrEditForm.controls[key].markAsDirty();
@@ -279,10 +302,16 @@ export class UserManageComponent implements OnInit {
    * @param id 用户id。
    */
   editUser(id: string): void {
+    // 编辑模式下，替换空间，去掉校验
+   /* this.addOrEditForm.setControl('username', new FormControl(this.addOrEditForm.value.username));
+    this.addOrEditForm.setControl('password', new FormControl('123456'));
+    this.addOrEditForm.setControl('confirm', new FormControl('123456'));*/
+    this.modalType = 2;
     this.isShowAddOrEditModal = true;
     this.userManageService.getUserInfoById(id)
       .ok(data => {
           this.userInfo = data;
+          this.deptSelectedId = this.userInfo.deptId;
           this.addOrEditForm.patchValue({
             username: this.userInfo.username,
             deptId: this.userInfo.deptName,

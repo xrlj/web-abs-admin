@@ -22,8 +22,15 @@ export class UserManageService {
    * 添加系统用户.
    * @param vUserReq 表单体
    */
-  addOrUpdateSystemUser(vUserReq: VUserReq): any {
+  addSystemUser(vUserReq: VUserReq): any {
     return this.api.post(ApiPath.usercentral.userApi.addSystemUser, vUserReq);
+  }
+
+  /**
+   * 更新系统用户信息。
+   */
+  updateSystemUser(vUserReq: VUserReq): any {
+    return this.api.post(ApiPath.usercentral.userApi.updateSystemUser, vUserReq);
   }
 
   /**

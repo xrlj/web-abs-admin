@@ -83,13 +83,13 @@
             <a (click)="checkUser(data.userId)">重新审核</a>
           </div>
           <div *ngSwitchDefault>
-            <a (click)="updateUserPwd(data.userId)">重置密码</a>
-            <nz-divider nzType="vertical"></nz-divider>
             <a (click)="editUser(data.userId)">编辑</a>
             <nz-divider nzType="vertical"></nz-divider>
             <a (click)="disableUser(data.userId)">禁用</a>
             <nz-divider nzType="vertical"></nz-divider>
             <a (click)="addUserBlack(data.userId)">拉黑</a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a (click)="updateUserPwd(data.userId)">重置密码</a>
           </div>
         </td>
       </tr>
@@ -124,7 +124,7 @@
     <nz-form-item>
       <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="username" nzRequired>用户名</nz-form-label>
       <nz-form-control [nzSm]="10" [nzXs]="24" nzHasFeedback nzValidatingTip="检查用户名..." [nzErrorTip]="userErrorTpl">
-        <input nz-input formControlName="username" placeholder="用户名" />
+        <input nz-input formControlName="username" placeholder="用户名" [disabled]="modalType === 2 ? true : false" [readonly]="modalType ===2 ? true : false"/>
         <ng-template #userErrorTpl let-control>
           <ng-container *ngIf="control.hasError('required')">
             请输入用户名!
@@ -147,7 +147,7 @@
       </nz-form-control>
     </nz-form-item>
     <!--密码-->
-    <nz-form-item>
+    <nz-form-item *ngIf="modalType === 1">
       <nz-form-label [nzSm]="4" [nzXs]="24" nzRequired>密码</nz-form-label>
       <div>
         <nz-form-control [nzSm]="10" [nzXs]="24" nzHasFeedback nzErrorTip="请输入密码!">
@@ -155,7 +155,7 @@
         </nz-form-control>
       </div>
     </nz-form-item>
-    <nz-form-item>
+    <nz-form-item *ngIf="modalType === 1">
       <nz-form-label [nzSm]="4" [nzXs]="24" nzRequired>确认密码</nz-form-label>
       <nz-form-control [nzSm]="10" [nzXs]="24" nzHasFeedback [nzErrorTip]="passwordErrorTpl">
         <input nz-input type="password" formControlName="confirm" placeholder="确认密码" />
