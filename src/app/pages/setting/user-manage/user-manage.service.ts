@@ -22,7 +22,7 @@ export class UserManageService {
    * 添加系统用户.
    * @param vUserReq 表单体
    */
-  addSystemUser(vUserReq: VUserReq): any {
+  addOrUpdateSystemUser(vUserReq: VUserReq): any {
     return this.api.post(ApiPath.usercentral.userApi.addSystemUser, vUserReq);
   }
 
@@ -44,6 +44,15 @@ export class UserManageService {
     };
     const path = ApiPath.usercentral.userApi.updateUserStatus;
     return this.api.post(path, par);
+  }
+
+  /**
+   * 根据用户id获取用户信息。
+   * @param userId 用户id。
+   */
+  getUserInfoById(userId: string): any {
+    const path = `${ApiPath.usercentral.userApi.getUserInfoById}/${userId}`;
+    return this.api.get(path);
   }
 
   /**

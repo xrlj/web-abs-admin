@@ -10,7 +10,7 @@
     </nz-select>
     <button nz-button nzType="default" (click)="search(true)"><i nz-icon nzType="search"></i>查询</button>
     <button nz-button nzType="primary" (click)="addModalShow()"><i nz-icon type="plus"></i>新增</button>
-    <button nz-button nzType="danger" (click)="delRole()"><i nz-icon type="delete"></i>删除</button>
+    <button nz-button nzType="danger" (click)="delUser()"><i nz-icon type="delete"></i>删除</button>
     <button nz-button nzType="primary" nzGhost (click)="showSetUserRole()">设置角色</button>
     <button nz-button nzType="default"><i nz-icon nzType="export" nzTheme="outline"></i>导出</button>
   </div>
@@ -78,12 +78,14 @@
             <a (click)="checkUser(data.userId)">审核</a>
           </div>
           <div *ngSwitchCase="userStatus.CHECK_FAILURE">
-            <a (click)="editRole(data.userId)">编辑</a>
+            <a (click)="editUser(data.userId)">编辑</a>
             <nz-divider nzType="vertical"></nz-divider>
             <a (click)="checkUser(data.userId)">重新审核</a>
           </div>
           <div *ngSwitchDefault>
-            <a (click)="editRole(data.userId)">编辑</a>
+            <a (click)="updateUserPwd(data.userId)">重置密码</a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a (click)="editUser(data.userId)">编辑</a>
             <nz-divider nzType="vertical"></nz-divider>
             <a (click)="disableUser(data.userId)">禁用</a>
             <nz-divider nzType="vertical"></nz-divider>
@@ -214,14 +216,14 @@
       </nz-form-control>
     </nz-form-item>
     <!--角色-->
-    <nz-form-item>
+    <!--<nz-form-item>
       <nz-form-label [nzSm]="4" [nzXs]="24">角色配置</nz-form-label>
       <nz-form-control [nzSm]="10" [nzXs]="24">
         <nz-select id="roleId" formControlName="roleId" nzShowSearch nzAllowClear nzPlaceHolder="请选择角色">
           <nz-option *ngFor="let role of roleList" [nzLabel]="role.roleName" [nzValue]="role.id"></nz-option>
         </nz-select>
       </nz-form-control>
-    </nz-form-item>
+    </nz-form-item>-->
     <!--用户状态-->
     <nz-form-item>
       <nz-form-label [nzSm]="4" [nzXs]="24">状态</nz-form-label>
@@ -262,4 +264,50 @@
     (nzSearchValueChange)="deptSearchEvent($event)"
   >
   </nz-tree>
+</nz-modal>
+
+<!--重置密码内容框                                                                                                                                                                                                                                                                                                          -->
+<nz-modal [(nzVisible)]="isShowModifyPwdModal"
+          nzWidth="800"
+          [nzMaskClosable]="false"
+          [nzTitle]="'重置密码'"
+          (nzOnOk)="updateUserPwdHandleOk()"
+          (nzOnCancel)="updateUserPwdHandleCancel()"
+          [nzOkLoading]="isModalOkLoading">
+
+  <form nz-form [formGroup]="modifyPwdForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="oldPassword" nzRequired>旧密码</nz-form-label>
+      <div>
+        <nz-form-control [nzSm]="10" [nzXs]="24">
+          <input nz-input type="password" formControlName="oldPassword" placeholder="旧密码"/>
+          <nz-form-explain *ngIf="modifyPwdForm.get('oldPassword')?.dirty && modifyPwdForm.get('oldPassword')?.errors">请输入旧的密码!
+          </nz-form-explain>
+        </nz-form-control>
+      </div>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzRequired>密码</nz-form-label>
+      <div>
+        <nz-form-control [nzSm]="10" [nzXs]="24" nzHasFeedback nzErrorTip="请输入密码!">
+          <input nz-input type="password" formControlName="password" (ngModelChange)="validateConfirmPassword()" placeholder="密码"/>
+        </nz-form-control>
+      </div>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzRequired>确认密码</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24" nzHasFeedback [nzErrorTip]="passwordErrorTpl">
+        <input nz-input type="password" formControlName="confirm" placeholder="确认密码" />
+        <ng-template #passwordErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">
+            请再次输入密码!
+          </ng-container>
+          <ng-container *ngIf="control.hasError('confirm')">
+            确认密码和密码不一致!
+          </ng-container>
+        </ng-template>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+
 </nz-modal>

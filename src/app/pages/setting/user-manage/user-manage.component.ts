@@ -45,6 +45,12 @@ export class UserManageComponent implements OnInit {
   isShowAddOrEditModal = false;
   modalType = 1; // 1-新增；2-编辑
   isModalOkLoading = false;
+  userInfo: VUserResp; // 用户详情
+
+  // 更改密码内容框
+  modifyPwdForm: FormGroup;
+  isShowModifyPwdModal = false;
+  isPwdModalOkLoading = false;
 
   // 部门搜索对话框
   isShowDeptSearchModal = false;
@@ -69,8 +75,14 @@ export class UserManageComponent implements OnInit {
       sex: ['1', null], // 性别选择。1-男；2-女；0-保密
       email: [null, [Validators.email]],
       mobile: [null, [Validators.required]],
-      roleId: [null, null],
       status: ['1', null] // 用户状态。0=停用；1-正常
+    });
+
+    // 更改密码表单
+    this.modifyPwdForm = this.fb.group({
+      oldPassword: [null, [Validators.required]],
+      password: [null, [Validators.required]],
+      confirm: [null, [this.confirmValidator]]
     });
   }
 
@@ -156,28 +168,24 @@ export class UserManageComponent implements OnInit {
         realName: this.addOrEditForm.value.realName,
         email: this.addOrEditForm.value.email,
         mobile: this.addOrEditForm.value.mobile,
-        roleId: this.addOrEditForm.value.roleId,
         status: this.addOrEditForm.value.status
       };
-      if (this.modalType === 1) { // 新增
-        this.userManageService.addSystemUser(par)
-          .ok(data => {
-            if (data) {
-              this.uiHelper.msgTipSuccess('保存成功');
-              this.resetAddOrEditModal();
-              setTimeout(() => {
-                this.search();
-              }, 100);
-            } else {
-              this.uiHelper.msgTipError('保存失败');
-            }
-          }).fail(error => {
-            this.uiHelper.msgTipError(error.msg);
-        }).final((b) => {
-          this.isModalOkLoading = false;
-        });
-      } else { // 编辑
-      }
+      this.userManageService.addOrUpdateSystemUser(par)
+        .ok(data => {
+          if (data) {
+            this.uiHelper.msgTipSuccess('保存成功');
+            this.resetAddOrEditModal();
+            setTimeout(() => {
+              this.search();
+            }, 100);
+          } else {
+            this.uiHelper.msgTipError('保存失败');
+          }
+        }).fail(error => {
+        this.uiHelper.msgTipError(error.msg);
+      }).final((b) => {
+        this.isModalOkLoading = false;
+      });
     } else {
       for (const key in this.addOrEditForm.controls) {
         this.addOrEditForm.controls[key].markAsDirty();
@@ -266,27 +274,53 @@ export class UserManageComponent implements OnInit {
     }
   }
 
-  editRole(id: string): void {
+  /**
+   * 编辑修改用户信息。
+   * @param id 用户id。
+   */
+  editUser(id: string): void {
+    this.isShowAddOrEditModal = true;
+    this.userManageService.getUserInfoById(id)
+      .ok(data => {
+          this.userInfo = data;
+          this.addOrEditForm.patchValue({
+            username: this.userInfo.username,
+            deptId: this.userInfo.deptName,
+            password: null,
+            confirm: null,
+            realName: this.userInfo.realName,
+            sex: String(this.userInfo.sexType),
+            email: this.userInfo.email,
+            mobile: this.userInfo.mobile,
+            status: String(this.userInfo.status)
+          });
+      }).fail(error => {
+        this.uiHelper.msgTipError(error.msg);
+    });
   }
 
   /**
-   * 删除角色。
-   * @param id 角色id
+   * 删除用户。
+   * @param id 用户id。
    */
-  delRole(id?: string, name?: string): void {
+  delUser(id?: string, name?: string): void {
     const checkIds: string[] = []; // 待删除角色
-    for (const key in this.mapOfCheckedId) {
-      if (this.mapOfCheckedId[key]) {
-        checkIds.push(key);
+    if (id) {
+      checkIds.push(id);
+    } else {
+      for (const key in this.mapOfCheckedId) {
+        if (this.mapOfCheckedId[key]) {
+          checkIds.push(key);
+        }
       }
     }
     if (checkIds.length === 0) {
       this.uiHelper.msgTipWarning('请选择用户!');
       return;
     }
-    this.defaultBusService.showLoading(true);
-    this.uiHelper.modalDel(`确定删除角色${name ? `[${name}]` : ''}?`)
+    this.uiHelper.modalDel(`确定删除用户${name ? `[${name}]` : ''}?`)
       .ok(() => {
+        this.defaultBusService.showLoading(true);
         this.userManageService.delUser(checkIds)
           .ok(data => {
             if (data) {
@@ -306,6 +340,22 @@ export class UserManageComponent implements OnInit {
   }
 
   showSetUserRole(): void {
+  }
+
+  /**
+   * 更新用户密码
+   * @param userId 用户id
+   */
+  updateUserPwd(userId: string): void {
+    this.isShowModifyPwdModal = true;
+  }
+
+  updateUserPwdHandleOk(): void {
+  }
+
+  updateUserPwdHandleCancel(): void {
+    this.isShowModifyPwdModal = false;
+    this.modifyPwdForm.reset();
   }
 
   /**

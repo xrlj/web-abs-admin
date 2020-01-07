@@ -32,10 +32,6 @@ export interface VUserReq {
    */
   mobile?: string;
   /**
-   * 角色
-   */
-  roleId?: string;
-  /**
    * 状态
    */
   status?: number;
