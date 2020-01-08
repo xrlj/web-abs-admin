@@ -58,8 +58,11 @@ export class UserManageComponent implements OnInit {
   deptSelectedId = null;
   deptDataList = [];
 
-  // 部门下角色
-  roleList: VRoleResp[] = [];
+  // 设置角色内容框
+  setUserRolesForm: FormGroup;
+  isShowUserRolesModal = false;
+  isUserRolesModalOkLoading = false;
+  roleList: VRoleResp[] = []; // 部门下角色
 
   constructor(private fb: FormBuilder, private departmentService: DepartmentService,
               private uiHelper: UIHelper, private utils: Utils,
@@ -67,7 +70,8 @@ export class UserManageComponent implements OnInit {
               private defaultBusService: DefaultBusService) {
     // 新增编辑对话框
     this.addOrEditForm = this.fb.group({
-      username: [null, [Validators.required], [this.userNameAsyncValidator]],
+      // username: [null, [Validators.required], [this.userNameAsyncValidator]],
+      username: [null, [Validators.required]],
       deptId: [null, [Validators.required]],
       password: [null, [Validators.required]],
       confirm: [null, [this.confirmValidator]],
@@ -303,9 +307,6 @@ export class UserManageComponent implements OnInit {
    */
   editUser(id: string): void {
     // 编辑模式下，替换空间，去掉校验
-   /* this.addOrEditForm.setControl('username', new FormControl(this.addOrEditForm.value.username));
-    this.addOrEditForm.setControl('password', new FormControl('123456'));
-    this.addOrEditForm.setControl('confirm', new FormControl('123456'));*/
     this.modalType = 2;
     this.isShowAddOrEditModal = true;
     this.userManageService.getUserInfoById(id)
@@ -315,8 +316,8 @@ export class UserManageComponent implements OnInit {
           this.addOrEditForm.patchValue({
             username: this.userInfo.username,
             deptId: this.userInfo.deptName,
-            password: null,
-            confirm: null,
+            password: '123456',
+            confirm: '123456',
             realName: this.userInfo.realName,
             sex: String(this.userInfo.sexType),
             email: this.userInfo.email,
@@ -330,17 +331,13 @@ export class UserManageComponent implements OnInit {
 
   /**
    * 删除用户。
-   * @param id 用户id。
    */
-  delUser(id?: string, name?: string): void {
+  delUser(): void {
+    // console.log(this.mapOfCheckedId);
     const checkIds: string[] = []; // 待删除角色
-    if (id) {
-      checkIds.push(id);
-    } else {
-      for (const key in this.mapOfCheckedId) {
-        if (this.mapOfCheckedId[key]) {
-          checkIds.push(key);
-        }
+    for (const key in this.mapOfCheckedId) {
+      if (this.mapOfCheckedId[key]) {
+        checkIds.push(key);
       }
     }
     if (checkIds.length === 0) {
@@ -368,9 +365,6 @@ export class UserManageComponent implements OnInit {
       });
   }
 
-  showSetUserRole(): void {
-  }
-
   /**
    * 更新用户密码
    * @param userId 用户id
@@ -379,12 +373,49 @@ export class UserManageComponent implements OnInit {
     this.isShowModifyPwdModal = true;
   }
 
+  /**
+   * 确定更新密码操作。
+   */
   updateUserPwdHandleOk(): void {
   }
 
+  /**
+   * 取消更新密码操作。
+   */
   updateUserPwdHandleCancel(): void {
     this.isShowModifyPwdModal = false;
     this.modifyPwdForm.reset();
+  }
+
+  /**
+   * 设置用户角色。
+   */
+  showSetUserRole(): void {
+    const checkIds: string[] = []; // 待删除角色
+    for (const key in this.mapOfCheckedId) {
+      if (this.mapOfCheckedId[key]) {
+        checkIds.push(key);
+      }
+    }
+    if (checkIds.length === 0) {
+      this.uiHelper.msgTipWarning('请选择用户!');
+      return;
+    }
+    this.isShowUserRolesModal = true;
+  }
+
+  /**
+   * 确定设置用户角色操作。
+   */
+  setUserRolesHandleOk(): void {
+  }
+
+  /**
+   * 取消设置用户角色操作。
+   */
+  setUserRolesHandleCancel(): void {
+    this.isShowUserRolesModal = false;
+    this.roleList = [];
   }
 
   /**

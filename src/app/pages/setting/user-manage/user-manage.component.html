@@ -311,3 +311,13 @@
   </form>
 
 </nz-modal>
+
+<!--设置用户角色内容框-->
+<nz-modal [(nzVisible)]="isShowUserRolesModal"
+          nzWidth="800"
+          [nzMaskClosable]="false"
+          [nzTitle]="'设置用户角色'"
+          (nzOnOk)="setUserRolesHandleOk()"
+          (nzOnCancel)="setUserRolesHandleCancel()"
+          [nzOkLoading]="isModalOkLoading">
+</nz-modal>
