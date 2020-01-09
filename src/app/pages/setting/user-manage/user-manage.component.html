@@ -314,10 +314,19 @@
 
 <!--设置用户角色内容框-->
 <nz-modal [(nzVisible)]="isShowUserRolesModal"
-          nzWidth="800"
+          nzWidth="600"
           [nzMaskClosable]="false"
           [nzTitle]="'设置用户角色'"
           (nzOnOk)="setUserRolesHandleOk()"
           (nzOnCancel)="setUserRolesHandleCancel()"
           [nzOkLoading]="isModalOkLoading">
+
+  <nz-checkbox-wrapper style="width: 100%;margin-left: 20px" (nzOnChange)="setUserRoleOnChange($event)">
+    <div nz-row>
+      <div nz-col nzSpan="8" *ngFor="let role of roleList">
+        <label nz-checkbox [nzValue]="role.id" [ngModel]="isUserRole(role.id)">{{role.roleName}}</label>
+      </div>
+    </div>
+  </nz-checkbox-wrapper>
+
 </nz-modal>

@@ -334,7 +334,6 @@ export class RoleManageComponent implements OnInit {
     const body: VRoleReq = {
       pageIndex: reset ? 1 : this.pageIndex,
       pageSize: this.pageSize,
-      clientId: this.utils.getJwtTokenClaim(JwtKvEnum.ClientId),
       enterpriseId: this.utils.getJwtTokenClaim(JwtKvEnum.EnterpriseId),
       roleName: this.roleName
     };

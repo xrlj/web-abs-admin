@@ -59,14 +59,14 @@ export class UserManageComponent implements OnInit {
   deptDataList = [];
 
   // 设置角色内容框
-  setUserRolesForm: FormGroup;
   isShowUserRolesModal = false;
   isUserRolesModalOkLoading = false;
   roleList: VRoleResp[] = []; // 部门下角色
+  userRoleList: any[]; // 用户用后的角色
 
   constructor(private fb: FormBuilder, private departmentService: DepartmentService,
               private uiHelper: UIHelper, private utils: Utils,
-              private roleManageService: RoleManageService, private userManageService: UserManageService,
+              private userManageService: UserManageService,
               private defaultBusService: DefaultBusService) {
     // 新增编辑对话框
     this.addOrEditForm = this.fb.group({
@@ -292,12 +292,6 @@ export class UserManageComponent implements OnInit {
       this.addOrEditForm.patchValue({deptId: event.node.origin.title});
       this.deptSearchHandleCancel();
       console.log(this.deptSelectedId);
-
-      // 获取部门角色
-      this.roleManageService.getAllRoleByDeptId(this.deptSelectedId)
-        .ok(data => {
-          this.roleList = data;
-        });
     }
   }
 
@@ -308,7 +302,6 @@ export class UserManageComponent implements OnInit {
   editUser(id: string): void {
     // 编辑模式下，替换空间，去掉校验
     this.modalType = 2;
-    this.isShowAddOrEditModal = true;
     this.userManageService.getUserInfoById(id)
       .ok(data => {
           this.userInfo = data;
@@ -324,6 +317,7 @@ export class UserManageComponent implements OnInit {
             mobile: this.userInfo.mobile,
             status: String(this.userInfo.status)
           });
+          this.isShowAddOrEditModal = true;
       }).fail(error => {
         this.uiHelper.msgTipError(error.msg);
     });
@@ -401,7 +395,45 @@ export class UserManageComponent implements OnInit {
       this.uiHelper.msgTipWarning('请选择用户!');
       return;
     }
-    this.isShowUserRolesModal = true;
+    if (checkIds.length > 1) {
+      this.uiHelper.msgTipWarning('最多只能选择一个用户!');
+      return;
+    }
+
+    const userId = checkIds[0];
+    // 获取部门角色
+    this.userManageService.getUserCanSelectRoles(userId)
+      .ok(data => {
+        this.roleList = data;
+
+        // 获取用户角色
+        this.userManageService.getRolesByUserId(userId)
+          .ok(data1 => {
+              this.userRoleList = data1;
+              this.isShowUserRolesModal = true;
+          });
+      });
+  }
+
+  /**
+   * 判断角色是否为用户拥有的角色。是，返回true。
+   * @param id 随便的一个角色id。
+   */
+  isUserRole(id: string): boolean {
+    let b = false;
+    if (this.userRoleList && this.userRoleList.length > 0) {
+      this.userRoleList.forEach(value => {
+        const roleId = value.roleId;
+        if (id === roleId) {
+          b = true;
+        }
+      });
+    }
+    return b;
+  }
+
+  setUserRoleOnChange(value: string[]): void {
+    console.log(value);
   }
 
   /**
@@ -475,7 +507,6 @@ export class UserManageComponent implements OnInit {
     this.userManageService.updateUserStatus(userId, status)
       .ok(data => {
         if (data) {
-          this.uiHelper.msgTipSuccess('请求成功!');
           setTimeout(() => {
             this.search();
           }, 100);

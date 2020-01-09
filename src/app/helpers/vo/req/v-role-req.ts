@@ -1,6 +1,6 @@
 export interface VRoleReq {
   enterpriseId: string;
-  clientId: string;
+  clientId?: string;
   roleId?: string;
   pageIndex?: number;
   pageSize?: number;

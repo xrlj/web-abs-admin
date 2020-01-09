@@ -9,6 +9,8 @@ export const ApiPath = {
       getUserMenus: `/${usercentral}/user/getUserMenus`,
       addSystemUser: `/${usercentral}/user/addSystemUser`,
       updateSystemUser: `/${usercentral}/user/updateSystemUser`,
+      getUserCanSelectRoles: `/${usercentral}/user/getUserCanSelectRoles`,
+      getRolesByUserId: `/${usercentral}/user/getRolesByUserId`,
       getEtpUsers: `/${usercentral}/user/getEtpUsers`,
       exitUsername: `/${usercentral}/user/exitUsername`,
       updateUserStatus: `/${usercentral}/user/updateUserStatus`,

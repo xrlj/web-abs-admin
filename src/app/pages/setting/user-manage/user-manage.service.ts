@@ -76,4 +76,22 @@ export class UserManageService {
     });
     return this.api.delete(`${ApiPath.usercentral.userApi.delUser}/${idsPar}`);
   }
+
+  /**
+   * 获取用户可选角色列表。
+   * @param userId 用户id。
+   */
+  getUserCanSelectRoles(userId: string): any {
+    const path = `${ApiPath.usercentral.userApi.getUserCanSelectRoles}/${userId}`;
+    return this.api.get(path);
+  }
+
+  /**
+   * 获取用户角色。
+   * @param username 用户名称。
+   */
+  getRolesByUserId(userId: string): any {
+    const path = `${ApiPath.usercentral.userApi.getRolesByUserId}/${userId}`;
+    return this.api.get(path);
+  }
 }
