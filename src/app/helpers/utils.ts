@@ -117,4 +117,20 @@ export class Utils {
     });
     return arrayNew;
   }
+
+  /**
+   * 把数组参数转换成英文逗号隔开的字符串。
+   * @param array 数组
+   * @return 如： a,b,c
+   */
+  arrayToArrayParam(array: any[]): string {
+    let arrayPar  = '';
+    array.forEach((value, index) => {
+      arrayPar = arrayPar.concat(value);
+      if (index !== array.length - 1) {
+        arrayPar = arrayPar.concat(',');
+      }
+    });
+    return arrayPar;
+  }
 }

@@ -11,11 +11,14 @@ export const ApiPath = {
       updateSystemUser: `/${usercentral}/user/updateSystemUser`,
       getUserCanSelectRoles: `/${usercentral}/user/getUserCanSelectRoles`,
       getRolesByUserId: `/${usercentral}/user/getRolesByUserId`,
+      addUserRoles: `/${usercentral}/user/addUserRoles`,
       getEtpUsers: `/${usercentral}/user/getEtpUsers`,
       exitUsername: `/${usercentral}/user/exitUsername`,
       updateUserStatus: `/${usercentral}/user/updateUserStatus`,
       delUser: `/${usercentral}/user/delUser`,
-      getUserInfoById: `/${usercentral}/user/getUserInfoById`
+      getUserInfoById: `/${usercentral}/user/getUserInfoById`,
+      updateUserPassword: `/${usercentral}/user/updateUserPassword`,
+      resetUserPassword: `/${usercentral}/user/resetUserPassword`
     },
     menuApi: {
       saveOrUpdate: `/${usercentral}/menu/saveOrUpdate`,

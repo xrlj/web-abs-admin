@@ -42,7 +42,7 @@ export class Api {
    * @param body 请求体。和params不同时存在。
    * @param version api版本号，默认0
    * @param params 请求参数。
-   * @param contentType 请求内容类型，和params同时存在。
+   * @param contentType 请求内容类型，和params同时存在。参考枚举类:ContentTypeEnum
    */
   post(path: string, body?: any, version?: number, params?: HttpParams | {}, contentType?: string): any {
     if (path === null || path === undefined) {
@@ -66,7 +66,7 @@ export class Api {
       }
       httpOptions.headers = httpOptions.headers.set('Content-Type', contentType);
 
-      client = this.http.post(environment.apiUrl.concat(path), httpOptions);
+      client = this.http.post(environment.apiUrl.concat(path), null, httpOptions);
     } else {
       httpOptions.headers = httpOptions.headers.set('Content-Type', 'application/json');
       client = this.http.post(environment.apiUrl.concat(path), body, httpOptions);

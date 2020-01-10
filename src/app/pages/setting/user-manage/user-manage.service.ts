@@ -2,13 +2,16 @@ import { Injectable } from '@angular/core';
 import {Api} from '../../../helpers/http/api';
 import {ApiPath} from '../../../api-path';
 import {VUserReq} from '../../../helpers/vo/req/v-user-req';
+import {Utils} from '../../../helpers/utils';
+import {VUserPwdReq} from '../../../helpers/vo/req/v-user-pwd-req';
+import {ContentTypeEnum} from '../../../helpers/http/content-type-enum';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserManageService {
 
-  constructor(private api: Api) { }
+  constructor(private api: Api, private utils: Utils) { }
 
   /**
    * 判断用户名是否已经被占用。
@@ -93,5 +96,34 @@ export class UserManageService {
   getRolesByUserId(userId: string): any {
     const path = `${ApiPath.usercentral.userApi.getRolesByUserId}/${userId}`;
     return this.api.get(path);
+  }
+
+  /**
+   * 添加用户角色。
+   * @param userId1 用户id
+   * @param roleIds1 角色ids
+   */
+  addUserRoles(userId1: any, roleIds1: any): any {
+    const body = {
+      userId: userId1,
+      roleIds: roleIds1
+    };
+    return this.api.post(ApiPath.usercentral.userApi.addUserRoles, body);
+  }
+
+  /**
+   * 修改用户密码。
+   * @param vUserPwdReq 修改用户密码。
+   */
+  updateUserPassword(vUserPwdReq: VUserPwdReq): any {
+    return this.api.post(ApiPath.usercentral.userApi.updateUserPassword, vUserPwdReq);
+  }
+
+  /**
+   * 重置密码。
+   * @param id 用户id
+   */
+  resetUserPassword(id: string): any {
+    return this.api.post(ApiPath.usercentral.userApi.resetUserPassword, null, 0, {userId: id}, ContentTypeEnum.APPLICATION_FORM_URLENCODED_VALUE);
   }
 }

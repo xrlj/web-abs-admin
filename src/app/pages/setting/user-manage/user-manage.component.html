@@ -42,14 +42,14 @@
         <th nzWidth="12%" nzAlign="center">所属部门</th>
         <th nzWidth="12%" nzAlign="center">邮箱</th>
         <th nzWidth="12%" nzAlign="center">手机号码</th>
-        <th nzWidth="12%" nzAlign="center">性别</th>
-        <th nzWidth="12%" nzAlign="center">状态</th>
+        <th nzWidth="10%" nzAlign="center">性别</th>
+        <th nzWidth="10%" nzAlign="center">状态</th>
         <th nzWidth="12%" nzAlign="center"
             nzShowSort
         >
           创建时间
         </th>
-        <th nzWidth="16%" nzAlign="center">操作</th>
+        <th nzWidth="20%" nzAlign="center">操作</th>
       </tr>
       </thead>
       <tbody>
@@ -89,7 +89,9 @@
             <nz-divider nzType="vertical"></nz-divider>
             <a (click)="addUserBlack(data.userId)">拉黑</a>
             <nz-divider nzType="vertical"></nz-divider>
-            <a (click)="updateUserPwd(data.userId)">重置密码</a>
+            <a (click)="updateUserPwd(data.userId)">更改密码</a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a (click)="resetUserPwd(data.userId)">重置密码</a>
           </div>
         </td>
       </tr>
@@ -273,14 +275,14 @@
           [nzTitle]="'重置密码'"
           (nzOnOk)="updateUserPwdHandleOk()"
           (nzOnCancel)="updateUserPwdHandleCancel()"
-          [nzOkLoading]="isModalOkLoading">
+          [nzOkLoading]="isPwdModalOkLoading">
 
   <form nz-form [formGroup]="modifyPwdForm">
     <nz-form-item>
       <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="oldPassword" nzRequired>旧密码</nz-form-label>
       <div>
         <nz-form-control [nzSm]="10" [nzXs]="24">
-          <input nz-input type="password" formControlName="oldPassword" placeholder="旧密码"/>
+          <input nz-input type="password" formControlName="oldPassword" (ngModelChange)="this.modifyPwdForm.controls.password.updateValueAndValidity()" placeholder="旧密码"/>
           <nz-form-explain *ngIf="modifyPwdForm.get('oldPassword')?.dirty && modifyPwdForm.get('oldPassword')?.errors">请输入旧的密码!
           </nz-form-explain>
         </nz-form-control>
@@ -289,16 +291,24 @@
     <nz-form-item>
       <nz-form-label [nzSm]="4" [nzXs]="24" nzRequired>密码</nz-form-label>
       <div>
-        <nz-form-control [nzSm]="10" [nzXs]="24" nzHasFeedback nzErrorTip="请输入密码!">
-          <input nz-input type="password" formControlName="password" (ngModelChange)="validateConfirmPassword()" placeholder="密码"/>
+        <nz-form-control [nzSm]="10" [nzXs]="24" nzHasFeedback [nzErrorTip]="passwordErrorTpl">
+          <input nz-input type="password" formControlName="password" (ngModelChange)="updatePwdValidateConfirmPassword()" placeholder="密码"/>
+          <ng-template #passwordErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">
+              请输入密码！
+            </ng-container>
+            <ng-container *ngIf="control.hasError('notOld')">
+              新密码不能和旧密码一样！
+            </ng-container>
+          </ng-template>
         </nz-form-control>
       </div>
     </nz-form-item>
     <nz-form-item>
       <nz-form-label [nzSm]="4" [nzXs]="24" nzRequired>确认密码</nz-form-label>
-      <nz-form-control [nzSm]="10" [nzXs]="24" nzHasFeedback [nzErrorTip]="passwordErrorTpl">
+      <nz-form-control [nzSm]="10" [nzXs]="24" nzHasFeedback [nzErrorTip]="confirmPasswordErrorTpl">
         <input nz-input type="password" formControlName="confirm" placeholder="确认密码" />
-        <ng-template #passwordErrorTpl let-control>
+        <ng-template #confirmPasswordErrorTpl let-control>
           <ng-container *ngIf="control.hasError('required')">
             请再次输入密码!
           </ng-container>
@@ -319,7 +329,7 @@
           [nzTitle]="'设置用户角色'"
           (nzOnOk)="setUserRolesHandleOk()"
           (nzOnCancel)="setUserRolesHandleCancel()"
-          [nzOkLoading]="isModalOkLoading">
+          [nzOkLoading]="isUserRolesModalOkLoading">
 
   <nz-checkbox-wrapper style="width: 100%;margin-left: 20px" (nzOnChange)="setUserRoleOnChange($event)">
     <div nz-row>

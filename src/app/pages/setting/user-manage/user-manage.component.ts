@@ -15,6 +15,7 @@ import {UserStatusEnum} from '../../../helpers/enum/user-status-enum';
 import {DefaultBusService} from '../../../helpers/event-bus/default-bus.service';
 import {VUserResp} from '../../../helpers/vo/resp/v-user-resp';
 import {UserSexEnum} from '../../../helpers/enum/user-sex-enum';
+import {VUserPwdReq} from '../../../helpers/vo/req/v-user-pwd-req';
 
 @Component({
   selector: 'app-user-manage',
@@ -62,7 +63,9 @@ export class UserManageComponent implements OnInit {
   isShowUserRolesModal = false;
   isUserRolesModalOkLoading = false;
   roleList: VRoleResp[] = []; // 部门下角色
-  userRoleList: any[]; // 用户用后的角色
+  userRoleList: any[] = []; // 用户用后的角色
+  userRoleCheckedList: string[]; // 选择的用户角色
+  selectedUserId: string; // 选择的用户id。
 
   constructor(private fb: FormBuilder, private departmentService: DepartmentService,
               private uiHelper: UIHelper, private utils: Utils,
@@ -85,8 +88,8 @@ export class UserManageComponent implements OnInit {
     // 更改密码表单
     this.modifyPwdForm = this.fb.group({
       oldPassword: [null, [Validators.required]],
-      password: [null, [Validators.required]],
-      confirm: [null, [this.confirmValidator]]
+      password: [null, [this.notOldPwd]],
+      confirm: [null, [this.updatePwdConfirmValidator]]
     });
   }
 
@@ -241,19 +244,50 @@ export class UserManageComponent implements OnInit {
     })
 
   /**
-   * 校验密码
+   * 新增编辑校验密码
    */
   validateConfirmPassword(): void {
     setTimeout(() => this.addOrEditForm.controls.confirm.updateValueAndValidity());
   }
 
   /**
-   * 确认前后密码是否一致。
+   * 新增编辑确认前后密码是否一致。
    */
   confirmValidator = (control: FormControl): { [s: string]: boolean } => {
     if (!control.value) {
       return { error: true, required: true };
     } else if (control.value !== this.addOrEditForm.controls.password.value) {
+      return { confirm: true, error: true };
+    }
+    return {};
+  }
+
+  /**
+   * 修改密码-校验密码
+   */
+  updatePwdValidateConfirmPassword(): void {
+    setTimeout(() => this.modifyPwdForm.controls.confirm.updateValueAndValidity());
+  }
+
+  /**
+   * 修改密码-新密码不能和旧密码一样校验
+   */
+  notOldPwd = (control: FormControl): { [s: string]: boolean } => {
+    if (!control.value) {
+      return { error: true, required: true };
+    } else if (control.value === this.modifyPwdForm.controls.oldPassword.value) {
+      return { notOld: true, error: true };
+    }
+    return {};
+  }
+
+  /**
+   * 修改密码-确认前后密码是否一致。
+   */
+  updatePwdConfirmValidator = (control: FormControl): { [s: string]: boolean } => {
+    if (!control.value) {
+      return { error: true, required: true };
+    } else if (control.value !== this.modifyPwdForm.controls.password.value) {
       return { confirm: true, error: true };
     }
     return {};
@@ -365,12 +399,43 @@ export class UserManageComponent implements OnInit {
    */
   updateUserPwd(userId: string): void {
     this.isShowModifyPwdModal = true;
+    this.selectedUserId = userId;
   }
 
   /**
    * 确定更新密码操作。
    */
   updateUserPwdHandleOk(): void {
+    if (this.modifyPwdForm.valid) { // 前端通过所有输入校验
+      this.isPwdModalOkLoading = true;
+      const value = this.modifyPwdForm.value;
+      const  vUserPwdReq: VUserPwdReq = {
+        userId: this.selectedUserId,
+        oldPassword: value.oldPassword,
+        password: value.password,
+        confirmPassword: value.confirm
+      };
+      console.log(vUserPwdReq);
+      this.userManageService.updateUserPassword(vUserPwdReq)
+        .ok(data => {
+          if (data) {
+            this.uiHelper.msgTipSuccess('更改用户密码成功');
+            this.updateUserPwdHandleCancel();
+            this.isShowModifyPwdModal = false;
+          } else {
+            this.uiHelper.msgTipError('更改用户密码失败');
+          }
+        }).fail(error => {
+          this.uiHelper.msgTipError(error.msg);
+      }).final(() => {
+        this.isPwdModalOkLoading = false;
+      });
+    } else {
+      for (const key in this.modifyPwdForm.controls) {
+        this.modifyPwdForm.controls[key].markAsDirty();
+        this.modifyPwdForm.controls[key].updateValueAndValidity();
+      }
+    }
   }
 
   /**
@@ -378,7 +443,28 @@ export class UserManageComponent implements OnInit {
    */
   updateUserPwdHandleCancel(): void {
     this.isShowModifyPwdModal = false;
+    this.selectedUserId = null;
     this.modifyPwdForm.reset();
+  }
+
+  /**
+   * 重置用户密码。
+   * @param userId 用户id
+   */
+  resetUserPwd(userId: string): void {
+    this.defaultBusService.showLoading(true);
+    this.userManageService.resetUserPassword(userId)
+      .ok(data => {
+        if (data) {
+          this.uiHelper.msgTipSuccess('重置密码成功');
+        } else {
+          this.uiHelper.msgTipError('重置用户密码失败');
+        }
+      }).fail(error => {
+        this.uiHelper.msgTipError(error.msg);
+    }).final(() => {
+      this.defaultBusService.showLoading(false);
+    });
   }
 
   /**
@@ -400,19 +486,20 @@ export class UserManageComponent implements OnInit {
       return;
     }
 
-    const userId = checkIds[0];
+    this.selectedUserId = checkIds[0];
     // 获取部门角色
-    this.userManageService.getUserCanSelectRoles(userId)
+    this.userManageService.getUserCanSelectRoles(this.selectedUserId)
       .ok(data => {
         this.roleList = data;
 
         // 获取用户角色
-        this.userManageService.getRolesByUserId(userId)
+        this.userManageService.getRolesByUserId(this.selectedUserId)
           .ok(data1 => {
               this.userRoleList = data1;
-              this.isShowUserRolesModal = true;
           });
       });
+
+    this.isShowUserRolesModal = true;
   }
 
   /**
@@ -432,14 +519,40 @@ export class UserManageComponent implements OnInit {
     return b;
   }
 
+  /**
+   * 确定更改用户用户角色。
+   * @param value 选择的角色列表。
+   */
   setUserRoleOnChange(value: string[]): void {
     console.log(value);
+    this.userRoleCheckedList = value;
   }
 
   /**
    * 确定设置用户角色操作。
    */
   setUserRolesHandleOk(): void {
+    if (!this.userRoleCheckedList || this.userRoleCheckedList.length === 0) {
+      this.uiHelper.msgTipWarning('没有选择要更改的角色！');
+      return;
+    }
+    this.isUserRolesModalOkLoading = true;
+    this.userManageService.addUserRoles(this.selectedUserId, this.userRoleCheckedList)
+      .ok(data => {
+          if (data) {
+            this.uiHelper.msgTipSuccess('设置用户角色成功');
+            this.isShowUserRolesModal = false;
+            this.mapOfCheckedId = {};
+            this.refreshStatus();
+            this.setUserRolesHandleCancel();
+          } else {
+            this.uiHelper.msgTipError('设置角色失败');
+          }
+      }).fail(error => {
+        this.uiHelper.msgTipError(error.msg);
+    }).final(() => {
+      this.isUserRolesModalOkLoading = false;
+    });
   }
 
   /**
@@ -448,6 +561,9 @@ export class UserManageComponent implements OnInit {
   setUserRolesHandleCancel(): void {
     this.isShowUserRolesModal = false;
     this.roleList = [];
+    this.userRoleList = [];
+    this.userRoleCheckedList = null;
+    this.selectedUserId = null;
   }
 
   /**
