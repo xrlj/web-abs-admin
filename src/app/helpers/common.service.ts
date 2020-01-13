@@ -14,11 +14,11 @@ export class CommonService {
    * @param appType1 应用类型。
    */
   getAllAppList(appType1?: number): any {
-    if (appType1) {
+    if (appType1 === null || appType1 === undefined) {
+      return  this.api.get(ApiPath.usercentral.appInfoApi.getAll);
+    } else {
       const par = {appType: appType1};
       return this.api.get(ApiPath.usercentral.appInfoApi.getAll, par);
-    } else {
-      return  this.api.get(ApiPath.usercentral.appInfoApi.getAll);
     }
   }
 }

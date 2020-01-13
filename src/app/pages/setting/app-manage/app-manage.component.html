@@ -1,4 +1,4 @@
-<nz-card class="card-content" nzTitle="用户列表">
+<nz-card class="card-content" nzTitle="应用列表">
   <div class="card-content-action">
     <nz-input-group [nzSuffix]="appNameSuffixTemplate">
       <input type="text" nz-input [(ngModel)]="appName" placeholder="应用名称"/>
@@ -54,17 +54,17 @@
           [nzDisabled]="data.disabled"
           (nzCheckedChange)="refreshStatus()"
         ></td>
-        <td nzAlign="center">{{ data.username }}</td>
-        <td nzAlign="center">{{ data.deptName }}</td>
-        <td nzAlign="center">{{ data.email }}</td>
-        <td nzAlign="center">{{ data.mobile }}</td>
-        <td nzAlign="center">{{ data.sexTypeName }}</td>
-        <td nzAlign="center">{{ data.statusName}}</td>
-        <td nzAlign="center">{{ data.dateCreated }}</td>
-        <td nzAlign="center" [ngSwitch]="data?.status">
-          <a (click)="editUser(data.userId)">编辑</a>
+        <td nzAlign="center">{{ data.appId }}</td>
+        <td nzAlign="center">{{ data.appName }}</td>
+        <td nzAlign="center">{{ data.appSecret }}</td>
+        <td nzAlign="center">{{data.appTypeName}}</td>
+        <td nzAlign="center">{{ data.checkStatusName }}</td>
+        <td nzAlign="center">{{ data.dateCreated}}</td>
+        <td nzAlign="center">{{ data.description }}</td>
+        <td nzAlign="center">
+          <a (click)="editApp(data.id)">编辑</a>
           <nz-divider nzType="vertical"></nz-divider>
-          <a (click)="disableUser(data.userId)">删除</a>
+          <a (click)="delApp(data.id)">删除</a>
         </td>
       </tr>
       </tbody>
@@ -84,3 +84,55 @@
   (click)="appName = null"
 ></i
 ></ng-template>
+
+<!--新增、编辑-->
+<nz-modal *ngIf="isShowAddOrEditModal"
+          [(nzVisible)]="isShowAddOrEditModal"
+          nzWidth="800"
+          [nzMaskClosable]="false"
+          [nzTitle]="modalType === 1 ? '新增' : '修改'"
+          (nzOnCancel)="handleCancel()"
+          (nzOnOk)="handleOk()"
+          [nzOkLoading]="isModalOkLoading">
+
+  <form nz-form [formGroup]="addOrEditForm">
+    <!--引用名称-->
+    <nz-form-item>
+      <nz-form-label [nzSm]="3" [nzXs]="24" nzFor="appName" nzRequired>名称</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24">
+        <input nz-input id="appName" formControlName="appName" placeholder="应用名称"/>
+        <nz-form-explain *ngIf="addOrEditForm.get('appName')?.dirty && addOrEditForm.get('appName')?.errors">应用名称不为空!
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <!--应用类别-->
+    <nz-form-item>
+      <nz-form-label [nzSm]="3" [nzXs]="24" nzRequired>类别</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24">
+        <nz-radio-group formControlName="appType">
+          <label nz-radio nzValue="0">内部系统</label>
+          <label nz-radio nzValue="1">外部系统</label>
+        </nz-radio-group>
+      </nz-form-control>
+    </nz-form-item>
+    <!--用户列表-->
+    <nz-form-item *ngIf="addOrEditForm.value.appType === '1'">
+      <nz-form-label [nzSm]="3" [nzXs]="24" nzFor="owner" nzRequired>用户</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24">
+        <nz-select id="owner" formControlName="owner" [ngModel]="null" nzPlaceHolder="请选择用户">
+          <nz-option nzLabel="张三" nzValue="1"></nz-option>
+          <nz-option nzLabel="李四" nzValue="2"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <!--描述-->
+    <nz-form-item>
+      <nz-form-label [nzSm]="3" [nzXs]="24" nzRequired>描述</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24" nzErrorTip="描述不能为空">
+        <textarea formControlName="description" nz-input rows="2" placeholder="描述,不超过200字"></textarea>
+      </nz-form-control>
+    </nz-form-item>
+
+  </form>
+
+</nz-modal>
