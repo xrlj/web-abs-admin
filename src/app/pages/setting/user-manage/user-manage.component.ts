@@ -7,7 +7,6 @@ import {DepartmentService} from '../department-manage/department.service';
 import {UIHelper} from '../../../helpers/ui-helper';
 import {Utils} from '../../../helpers/utils';
 import {JwtKvEnum} from '../../../helpers/enum/jwt-kv-enum';
-import {RoleManageService} from '../role-manage/role-manage.service';
 import {VRoleResp} from '../../../helpers/vo/resp/v-role-resp';
 import {UserManageService} from './user-manage.service';
 import {VUserSearchReq} from '../../../helpers/vo/req/v-user-search-req';
@@ -115,7 +114,8 @@ export class UserManageComponent implements OnInit {
       this.pageIndex = 1;
     }
     this.loading = true;
-    this.userManageService.getEtpUsers(this.vUserSearchReq)
+    this.vUserSearchReq.etpId = this.utils.getJwtTokenClaim(JwtKvEnum.EnterpriseId);
+    this.userManageService.getUserList(this.vUserSearchReq)
       .ok(data => {
         this.pageIndex = data.pageIndex;
         this.pageSize = data.pageSize;

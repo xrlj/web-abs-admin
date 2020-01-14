@@ -119,9 +119,18 @@
     <nz-form-item *ngIf="addOrEditForm.value.appType === '1'">
       <nz-form-label [nzSm]="3" [nzXs]="24" nzFor="owner" nzRequired>用户</nz-form-label>
       <nz-form-control [nzSm]="10" [nzXs]="24">
-        <nz-select id="owner" formControlName="owner" [ngModel]="null" nzPlaceHolder="请选择用户">
-          <nz-option nzLabel="张三" nzValue="1"></nz-option>
-          <nz-option nzLabel="李四" nzValue="2"></nz-option>
+        <nz-select
+          id="owner"
+          formControlName="owner"
+          nzShowSearch
+          nzServerSearch
+          [(ngModel)]="userSelectedValue"
+          [nzShowArrow]="false"
+          [nzFilterOption]="nzFilterOption"
+          (nzOnSearch)="searchUser($event)"
+          nzPlaceHolder="请选择用户"
+        >
+          <nz-option *ngFor="let o of userListOfOption" [nzLabel]="o.text" [nzValue]="o.value"> </nz-option>
         </nz-select>
       </nz-form-control>
     </nz-form-item>

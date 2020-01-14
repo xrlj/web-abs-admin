@@ -13,4 +13,8 @@ export interface VUserSearchReq extends VPageReq {
    * 所属部门id
    */
   deptId?: string;
+  /**
+   * 企业id。
+   */
+  etpId?: string;
 }

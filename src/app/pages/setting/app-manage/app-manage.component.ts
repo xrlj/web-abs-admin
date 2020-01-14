@@ -4,6 +4,7 @@ import {AppManageService} from './app-manage.service';
 import {AppCheckStatusEnum} from '../../../helpers/enum/app-check-status-enum';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import {UIHelper} from '../../../helpers/ui-helper';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-app-manage',
@@ -33,9 +34,12 @@ export class AppManageComponent implements OnInit {
   isShowAddOrEditModal = false;
   modalType = 1; // 1-新增；2-编辑
   isModalOkLoading = false;
+  userSelectedValue = null;
+  userListOfOption: Array<{ value: string; text: string }> = [];
+  nzFilterOption = () => true;
 
   constructor(private fb: FormBuilder, private appManageService: AppManageService,
-              private uiHelper: UIHelper) {
+              private uiHelper: UIHelper, private httpClient: HttpClient) {
     // 新增编辑对话框
     this.addOrEditForm = this.fb.group({
       appName: [null, [Validators.required]],
@@ -132,6 +136,24 @@ export class AppManageComponent implements OnInit {
     this.modalType = 1;
     this.addOrEditForm.reset();
     this.addOrEditForm.patchValue({appType: '0'});
+  }
+
+  /**
+   * 搜索选择用户。
+   */
+  searchUser(value: string): void {
+    this.httpClient
+      .jsonp<{ result: Array<[string, string]> }>(`https://suggest.taobao.com/sug?code=utf-8&q=${value}`, 'callback')
+      .subscribe(data => {
+        const listOfOption: Array<{ value: string; text: string }> = [];
+        data.result.forEach(item => {
+          listOfOption.push({
+            value: item[0],
+            text: item[0]
+          });
+        });
+        this.userListOfOption = listOfOption;
+      });
   }
   /*============== 新增、编辑 end ===============*/
 

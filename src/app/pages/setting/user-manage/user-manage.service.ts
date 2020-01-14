@@ -40,8 +40,8 @@ export class UserManageService {
    * 获取企业下所有用户。
    * @param body 请求体。
    */
-  getEtpUsers(body: any): any {
-    return this.api.post(ApiPath.usercentral.userApi.getEtpUsers, body);
+  getUserList(body: any): any {
+    return this.api.post(ApiPath.usercentral.userApi.getUserList, body);
   }
 
   /**
