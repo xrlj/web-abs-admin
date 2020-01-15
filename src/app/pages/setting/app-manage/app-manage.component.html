@@ -3,6 +3,10 @@
     <nz-input-group [nzSuffix]="appNameSuffixTemplate">
       <input type="text" nz-input [(ngModel)]="appName" placeholder="应用名称"/>
     </nz-input-group>
+    <nz-select nzShowSearch nzAllowClear nzPlaceHolder="应用类型" [(ngModel)]="appType" style="min-width: 200px">
+      <nz-option [nzLabel]="'内部系统'" [nzValue]="0"></nz-option>
+      <nz-option [nzLabel]="'对外开放系统'" [nzValue]="1"></nz-option>
+    </nz-select>
     <button nz-button nzType="default" (click)="search(true)"><i nz-icon nzType="search"></i>查询</button>
     <button nz-button nzType="primary" (click)="addModalShow()"><i nz-icon type="plus"></i>新增</button>
     <button nz-button nzType="danger" (click)="delApp()"><i nz-icon type="delete"></i>删除</button>
@@ -50,7 +54,7 @@
       <tr *ngFor="let data of table['data']">
         <td
           nzShowCheckbox
-          [(nzChecked)]="mapOfCheckedId[data.userId]"
+          [(nzChecked)]="mapOfCheckedId[data.id]"
           [nzDisabled]="data.disabled"
           (nzCheckedChange)="refreshStatus()"
         ></td>
@@ -62,7 +66,7 @@
         <td nzAlign="center">{{ data.dateCreated}}</td>
         <td nzAlign="center">{{ data.description }}</td>
         <td nzAlign="center">
-          <a (click)="editApp(data.id)">编辑</a>
+          <a (click)="editApp(data.appId)">编辑</a>
           <nz-divider nzType="vertical"></nz-divider>
           <a (click)="delApp(data.id)">删除</a>
         </td>
@@ -109,16 +113,16 @@
     <nz-form-item>
       <nz-form-label [nzSm]="3" [nzXs]="24" nzRequired>类别</nz-form-label>
       <nz-form-control [nzSm]="10" [nzXs]="24">
-        <nz-radio-group formControlName="appType">
+        <nz-radio-group formControlName="appType" (ngModelChange)="appTypeSelectEvent($event)" [nzDisabled]="modalType === 2 ? true : false">
           <label nz-radio nzValue="0">内部系统</label>
           <label nz-radio nzValue="1">外部系统</label>
         </nz-radio-group>
       </nz-form-control>
     </nz-form-item>
     <!--用户列表-->
-    <nz-form-item *ngIf="addOrEditForm.value.appType === '1'">
-      <nz-form-label [nzSm]="3" [nzXs]="24" nzFor="owner" nzRequired>用户</nz-form-label>
-      <nz-form-control [nzSm]="10" [nzXs]="24">
+    <nz-form-item *ngIf="addOrEditForm.value.appType === '1' && modalType === 1">
+      <nz-form-label [nzSm]="3" [nzXs]="24" nzRequired>用户</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24" nzErrorTip="所属用户不能为空">
         <nz-select
           id="owner"
           formControlName="owner"
@@ -128,7 +132,7 @@
           [nzShowArrow]="false"
           [nzFilterOption]="nzFilterOption"
           (nzOnSearch)="searchUser($event)"
-          nzPlaceHolder="请选择用户"
+          nzPlaceHolder="搜索用户并选择"
         >
           <nz-option *ngFor="let o of userListOfOption" [nzLabel]="o.text" [nzValue]="o.value"> </nz-option>
         </nz-select>

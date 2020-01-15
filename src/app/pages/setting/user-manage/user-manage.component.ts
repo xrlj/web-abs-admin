@@ -379,11 +379,12 @@ export class UserManageComponent implements OnInit {
           .ok(data => {
             if (data) {
               this.uiHelper.msgTipSuccess('批量删除用户成功！');
+              this.mapOfCheckedId = {};
               setTimeout(() => {
                 this.search();
               }, 100);
             } else {
-              this.uiHelper.modalError('删除用户失败');
+              this.uiHelper.msgTipError('删除用户失败');
             }
           }).fail(error => {
             this.uiHelper.msgTipError(error.msg);

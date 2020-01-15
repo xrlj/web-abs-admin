@@ -29,6 +29,10 @@ export const ApiPath = {
     appInfoApi: {
       getAll: `/${usercentral}/appInfo/getAll`,
       getAllPage: `/${usercentral}/appInfo/getAllPage`,
+      registerAppInfo: `/${usercentral}/appInfo/registerAppInfo`,
+      update: `/${usercentral}/appInfo/update`,
+      delAppInfo: `/${usercentral}/appInfo/delAppInfo`,
+      getAppInfoByAppId: `/${usercentral}/appInfo/getAppInfoByAppId`
     },
     roleApi: {
       getAll: `/${usercentral}/role/getAll`,

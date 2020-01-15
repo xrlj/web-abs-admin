@@ -5,6 +5,7 @@ import {VUserReq} from '../../../helpers/vo/req/v-user-req';
 import {Utils} from '../../../helpers/utils';
 import {VUserPwdReq} from '../../../helpers/vo/req/v-user-pwd-req';
 import {ContentTypeEnum} from '../../../helpers/http/content-type-enum';
+import {VUserSearchReq} from '../../../helpers/vo/req/v-user-search-req';
 
 @Injectable({
   providedIn: 'root'
@@ -37,11 +38,11 @@ export class UserManageService {
   }
 
   /**
-   * 获取企业下所有用户。
-   * @param body 请求体。
+   * 获取用户列表。
+   * @param vUserSearchReq 请求体。
    */
-  getUserList(body: any): any {
-    return this.api.post(ApiPath.usercentral.userApi.getUserList, body);
+  getUserList(vUserSearchReq: VUserSearchReq): any {
+    return this.api.post(ApiPath.usercentral.userApi.getUserList, vUserSearchReq);
   }
 
   /**

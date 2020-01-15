@@ -4,7 +4,8 @@ export interface VAppInfoResp {
   appName: string;
   appSecret: string;
   checkStatus: number;
-  appType: number;
+  appTypeValue: number;
+  appTypeName: string;
   description: string;
   disabled?: boolean;
 }
