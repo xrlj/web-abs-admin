@@ -1,1 +1,89 @@
-<p>permission-manage works!</p>
+<nz-card class="card-content" nzTitle="权限列表">
+  <div class="card-content-action">
+    <nz-input-group [nzSuffix]="appNameSuffixTemplate">
+      <input type="text" nz-input [(ngModel)]="permissionName" placeholder="权限名称名称"/>
+    </nz-input-group>
+    <button nz-button nzType="default" (click)="search(true)"><i nz-icon nzType="search"></i>查询</button>
+    <button nz-button nzType="primary" (click)="addOrEditModalShow(1)"><i nz-icon type="plus"></i>新增</button>
+    <button nz-button nzType="danger" (click)="del()"><i nz-icon type="delete"></i>删除</button>
+  </div>
+
+  <div class="card-content-table">
+    <nz-table
+      #table
+      nzShowPagination
+      nzShowSizeChanger
+      nzBordered
+      [nzFrontPagination]="false"
+      [nzData]="listOfAllData"
+      [nzLoading]="loading"
+      [nzTotal]="total"
+      [(nzPageIndex)]="pageIndex"
+      [(nzPageSize)]="pageSize"
+      (nzPageIndexChange)="search()"
+      (nzPageSizeChange)="search(true)"
+      (nzCurrentPageDataChange)="currentPageDataChange($event)"
+    >
+      <thead>
+      <tr>
+        <th
+          nzShowCheckbox
+          [(nzChecked)]="isAllDisplayDataChecked"
+          [nzIndeterminate]="isIndeterminate"
+          (nzCheckedChange)="checkAll($event)"
+        ></th>
+        <th nzWidth="25%" nzAlign="center">权限名称</th>
+        <th nzWidth="25%" nzAlign="center">描述</th>
+        <th nzWidth="20%" nzAlign="center">添加人</th>
+        <th nzWidth="20%" nzAlign="center"
+            nzShowSort
+        >
+          创建时间
+        </th>
+        <th nzWidth="10%" nzAlign="center">操作</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let data of table['data']">
+        <td
+          nzShowCheckbox
+          [(nzChecked)]="mapOfCheckedId[data.id]"
+          [nzDisabled]="data.disabled"
+          (nzCheckedChange)="refreshStatus()"
+        ></td>
+        <td nzAlign="center">{{ data.id }}</td>
+        <td nzAlign="center">{{ data.permissionName }}</td>
+        <td nzAlign="center">{{ data.description }}</td>
+        <td nzAlign="center">{{data.operatorUser}}</td>
+        <td nzAlign="center">{{ data.dateCreated}}</td>
+        <td nzAlign="center">
+          <a (click)="editApp(data.appId)">编辑</a>
+        </td>
+      </tr>
+      </tbody>
+    </nz-table>
+  </div>
+</nz-card>
+
+<ng-template #appNameSuffixTemplate
+><i
+  nz-icon
+  nz-tooltip
+  class="ant-input-clear-icon"
+  nzTheme="fill"
+  nzType="close-circle"
+  *ngIf="permissionName"
+  (click)="permissionName = null"
+></i
+></ng-template>
+
+<!--新增、编辑-->
+<nz-modal *ngIf="isShowAddOrEditModal"
+          [(nzVisible)]="isShowAddOrEditModal"
+          nzWidth="800"
+          [nzMaskClosable]="false"
+          [nzTitle]="modalType === 1 ? '新增' : '修改'"
+          (nzOnCancel)="handleCancel()"
+          (nzOnOk)="handleOk()"
+          [nzOkLoading]="isModalOkLoading">
+</nz-modal>
