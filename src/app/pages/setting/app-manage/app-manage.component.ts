@@ -57,7 +57,7 @@ export class AppManageComponent implements OnInit {
   nzFilterOption = () => true;
 
   ngOnInit() {
-    this.search();
+    this.search(true);
   }
 
   /*=========== 列表 start ============*/

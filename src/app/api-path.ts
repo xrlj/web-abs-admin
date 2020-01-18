@@ -47,6 +47,13 @@ export const ApiPath = {
       del: `/${usercentral}/dept/del`,
       getById: `/${usercentral}/dept/getById`,
       getAll: `/${usercentral}/dept/getAll`
+    },
+    rolePermissions: {
+      addPermission: `/${usercentral}/rolePermissions/addPermission`,
+      updatePermission: `/${usercentral}/rolePermissions/updatePermission`,
+      getPermissionById: `/${usercentral}/rolePermissions/getPermissionById`,
+      getPermissionListPage: `/${usercentral}/rolePermissions/getPermissionListPage`,
+      delPermission: `/${usercentral}/rolePermissions/delPermission`
     }
   }
 };

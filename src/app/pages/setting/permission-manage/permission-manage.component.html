@@ -51,13 +51,14 @@
           [nzDisabled]="data.disabled"
           (nzCheckedChange)="refreshStatus()"
         ></td>
-        <td nzAlign="center">{{ data.id }}</td>
         <td nzAlign="center">{{ data.permissionName }}</td>
         <td nzAlign="center">{{ data.description }}</td>
-        <td nzAlign="center">{{data.operatorUser}}</td>
+        <td nzAlign="center">{{data.operatorUserName}}</td>
         <td nzAlign="center">{{ data.dateCreated}}</td>
         <td nzAlign="center">
-          <a (click)="editApp(data.appId)">编辑</a>
+          <a (click)="edit(data.id)">编辑</a>
+          <nz-divider nzType="vertical"></nz-divider>
+          <a (click)="setPermissionRoles(data.id)">分配角色</a>
         </td>
       </tr>
       </tbody>
@@ -86,4 +87,106 @@
           (nzOnCancel)="handleCancel()"
           (nzOnOk)="handleOk()"
           [nzOkLoading]="isModalOkLoading">
+
+  <form nz-form [formGroup]="addOrEditForm">
+    <!--引用名称-->
+    <nz-form-item>
+      <nz-form-label [nzSm]="3" [nzXs]="24" nzRequired>名称</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24" nzErrorTip="权限名称不能为空">
+        <input nz-input id="permissionName" formControlName="permissionName" placeholder="权限名称（服务名:控制器名:方法名）：serviceName:user:save"/>
+      </nz-form-control>
+    </nz-form-item>
+    <!--描述-->
+    <nz-form-item>
+      <nz-form-label [nzSm]="3" [nzXs]="24" nzRequired>描述</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24" nzErrorTip="描述不能为空">
+        <textarea formControlName="description" nz-input rows="2" placeholder="描述,不超过500字"></textarea>
+      </nz-form-control>
+    </nz-form-item>
+
+  </form>
 </nz-modal>
+
+<!--分配角色-->
+<!--<nz-modal *ngIf="isShowSetRoleModal"
+          [(nzVisible)]="isShowSetRoleModal"
+          nzWidth="800"
+          [nzMaskClosable]="false"
+          [nzTitle]="'分配角色'"
+          (nzOnCancel)="handleSetRoleModalCancel()"
+          (nzOnOk)="handleSetRoleModalOk()"
+          [nzOkLoading]="isSetRoleModalOkLoading">
+
+    <div class="list-action">
+      <nz-input-group [nzSuffix]="suffixTemplate">
+        <input type="text" nz-input [(ngModel)]="roleName" placeholder="角色名称"/>
+      </nz-input-group>
+      <button nz-button nzType="default" (click)="search(true)"><i nz-icon nzType="search"></i>查询</button>
+    </div>
+    <div class="list-table">
+      <nz-table
+        #roleTable
+        nzShowPagination
+        nzShowSizeChanger
+        nzBordered
+        [nzFrontPagination]="false"
+        [nzData]="listOfAllData"
+        [nzLoading]="loading"
+        [nzTotal]="total"
+        [(nzPageIndex)]="pageIndex"
+        [(nzPageSize)]="pageSize"
+        (nzPageIndexChange)="search()"
+        (nzPageSizeChange)="search(true)"
+        (nzCurrentPageDataChange)="currentPageDataChange($event)"
+      >
+        <thead>
+        <tr>
+          <th
+            nzShowCheckbox
+            [(nzChecked)]="isAllDisplayDataChecked"
+            [nzIndeterminate]="isIndeterminate"
+            (nzCheckedChange)="checkAll($event)"
+          ></th>
+          <th nzWidth="30%" nzAlign="center">名称</th>
+          <th nzWidth="30%" nzAlign="center">备注</th>
+          <th nzWidth="20%" nzAlign="center"
+              nzShowSort
+          >
+            创建时间
+          </th>
+          <th nzWidth="20%" nzAlign="center">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let data of roleTable['data']">
+          <td
+            nzShowCheckbox
+            [(nzChecked)]="mapOfCheckedId[data.id]"
+            [nzDisabled]="data.disabled"
+            (nzCheckedChange)="refreshStatus()"
+          ></td>
+          <td nzAlign="center">{{ data.roleName }}</td>
+          <td nzAlign="center">{{ data.description }}</td>
+          <td nzAlign="center">{{ data.dateCreated }}</td>
+          <td nzAlign="center">
+            <a (click)="editRole(data.id)">编辑</a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a (click)="delRoleSingle(data.id, data.roleName)">删除</a>
+          </td>
+        </tr>
+        </tbody>
+      </nz-table>
+    </div>
+
+  <ng-template #suffixTemplate
+  ><i
+    nz-icon
+    nz-tooltip
+    class="ant-input-clear-icon"
+    nzTheme="fill"
+    nzType="close-circle"
+    *ngIf="roleName"
+    (click)="roleName = null"
+  ></i
+  ></ng-template>
+</nz-modal>-->
