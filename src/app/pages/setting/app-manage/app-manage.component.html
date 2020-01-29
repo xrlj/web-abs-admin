@@ -37,16 +37,16 @@
           (nzCheckedChange)="checkAll($event)"
         ></th>
         <th nzWidth="12%" nzAlign="center">应用ID</th>
-        <th nzWidth="12%" nzAlign="center">应用名称</th>
         <th nzWidth="12%" nzAlign="center">应用密钥</th>
+        <th nzWidth="12%" nzAlign="center">应用名称</th>
         <th nzWidth="12%" nzAlign="center">应用类型</th>
         <th nzWidth="12%" nzAlign="center">状态</th>
+        <th nzWidth="12%" nzAlign="center">应用描述</th>
         <th nzWidth="12%" nzAlign="center"
             nzShowSort
         >
           创建时间
         </th>
-        <th nzWidth="12%" nzAlign="center">应用描述</th>
         <th nzWidth="16%" nzAlign="center">操作</th>
       </tr>
       </thead>
@@ -59,12 +59,12 @@
           (nzCheckedChange)="refreshStatus()"
         ></td>
         <td nzAlign="center">{{ data.appId }}</td>
-        <td nzAlign="center">{{ data.appName }}</td>
         <td nzAlign="center">{{ data.appSecret }}</td>
+        <td nzAlign="center">{{ data.appName }}</td>
         <td nzAlign="center">{{data.appTypeName}}</td>
         <td nzAlign="center">{{ data.checkStatusName }}</td>
-        <td nzAlign="center">{{ data.dateCreated}}</td>
         <td nzAlign="center">{{ data.description }}</td>
+        <td nzAlign="center">{{ data.dateCreated}}</td>
         <td nzAlign="center">
           <a (click)="editApp(data.appId)">编辑</a>
           <nz-divider nzType="vertical"></nz-divider>

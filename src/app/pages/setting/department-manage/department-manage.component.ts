@@ -105,8 +105,9 @@ export class DepartmentManageComponent implements OnInit {
     this.departmentService.getAll(this.utils.getJwtTokenClaim(JwtKvEnum.EnterpriseId))
       .ok(data => {
         this.selectDeptList = data;
-        // this.cutEmptyChildrenToNull(this.listData);
+        // this.cutEmptyChildrenToNull(this.selectDeptList);
         this.uiHelper.setSelectTreeLeaf(this.selectDeptList);
+        console.log(this.selectDeptList);
       })
       .fail(error => {
         console.log(error.msg);

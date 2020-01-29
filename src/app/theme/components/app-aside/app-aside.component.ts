@@ -1,5 +1,4 @@
-import { Component, EventEmitter, OnInit, Input, Output } from '@angular/core';
-import { APP_MENUS } from '../../../mock/app-menu';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Constants} from '../../../helpers/constants';
 import {VMenuResp} from '../../../helpers/vo/resp/v-menu-resp';
 
