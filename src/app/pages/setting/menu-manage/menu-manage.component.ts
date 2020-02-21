@@ -18,12 +18,6 @@ import {VMenuReq} from '../../../helpers/vo/req/v-menu-req';
 })
 export class MenuManageComponent implements OnInit {
 
-  constructor(private menuManageService: MenuManageService,
-              private utils: Utils, private uiHelper: UIHelper,
-              private fb: FormBuilder, private modalService: NzModalService,
-              private commonService: CommonService) {
-  }
-
   appSelected: any;
   appDataList: VAppInfoResp[];
 
@@ -46,8 +40,14 @@ export class MenuManageComponent implements OnInit {
   selectMenu: VMenuResp;
   selectMenuList: VMenuResp[];
 
-  ngOnInit() {
+  constructor(private menuManageService: MenuManageService,
+              private utils: Utils, private uiHelper: UIHelper,
+              private fb: FormBuilder, private modalService: NzModalService,
+              private commonService: CommonService) {
     this.initAddMenuDialog();
+  }
+
+  ngOnInit() {
     this.initData();
   }
 

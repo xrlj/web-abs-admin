@@ -1,7 +1,14 @@
 <!--菜单列表-->
 <nz-card class="content" nzTitle="用户菜单列表" [nzExtra]="extraTemplate">
   <div class="content-action">
-    <nz-select nzShowSearch nzAllowClear nzPlaceHolder="请选择应用系统" [(ngModel)]="appSelected" style="min-width: 200px">
+    <nz-select
+      nzShowSearch
+      nzAllowClear
+      nzPlaceHolder="请选择应用系统"
+      [(ngModel)]="appSelected"
+      (ngModelChange)="getMenuByClientId(0)"
+      style="min-width: 200px"
+    >
       <nz-option *ngFor="let appInfo of appDataList" [nzLabel]="appInfo.appName" [nzValue]="appInfo.appId"></nz-option>
     </nz-select>
     <button nz-button nzType="default" (click)="refreshMenuList()"><i nz-icon nzType="search"></i>查询</button>
@@ -69,7 +76,7 @@
 <nz-modal *ngIf="isShowAdd"
           [(nzVisible)]="isShowAdd"
           nzWidth="800"
-          nzTitle="新增"
+          [nzTitle]="dialogType === 1 ? '新增' : '修改'"
           (nzOnCancel)="handleCancel()"
           (nzOnOk)="handleOk()"
           [nzOkLoading]="isAddOkLoading">

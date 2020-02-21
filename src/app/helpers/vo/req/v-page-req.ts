@@ -2,9 +2,9 @@ export interface VPageReq {
   /**
    * 页码
    */
-  pageIndex: number;
+  pageIndex?: number;
   /**
    * 密码
    */
-  pageSize: number;
+  pageSize?: number;
 }

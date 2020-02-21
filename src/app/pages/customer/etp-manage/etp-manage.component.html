@@ -1,0 +1,171 @@
+<nz-card class="card-list" nzTitle="保理商列表">
+  <div class="card-list-action">
+    <nz-input-group [nzSuffix]="etpCodeSuffixTemplate">
+      <input type="text" nz-input [(ngModel)]="etpSearchVo.etpCode" placeholder="企业编号"/>
+    </nz-input-group>
+    <nz-input-group [nzSuffix]="fullNameSuffixTemplate">
+      <input type="text" nz-input [(ngModel)]="etpSearchVo.fullName" placeholder="企业名称"/>
+    </nz-input-group>
+    <button nz-button nzType="default" (click)="search(true)"><i nz-icon nzType="search"></i>查询</button>
+    <button nz-button nzType="primary" (click)="addModalShow(1)"><i nz-icon type="plus"></i>新增</button>
+    <button nz-button nzType="default"><i nz-icon nzType="export" nzTheme="outline"></i>导出</button>
+  </div>
+  <div class="card-list-table">
+    <nz-table
+      #etpTable
+      nzShowPagination
+      nzShowSizeChanger
+      nzBordered
+      [nzFrontPagination]="false"
+      [nzData]="listOfAllData"
+      [nzLoading]="loading"
+      [nzTotal]="total"
+      [(nzPageIndex)]="pageIndex"
+      [(nzPageSize)]="pageSize"
+      (nzPageIndexChange)="search()"
+      (nzPageSizeChange)="search(true)"
+      (nzCurrentPageDataChange)="currentPageDataChange($event)"
+    >
+      <thead>
+      <tr>
+        <th
+          nzShowCheckbox
+          [(nzChecked)]="isAllDisplayDataChecked"
+          [nzIndeterminate]="isIndeterminate"
+          (nzCheckedChange)="checkAll($event)"
+        ></th>
+        <th nzWidth="12%" nzAlign="center">企业编号</th>
+        <th nzWidth="15%" nzAlign="center">企业名称</th>
+        <th nzWidth="12%" nzAlign="center">联系人</th>
+        <th nzWidth="12%" nzAlign="center">联系电话</th>
+        <th nzWidth="10%" nzAlign="center">状态</th>
+        <th nzWidth="15%" nzAlign="center">注册地址</th>
+        <th nzWidth="12%" nzAlign="center"
+            nzShowSort
+        >
+          创建时间
+        </th>
+        <th nzWidth="12%" nzAlign="center">操作</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let data of etpTable['data']">
+        <td
+          nzShowCheckbox
+          [(nzChecked)]="mapOfCheckedId[data.id]"
+          [nzDisabled]="data.disabled"
+          (nzCheckedChange)="refreshStatus()"
+        ></td>
+        <td nzAlign="center">{{ data.etpCode }}</td>
+        <td nzAlign="center">{{ data.fullName }}</td>
+        <td nzAlign="center">{{ data.linkName }}</td>
+        <td nzAlign="center">{{ data.linkMobile }}</td>
+        <td nzAlign="center"><span [style.color]="uiHelper.setEtpStatusNameColor(data.etpStatus)">{{ data.etpStatusName}}</span></td>
+        <td nzAlign="center">{{ data.dateCreated }}</td>
+        <td nzAlign="center">
+          <div>
+            <a (click)="editEtp(data.id)">编辑</a>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </nz-table>
+  </div>
+</nz-card>
+
+<ng-template #etpCodeSuffixTemplate
+><i
+  nz-icon
+  nz-tooltip
+  class="ant-input-clear-icon"
+  nzTheme="fill"
+  nzType="close-circle"
+  *ngIf="etpSearchVo.etpCode"
+  (click)="etpSearchVo.etpCode = null"
+></i
+></ng-template>
+
+<ng-template #fullNameSuffixTemplate
+><i
+  nz-icon
+  nz-tooltip
+  class="ant-input-clear-icon"
+  nzTheme="fill"
+  nzType="close-circle"
+  *ngIf="etpSearchVo.etpCode"
+  (click)="etpSearchVo.etpCode = null"
+></i
+></ng-template>
+
+<!--新增、编辑-->
+<nz-modal *ngIf="isShowAddOrEditModal"
+          [(nzVisible)]="isShowAddOrEditModal"
+          nzWidth="800"
+          [nzMaskClosable]="false"
+          [nzTitle]="modalType === 1 ? '新增' : '修改'"
+          (nzOnCancel)="handleCancel(modalType)"
+          (nzOnOk)="handleOk()"
+          [nzOkLoading]="isModalOkLoading">
+
+  <form nz-form [formGroup]="addOrEditForm">
+    <!--公司全称-->
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="fullName" nzRequired>公司全称</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24">
+        <input nz-input id="fullName" formControlName="fullName" placeholder="公司全称"/>
+        <nz-form-explain *ngIf="addOrEditForm.get('fullName')?.dirty && addOrEditForm.get('fullName')?.errors">公司全称不为空!
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <!--原始编号-->
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="routerPath">原始编号</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24">
+        <input nz-input id="oriCode" formControlName="oriCode" placeholder="原始编号"/>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24">公司简称</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24">
+        <input nz-input id="shortName" formControlName="shortName" placeholder="公司简称"/>
+      </nz-form-control>
+    </nz-form-item>
+    <!--公司电话-->
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzRequired>公司电话</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24" nzErrorTip="公司电话非空">
+        <input nz-input id="etpPhone" formControlName="etpPhone" placeholder="公司电话"/>
+      </nz-form-control>
+    </nz-form-item>
+    <!--公司传真-->
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24">公司传真</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24">
+        <input nz-input id="fax" formControlName="fax" placeholder="公司传真"/>
+      </nz-form-control>
+    </nz-form-item>
+    <!--联系人-->
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzRequired>联系人姓名</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24" nzErrorTip="联系人姓名非空">
+        <input nz-input id="linkName" formControlName="linkName" placeholder="联系人姓名"/>
+      </nz-form-control>
+    </nz-form-item>
+    <!--联系人手机号码-->
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="linkMobile" nzRequired>联系人手机号码</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24">
+        <input nz-input type="number" id="linkMobile" formControlName="linkMobile" maxlength="11" placeholder="11位手机号码"/>
+        <nz-form-explain *ngIf="addOrEditForm.get('linkMobile')?.dirty && addOrEditForm.get('linkMobile')?.errors">请输入正确手机号码!
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <!--联系人座机电话-->
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24">联系人电话</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24">
+        <input nz-input id="linkPhone" formControlName="linkPhone" placeholder="联系人电话"/>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>

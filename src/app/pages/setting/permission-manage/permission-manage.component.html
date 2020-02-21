@@ -1,5 +1,5 @@
-<nz-card class="card-content" nzTitle="权限列表">
-  <div class="card-content-action">
+<nz-card class="card-list" nzTitle="权限列表">
+  <div class="card-list-action">
     <nz-input-group [nzSuffix]="appNameSuffixTemplate">
       <input type="text" nz-input [(ngModel)]="permissionName" placeholder="权限名称名称"/>
     </nz-input-group>
@@ -8,7 +8,7 @@
     <button nz-button nzType="danger" (click)="del()"><i nz-icon type="delete"></i>删除</button>
   </div>
 
-  <div class="card-content-table">
+  <div class="card-list-table">
     <nz-table
       #table
       nzShowPagination

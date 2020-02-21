@@ -22,11 +22,12 @@ export class AuthInterceptor implements HttpInterceptor {
     } else { // 非登录请求，带上token
       const authToken = localStorage.getItem(Constants.localStorageKey.token);
       if (authToken) { // 已登录
-        const isExpired = this.utils.jwtTokenIsExpired();
+        // 服务端处理token是否过期，避免客户端和服务器时间不一致，或者改动客户端系统时间变成未过期
+        /*const isExpired = this.utils.jwtTokenIsExpired();
         if (isExpired) { // token已经失效
           localStorage.clear();
           this.router.navigateByUrl(AppPath.login);
-        }
+        }*/
       } else { // 未登录
         this.router.navigateByUrl(AppPath.login);
       }

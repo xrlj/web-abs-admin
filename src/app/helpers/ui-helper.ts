@@ -9,6 +9,7 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import {VMenuResp} from './vo/resp/v-menu-resp';
 import { NzTreeNode, NzTreeNodeOptions } from 'ng-zorro-antd';
 import {VDeptResp} from './vo/resp/v-dept-resp';
+import {UserStatusEnum} from './enum/user-status-enum';
 
 @Injectable({
   providedIn: 'root'
@@ -205,6 +206,7 @@ export class UIHelper {
   verifyLoginAndJumpToLogin() {
     const authToken = localStorage.getItem(Constants.localStorageKey.token);
     if (!authToken || this.utils.jwtTokenIsExpired()) { // 未登录或者已失效
+      localStorage.clear();
       this.router.navigateByUrl(AppPath.login);
     }
   }
@@ -214,7 +216,7 @@ export class UIHelper {
    */
   verifyLoginAndJumpToHome() {
     const authToken = localStorage.getItem(Constants.localStorageKey.token);
-    if (authToken && !this.utils.jwtTokenIsExpired()) { // 已登录且未失效
+    if (authToken) { // 已登录
       this.router.navigateByUrl(AppPath.pages);
     } else {
       localStorage.clear();
@@ -309,5 +311,34 @@ export class UIHelper {
         return true;
       });
     }
+  }
+
+  /**
+   * 设置不同状态下。不同颜色样式显示。
+   * @param status 状态。
+   */
+  setEtpStatusNameColor(status: number): string {
+    let color = '';
+    switch (status) {
+      case UserStatusEnum.BLACK:
+        color = 'red';
+        break;
+      case UserStatusEnum.DISABLE:
+        color = 'red';
+        break;
+      case UserStatusEnum.CHECK_FAILURE:
+        color = 'red';
+        break;
+      case UserStatusEnum.CHECK_PASS:
+        color = 'green';
+        break;
+      case UserStatusEnum.VERIFIED_PASS:
+        color = 'green';
+        break;
+      default:
+        color = 'gray';
+        break;
+    }
+    return color;
   }
 }

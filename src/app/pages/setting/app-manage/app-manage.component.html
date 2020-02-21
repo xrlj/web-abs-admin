@@ -1,5 +1,5 @@
-<nz-card class="card-content" nzTitle="应用列表">
-  <div class="card-content-action">
+<nz-card class="card-list" nzTitle="应用列表">
+  <div class="card-list-action">
     <nz-input-group [nzSuffix]="appNameSuffixTemplate">
       <input type="text" nz-input [(ngModel)]="appName" placeholder="应用名称"/>
     </nz-input-group>
@@ -12,7 +12,7 @@
     <button nz-button nzType="danger" (click)="delApp()"><i nz-icon type="delete"></i>删除</button>
   </div>
 
-  <div class="card-content-table">
+  <div class="card-list-table">
     <nz-table
       #table
       nzShowPagination
@@ -36,10 +36,10 @@
           [nzIndeterminate]="isIndeterminate"
           (nzCheckedChange)="checkAll($event)"
         ></th>
-        <th nzWidth="12%" nzAlign="center">应用ID</th>
-        <th nzWidth="12%" nzAlign="center">应用密钥</th>
         <th nzWidth="12%" nzAlign="center">应用名称</th>
         <th nzWidth="12%" nzAlign="center">应用类型</th>
+        <th nzWidth="12%" nzAlign="center">应用ID（appId）</th>
+        <th nzWidth="12%" nzAlign="center">应用密钥（appSecret）</th>
         <th nzWidth="12%" nzAlign="center">状态</th>
         <th nzWidth="12%" nzAlign="center">应用描述</th>
         <th nzWidth="12%" nzAlign="center"
@@ -58,10 +58,10 @@
           [nzDisabled]="data.disabled"
           (nzCheckedChange)="refreshStatus()"
         ></td>
-        <td nzAlign="center">{{ data.appId }}</td>
-        <td nzAlign="center">{{ data.appSecret }}</td>
         <td nzAlign="center">{{ data.appName }}</td>
         <td nzAlign="center">{{data.appTypeName}}</td>
+        <td nzAlign="center">{{ data.appId }}</td>
+        <td nzAlign="center">{{ data.appSecret }}</td>
         <td nzAlign="center">{{ data.checkStatusName }}</td>
         <td nzAlign="center">{{ data.description }}</td>
         <td nzAlign="center">{{ data.dateCreated}}</td>

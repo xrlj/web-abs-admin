@@ -1,5 +1,5 @@
-<nz-card class="list" nzTitle="用户列表">
-  <div class="list-action">
+<nz-card class="card-list" nzTitle="用户列表">
+  <div class="card-list-action">
     <nz-input-group [nzSuffix]="usernameSuffixTemplate">
       <input type="text" nz-input [(ngModel)]="vUserSearchReq.username" placeholder="用户名称"/>
     </nz-input-group>
@@ -14,7 +14,7 @@
     <button nz-button nzType="primary" nzGhost (click)="showSetUserRole()">设置角色</button>
     <button nz-button nzType="default"><i nz-icon nzType="export" nzTheme="outline"></i>导出</button>
   </div>
-  <div class="list-table">
+  <div class="card-list-table">
     <nz-table
       #userTable
       nzShowPagination
@@ -184,7 +184,7 @@
     <nz-form-item>
       <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="mobile" nzRequired>手机号码</nz-form-label>
       <nz-form-control [nzSm]="10" [nzXs]="24">
-        <input nz-input id="mobile" formControlName="mobile" placeholder="11位手机号码"/>
+        <input nz-input id="mobile" formControlName="mobile" maxlength="11" placeholder="11位手机号码"/>
         <nz-form-explain *ngIf="addOrEditForm.get('mobile')?.dirty && addOrEditForm.get('mobile')?.errors">请输入正确手机号码!
         </nz-form-explain>
         <!--<ng-template #mobileErrorTpl let-control>

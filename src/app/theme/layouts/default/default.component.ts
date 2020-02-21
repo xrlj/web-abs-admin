@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {UIHelper} from '../../../helpers/ui-helper';
 import {DefaultBusService} from '../../../helpers/event-bus/default-bus.service';
+import {Constants} from '../../../helpers/constants';
 
 @Component({
   selector: 'app-default',
@@ -23,7 +24,8 @@ export class DefaultComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.uiHelper.verifyLoginAndJumpToLogin();
+    // 服务端处理token是否过期，避免客户端和服务器时间不一致，或者改动客户端系统时间变成未过期
+    // this.uiHelper.verifyLoginAndJumpToLogin();
   }
 
   onToggleCollapsed(evt) {

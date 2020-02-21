@@ -1,5 +1,5 @@
-<nz-card class="list" nzTitle="角色列表">
-  <div class="list-action">
+<nz-card class="card-list" nzTitle="角色列表">
+  <div class="card-list-action">
     <nz-input-group [nzSuffix]="suffixTemplate">
       <input type="text" nz-input [(ngModel)]="roleName" placeholder="角色名称"/>
     </nz-input-group>
@@ -7,7 +7,7 @@
     <button nz-button nzType="primary" (click)="addRole()"><i nz-icon type="plus"></i>新增</button>
     <button nz-button nzType="danger" (click)="delBatch()"><i nz-icon type="delete"></i>删除</button>
   </div>
-  <div class="list-table">
+  <div class="card-list-table">
     <nz-table
       #roleTable
       nzShowPagination

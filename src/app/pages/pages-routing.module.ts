@@ -10,7 +10,7 @@ import {InitComponent} from './init/init.component';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: '/login',
+    redirectTo: 'login',
     pathMatch: 'full'
   },
   {
@@ -29,6 +29,10 @@ const routes: Routes = [
       {
         path: 'navigation',
         loadChildren: './navigation/navigation.module#NavigationModule'
+      },
+      {
+        path: 'customer',
+        loadChildren: './customer/customer.module#CustomerModule'
       },
       {
         path: 'setting',

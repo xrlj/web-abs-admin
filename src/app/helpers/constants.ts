@@ -7,7 +7,7 @@ export const Constants = {
     clientDeviceType: 'BROWSER'
   },
   localStorageKey: {
-    token: 'jwt-token',
+    token: 'm-jwt-token',
     menus: 'user-menus' // 菜单
   }
 };
