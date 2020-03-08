@@ -155,7 +155,7 @@
     <nz-form-item>
       <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="linkMobile" nzRequired>联系人手机号码</nz-form-label>
       <nz-form-control [nzSm]="10" [nzXs]="24">
-        <input nz-input type="number" id="linkMobile" formControlName="linkMobile" maxlength="11" placeholder="11位手机号码"/>
+        <input nz-input id="linkMobile" formControlName="linkMobile" maxlength="11" placeholder="11位手机号码"/>
         <nz-form-explain *ngIf="addOrEditForm.get('linkMobile')?.dirty && addOrEditForm.get('linkMobile')?.errors">请输入正确手机号码!
         </nz-form-explain>
       </nz-form-control>
