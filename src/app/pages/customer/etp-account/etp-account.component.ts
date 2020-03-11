@@ -13,6 +13,10 @@ import { FormBuilder } from '@angular/forms';
 })
 export class EtpAccountComponent implements OnInit {
 
+  // tab
+  tabIndex = 0;
+  tabTitle = ['保理商', '核心企业', '成员公司', '供应商', '资金方'];
+
   // 表格
   isAllDisplayDataChecked = false;
   isIndeterminate = false;

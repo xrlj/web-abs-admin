@@ -2,11 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {UIHelper} from '../../../helpers/ui-helper';
 import {Utils} from '../../../helpers/utils';
-import {UserStatusEnum} from '../../../helpers/enum/user-status-enum';
 import {DefaultBusService} from '../../../helpers/event-bus/default-bus.service';
 import {VCustomerEtpResp} from '../../../helpers/vo/resp/v-customer-etp-resp';
 import {VCustomerEtpReq} from '../../../helpers/vo/req/v-customer-etp-req';
-import {VUserResp} from '../../../helpers/vo/resp/v-user-resp';
 
 @Component({
   selector: 'app-etp-manage',
@@ -14,6 +12,10 @@ import {VUserResp} from '../../../helpers/vo/resp/v-user-resp';
   styleUrls: ['./etp-manage.component.less']
 })
 export class EtpManageComponent implements OnInit {
+
+  // tab
+  tabIndex = 0;
+  tabTitle = ['保理商', '核心企业', '成员公司', '供应商', '资金方'];
 
   // 表格
   isAllDisplayDataChecked = false;
