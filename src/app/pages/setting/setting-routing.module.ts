@@ -6,6 +6,11 @@ import {AppManageComponent} from './app-manage/app-manage.component';
 import {MenuManageComponent} from './menu-manage/menu-manage.component';
 import {RoleManageComponent} from './role-manage/role-manage.component';
 import {PermissionManageComponent} from './permission-manage/permission-manage.component';
+import {ParameterManageComponent} from './parameter-manage/parameter-manage.component';
+import {DictionaryComponent} from './dictionary-manage/dictionary/dictionary.component';
+import {DictionaryTypeComponent} from './dictionary-manage/dictionary-type/dictionary-type.component';
+import {FileManageComponent} from './file-manage/file-manage.component';
+import {ZhAreaManageComponent} from './zh-area-manage/zh-area-manage.component';
 
 const routes: Routes = [
   { path: 'user', component: UserManageComponent },
@@ -13,7 +18,13 @@ const routes: Routes = [
   { path: 'app', component: AppManageComponent },
   { path: 'menu', component: MenuManageComponent },
   { path: 'role', component: RoleManageComponent },
-  { path: 'permission', component: PermissionManageComponent }
+  { path: 'parameter', component: ParameterManageComponent },
+  { path: 'permission', component: PermissionManageComponent },
+  { path: 'parameter', component: ParameterManageComponent },
+  { path: 'dictionary', component: DictionaryComponent},
+  { path: 'dictionary-type', component: DictionaryTypeComponent},
+  { path: 'file', component: FileManageComponent},
+  { path: 'zh-area', component: ZhAreaManageComponent},
 ];
 
 @NgModule({

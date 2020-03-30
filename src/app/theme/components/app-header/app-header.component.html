@@ -34,7 +34,8 @@
     <nz-dropdown [nzPlacement]="'bottomRight'">
       <div nz-dropdown class="user-name">
         <nz-avatar nzIcon="user"></nz-avatar>
-        <span>超级管理员</span>
+        <span>{{utils.getJwtTokenClaim(jwtKvEnum.Username)}}</span>
+        <i nz-icon nzType="down" style="margin-left: 3px"></i>
       </div>
 
       <ul nz-menu nzSelectable>

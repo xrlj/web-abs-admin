@@ -80,12 +80,6 @@ export class Utils {
       case JwtKvEnum.AppType:
         return decodeToken.appType;
         break;
-      case JwtKvEnum.ClientDeviceType:
-        return decodeToken.clientDeviceType;
-        break;
-      case JwtKvEnum.ClientId:
-        return decodeToken.clientid;
-        break;
       case JwtKvEnum.UserId:
         return decodeToken.userId;
         break;

@@ -13,6 +13,7 @@ import {DefaultBusService} from '../../../helpers/event-bus/default-bus.service'
 import {VMenuResp} from '../../../helpers/vo/resp/v-menu-resp';
 import {VDeptResp} from '../../../helpers/vo/resp/v-dept-resp';
 import {DepartmentService} from '../department-manage/department.service';
+import {Constants} from '../../../helpers/constants';
 
 @Component({
   selector: 'app-role-manage',
@@ -127,7 +128,7 @@ export class RoleManageComponent implements OnInit {
   addRole(): void {
     this.dialogType = 1;
     this.isShowDialog = true;
-    this.menuManageService.getMenusByClientId(this.utils.getJwtTokenClaim(JwtKvEnum.ClientId), 0).ok(data => {
+    this.menuManageService.getMenusByClientId(Constants.appInfo.clientId, 0).ok(data => {
       this.nzTreeMenusData = data;
       this.uiHelper.setMenuPerDataLeaf(this.nzTreeMenusData);
     }).fail(error => {
@@ -160,7 +161,7 @@ export class RoleManageComponent implements OnInit {
           roleDesc: this.roleInfo.description
         });
         // 设置菜单授权
-        this.menuManageService.getMenusByClientId(this.utils.getJwtTokenClaim(JwtKvEnum.ClientId), 0)
+        this.menuManageService.getMenusByClientId(Constants.appInfo.clientId, 0)
           .ok(data1 => {
             this.nzTreeMenusData = data1;
             // 设置选中
@@ -273,7 +274,7 @@ export class RoleManageComponent implements OnInit {
     }
     const vRoleReq: VRoleReq = {
       enterpriseId: this.utils.getJwtTokenClaim(JwtKvEnum.EnterpriseId),
-      clientId: this.utils.getJwtTokenClaim(JwtKvEnum.ClientId),
+      clientId: Constants.appInfo.clientId,
       roleName: this.addOrEditForm.value.roleName,
       description: this.addOrEditForm.value.roleDesc,
       menuIds: this.checkedMenuIds,

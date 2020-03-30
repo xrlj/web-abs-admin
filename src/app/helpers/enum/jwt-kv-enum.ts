@@ -3,7 +3,5 @@ export enum JwtKvEnum {
   UserType = 'userType',
   UserId = 'userId',
   EnterpriseId = 'etpId',
-  ClientId = 'clientid',
-  ClientDeviceType = 'clientDeviceType',
   AppType = 'appType'
 }

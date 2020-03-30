@@ -150,6 +150,30 @@ export class MenuManageComponent implements OnInit {
     });
   }
 
+  addMenuForCurrent(menuId: string): void {
+    if (!this.appSelected) {
+      this.uiHelper.msgTipWarning('请先选择应用系统');
+      return;
+    }
+    this.isShowAdd = true;
+    this.menuManageService.getMenuById(menuId)
+      .ok(data => {
+        // 设置上级菜单下拉
+        this.menuManageService.getMenusByClientId(this.appSelected, 1)
+          .ok(data1 => {
+          this.selectMenuList = data1;
+          this.dealMenuList(this.selectMenuList);
+          this.getMenuById(data.id, this.selectMenuList);
+          if (this.selectMenu) {
+            this.selectMenuKey = this.selectMenu.key;
+          }
+          this.uiHelper.setMenuPerDataLeaf(this.selectMenuList);
+        }).fail(error => {
+        });
+      }).fail(error => {
+    });
+  }
+
   /**
    * 编辑菜单。
    */
@@ -314,14 +338,15 @@ export class MenuManageComponent implements OnInit {
    * 重新初始化各个值和控件。
    */
   resetInit() {
+    this.dialogType = 1;
     this.isShowAdd = false;
     this.isAddOkLoading = false;
     this.radioValue = 'A';
     this.menuDetails = null;
     this.selectMenuList = null;
     this.selectMenuKey = null;
-    this.dialogType = 1;
     this.selectMenu = null;
+    this.selectMenuId = null;
     this.resetAddMenuDialog();
   }
 

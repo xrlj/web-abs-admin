@@ -18,12 +18,12 @@
   <nz-table #expandTable [nzData]="menuList" [nzShowPagination]="false" [nzLoading]="isRefreshMenuList" nzBordered>
     <thead>
     <tr>
-      <th nzWidth="20%" nzAlign="center">名称</th>
+      <th nzWidth="18%" nzAlign="center">名称</th>
       <th nzWidth="10%" nzAlign="center">图标</th>
       <th nzWidth="10%" nzAlign="center">类型</th>
       <th nzWidth="10%" nzAlign="center">排序</th>
       <th nzWidth="10%" nzAlign="center">显示状态</th>
-      <th nzWidth="20%" nzAlign="center">路由</th>
+      <th nzWidth="18%" nzAlign="center">路由</th>
       <th nzWidth="10%" nzAlign="center">授权标识</th>
       <th nzAlign="center">操作</th>
     </tr>
@@ -55,6 +55,8 @@
             <td nzAlign="center">{{ item.link }}</td>
             <td nzAlign="center">{{ item.perms }}</td>
             <td nzAlign="center">
+              <a (click)="addMenuForCurrent(item.id)">新增</a>
+              <nz-divider nzType="vertical"></nz-divider>
               <a (click)="editMenu(item.id)">修改</a>
               <nz-divider nzType="vertical"></nz-divider>
               <a (click)="delMenu(item.id, item.title)">删除</a>

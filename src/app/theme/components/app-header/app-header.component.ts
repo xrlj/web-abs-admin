@@ -5,6 +5,9 @@ import {ApiPath} from '../../../api-path';
 import {UIHelper} from '../../../helpers/ui-helper';
 import {AppPath} from '../../../app-path';
 import {DefaultBusService} from '../../../helpers/event-bus/default-bus.service';
+import {Utils} from '../../../helpers/utils';
+import {UserStatusEnum} from '../../../helpers/enum/user-status-enum';
+import {JwtKvEnum} from '../../../helpers/enum/jwt-kv-enum';
 
 @Component({
   selector: 'app-header',
@@ -12,10 +15,11 @@ import {DefaultBusService} from '../../../helpers/event-bus/default-bus.service'
   styleUrls: ['./app-header.component.less']
 })
 export class AppHeaderComponent implements OnInit {
-  constructor(private router: Router, private api: Api, private uiHelper: UIHelper, private defaultBusService: DefaultBusService) {
-  }
+  constructor(private router: Router, private api: Api, public utils: Utils, private uiHelper: UIHelper, private defaultBusService: DefaultBusService) { }
 
   appName: string;
+
+  jwtKvEnum: typeof  JwtKvEnum = JwtKvEnum;
 
   ngOnInit() {
     this.appName = '运营总后台';

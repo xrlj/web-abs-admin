@@ -35,7 +35,7 @@ export class DepartmentManageComponent implements OnInit {
   selectedDeptId: string; // 选定的上级部门的id
 
   constructor(private fb: FormBuilder, private departmentService: DepartmentService,
-              private uiHelper: UIHelper, private uiTableHelper: UiTableHelper,
+              private uiHelper: UIHelper, public uiTableHelper: UiTableHelper,
               private utils: Utils) { }
 
   ngOnInit() {

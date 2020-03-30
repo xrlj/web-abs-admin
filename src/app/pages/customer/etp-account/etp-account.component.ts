@@ -32,7 +32,7 @@ export class EtpAccountComponent implements OnInit {
   // 列表搜索条件
   vCustomerAccountReq: VCustomerAccountReq = {pageIndex: this.pageIndex, pageSize: this.pageSize};
 
-  constructor(private fb: FormBuilder, private uiHelper: UIHelper) {
+  constructor(private fb: FormBuilder, public uiHelper: UIHelper) {
   }
 
   ngOnInit() {

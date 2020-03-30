@@ -1,0 +1,117 @@
+<nz-card class="card-list" nzTitle="云存储配置列表">
+  <div class="card-list-action">
+    <button nz-button nzType="primary" (click)="storageConfig()"><i nz-icon type="cloud"></i>云存储配置</button>
+    <button nz-button nzType="primary" (click)="uploadFile()"><i nz-icon type="upload"></i>上传文件</button>
+    <button nz-button nzType="danger" (click)="delFile()"><i nz-icon type="delete"></i>删除</button>
+  </div>
+  <div class="card-list-table">
+    <nz-table
+      #storageTable
+      nzShowPagination
+      nzShowSizeChanger
+      nzBordered
+      [nzFrontPagination]="false"
+      [nzData]="listOfAllData"
+      [nzLoading]="loading"
+      [nzTotal]="total"
+      [(nzPageIndex)]="pageIndex"
+      [(nzPageSize)]="pageSize"
+      (nzPageIndexChange)="search()"
+      (nzPageSizeChange)="search()"
+      (nzCurrentPageDataChange)="currentPageDataChange($event)"
+    >
+      <thead>
+      <tr>
+        <th
+          nzShowCheckbox
+          [(nzChecked)]="isAllDisplayDataChecked"
+          [nzIndeterminate]="isIndeterminate"
+          (nzCheckedChange)="checkAll($event)"
+        ></th>
+        <th nzWidth="40%" nzAlign="center">URL地址</th>
+        <th nzWidth="30%" nzAlign="center"
+            nzShowSort
+        >
+          创建时间
+        </th>
+        <th nzWidth="30%" nzAlign="center">操作</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let data of storageTable['data']">
+        <td
+          nzShowCheckbox
+          [(nzChecked)]="mapOfCheckedId[data.userId]"
+          [nzDisabled]="data.disabled"
+          (nzCheckedChange)="refreshStatus()"
+        ></td>
+        <td nzAlign="center">{{ data.url }}</td>
+        <td nzAlign="center">{{ data.dateCreated }}</td>
+        <td nzAlign="center">
+          <a>预览</a>
+        </td>
+      </tr>
+      </tbody>
+    </nz-table>
+  </div>
+</nz-card>
+
+<!--上传文件对话框-->
+<nz-modal *ngIf="isShowUploadModal"
+          [(nzVisible)]="isShowUploadModal"
+          nzWidth="800"
+          [nzMaskClosable]="false"
+          [nzTitle]="'上传文件'"
+          [nzFooter]="null"
+          (nzOnCancel)="uploadModalCancel()">
+
+  <nz-upload
+    class="file-uploader"
+    nzType="drag"
+    [nzMultiple]="true"
+    [nzLimit]="2"
+    [nzName]="'file'"
+    [nzData]="uploadFileData()"
+    [nzAction]="uploadFileUrl"
+    [nzBeforeUpload]="beforeUpload"
+    (nzChange)="uploadFileHandleChange($event)"
+  >
+    <p class="ant-upload-drag-icon">
+      <i nz-icon nzType="cloud-upload"></i>
+    </p>
+    <p class="ant-upload-text">点击或者拖拽文件到此处上传</p>
+    <p class="ant-upload-hint">
+      支持单个或者多个文件上传，文件大小不能超过300M
+    </p>
+  </nz-upload>
+
+</nz-modal>
+
+<!--文件服务器配置-->
+<nz-modal *ngIf="isShowConfigModal"
+          [(nzVisible)]="isShowConfigModal"
+          nzWidth="800"
+          [nzTitle]="'云存储配置'"
+          (nzOnCancel)="configHandleCancel()"
+          (nzOnOk)="configHandleOk()"
+          [nzOkLoading]="isConfigOkLoading">
+
+  <nz-radio-group [(ngModel)]="radioValue"  (ngModelChange)="selectStorageConfigType($event)" class="storage-config-type">
+    <label><span>类型</span></label>
+    <label nz-radio nzValue="A">阿里云</label>
+    <label nz-radio nzValue="B">腾讯云</label>
+    <label nz-radio nzValue="C">FastDFS</label>
+  </nz-radio-group>
+  <form nz-form [formGroup]="storageConfigForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="" [nzXs]="24" nzFor="url" nzRequired>名称</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24" nzErrorTip="权限名称不能为空">
+        <input nz-input id="url" formControlName="url" placeholder="菜单名称"/>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+
+</nz-modal>n
+
+
+

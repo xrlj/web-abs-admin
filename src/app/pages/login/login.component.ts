@@ -3,13 +3,12 @@ import {Router} from '@angular/router';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Api} from '../../helpers/http/api';
 import {VLoginRespData} from '../../helpers/vo/resp/v-login-resp';
-import {VLoginReq} from '../../helpers/vo/req/v-login-req';
 import {ApiPath} from '../../api-path';
-import {environment} from '../../../environments/environment';
 import {Constants} from '../../helpers/constants';
 import {Utils} from '../../helpers/utils';
 import {UIHelper} from '../../helpers/ui-helper';
 import {AppPath} from '../../app-path';
+import {HttpHeaders} from '@angular/common/http';
 
 
 @Component({
@@ -41,14 +40,10 @@ export class LoginComponent implements OnInit {
       this.validateForm.controls[i].markAsDirty();
       this.validateForm.controls[i].updateValueAndValidity();
     }
-
-    const body: VLoginReq = {
-      username: this.validateForm.value.username,
-      password: this.validateForm.value.password,
-      clientid: environment.clientId,
-      clientDeviceType: Constants.appInfo.clientDeviceType
-    };
-    this.api.post(ApiPath.login, body).ok(data => {
+    const headers = new HttpHeaders({
+      Authorization: 'Basic '.concat(this.utils.base64encoder(this.validateForm.value.username + ':' + this.validateForm.value.password))
+    });
+    this.api.post(ApiPath.login, null, null, null, null, headers).ok(data => {
       localStorage.setItem(Constants.localStorageKey.token, data.access_token);
       this.router.navigateByUrl(AppPath.init);
     }).fail(error => {

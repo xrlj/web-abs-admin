@@ -9,10 +9,15 @@ import {MenuManageComponent} from './menu-manage/menu-manage.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgZorroAntdModule} from 'ng-zorro-antd';
 import {SettingRoutingModule} from './setting-routing.module';
+import {ParameterManageComponent} from './parameter-manage/parameter-manage.component';
+import {DictionaryComponent} from './dictionary-manage/dictionary/dictionary.component';
+import {DictionaryTypeComponent} from './dictionary-manage/dictionary-type/dictionary-type.component';
+import { FileManageComponent } from './file-manage/file-manage.component';
+import { ZhAreaManageComponent } from './zh-area-manage/zh-area-manage.component';
 
 
 @NgModule({
-  declarations: [UserManageComponent, AppManageComponent, DepartmentManageComponent, RoleManageComponent, PermissionManageComponent, MenuManageComponent],
+  declarations: [UserManageComponent, AppManageComponent, DepartmentManageComponent, RoleManageComponent, PermissionManageComponent, MenuManageComponent, ParameterManageComponent, DictionaryComponent, DictionaryTypeComponent, FileManageComponent, ZhAreaManageComponent],
   imports: [
     CommonModule,
     FormsModule,

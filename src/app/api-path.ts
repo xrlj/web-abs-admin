@@ -1,8 +1,9 @@
 const serviceauth = 'serviceauth'; // 服务名称
 const usercentral = 'usercentral';
+const sysfilesystem = 'sysfilesystem'; // 文件系统服务
 
 export const ApiPath = {
-  login: `/${serviceauth}/auth/login`,
+  login: `/${serviceauth}/auth/sysLogin`,
   logout: `/${serviceauth}/auth/invalidate`,
   usercentral: {
     userApi: {
@@ -54,6 +55,11 @@ export const ApiPath = {
       getPermissionById: `/${usercentral}/rolePermissions/getPermissionById`,
       getPermissionListPage: `/${usercentral}/rolePermissions/getPermissionListPage`,
       delPermission: `/${usercentral}/rolePermissions/delPermission`
+    }
+  },
+  sysfilesystem: {
+    sysFiles: {
+      uploadFile: `/${sysfilesystem}/sysFiles/uploadFile`
     }
   }
 };

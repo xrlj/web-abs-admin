@@ -1,7 +1,5 @@
 import {Injectable} from '@angular/core';
-import {
-  HttpEvent, HttpInterceptor, HttpHandler, HttpRequest
-} from '@angular/common/http';
+import {HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {ApiPath} from '../api-path';
 import {Router} from '@angular/router';
 import {Constants} from '../helpers/constants';
@@ -30,8 +28,11 @@ export class AuthInterceptor implements HttpInterceptor {
         }*/
       } else { // 未登录
         this.router.navigateByUrl(AppPath.login);
+        return null;
       }
-      const authReq = req.clone({ setHeaders: { Authorization: authToken, 'Content-Type':  'application/json' } });
+
+      // 普通请求
+      const authReq = req.clone({ setHeaders: { Authorization: authToken} });
       return next.handle(authReq);
     }
   }

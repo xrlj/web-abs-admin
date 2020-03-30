@@ -40,7 +40,7 @@ export class EtpManageComponent implements OnInit {
   vCustomerEtpResp: VCustomerEtpResp; // 用户详情
 
   constructor(private fb: FormBuilder,
-              private uiHelper: UIHelper, private utils: Utils,
+              public uiHelper: UIHelper, private utils: Utils,
               private defaultBusService: DefaultBusService) {
     // 新增编辑对话框
     this.addOrEditForm = this.fb.group({
