@@ -33,13 +33,25 @@ export class FileManageComponent implements OnInit {
   /*云储存配置*/
   isShowConfigModal = false;
   isConfigOkLoading = false;
-  radioValue = 'A';
+  storageRadioValue = 'A';
   storageConfigForm: FormGroup;
 
   constructor(private uiHelper: UIHelper, private httpUtils: HttpUtils, private fb: FormBuilder) {
     // 云存储配置
     this.storageConfigForm = this.fb.group({
-      url: [null, [Validators.required]]
+      url: [null, [Validators.required]],
+      prefix: [null, null],
+      accessKey: [null, [Validators.required]],
+      secretKey: [null, [Validators.required]],
+      spaceName: [null, [Validators.required]],
+      endPoint: [null, [Validators.required]],
+      accessKeyId: [null, [Validators.required]],
+      accessKeySecret: [null, [Validators.required]],
+      bucketName: [null, [Validators.required]],
+      appId: [null, [Validators.required]],
+      secretId: [null, [Validators.required]],
+      tSecretKey: [null, [Validators.required]],
+      tBucketName: [null, [Validators.required]]
     });
   }
 

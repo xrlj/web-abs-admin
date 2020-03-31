@@ -37,6 +37,10 @@ const routes: Routes = [
       {
         path: 'setting',
         loadChildren: './setting/setting.module#SettingModule'
+      },
+      {
+        path: 'announcement',
+        loadChildren: './announcement/announcement.module#AnnouncementModule'
       }
     ]
   },
