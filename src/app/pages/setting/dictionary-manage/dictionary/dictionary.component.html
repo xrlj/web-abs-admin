@@ -1,1 +1,122 @@
-<p>dictionary works!</p>
+<nz-card class="card-list" nzTitle="字典管理">
+  <div class="card-list-action">
+    <nz-input-group [nzSuffix]="dicNameSuffixTemplate">
+      <input type="text" nz-input [(ngModel)]="dicName" placeholder="字典名称"/>
+    </nz-input-group>
+    <nz-input-group [nzSuffix]="dicTypeSuffixTemplate">
+      <input type="text" nz-input [(ngModel)]="dicType" placeholder="字典类型"/>
+    </nz-input-group>
+    <button nz-button nzType="default" (click)="search(true)"><i nz-icon nzType="search"></i>查询</button>
+    <button nz-button nzType="primary" (click)="add()"><i nz-icon type="plus"></i>新增</button>
+    <button nz-button nzType="danger" (click)="del()"><i nz-icon type="delete"></i>删除</button>
+  </div>
+  <div class="card-list-table">
+    <nz-table
+      #table
+      nzShowPagination
+      nzShowSizeChanger
+      nzBordered
+      [nzFrontPagination]="false"
+      [nzData]="listOfAllData"
+      [nzLoading]="loading"
+      [nzTotal]="total"
+      [(nzPageIndex)]="pageIndex"
+      [(nzPageSize)]="pageSize"
+      (nzPageIndexChange)="search()"
+      (nzPageSizeChange)="search(true)"
+      (nzCurrentPageDataChange)="currentPageDataChange($event)"
+    >
+      <thead>
+      <tr>
+        <th
+          nzShowCheckbox
+          [(nzChecked)]="isAllDisplayDataChecked"
+          [nzIndeterminate]="isIndeterminate"
+          (nzCheckedChange)="checkAll($event)"
+        ></th>
+        <th nzWidth="18%" nzAlign="center">字典名称</th>
+        <th nzWidth="18%" nzAlign="center">字典类型</th>
+        <th nzWidth="18%" nzAlign="center"  nzShowSort>排序</th>
+        <th nzWidth="18%" nzAlign="center">备注</th>
+        <th nzWidth="18%" nzAlign="center" nzShowSort>创建时间</th>
+        <th nzWidth="10%" nzAlign="center">操作</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let data of table['data']">
+        <td
+          nzShowCheckbox
+          [(nzChecked)]="mapOfCheckedId[data.id]"
+          [nzDisabled]="data.disabled"
+          (nzCheckedChange)="refreshStatus()"
+        ></td>
+        <td nzAlign="center">{{ data.dicName }}</td>
+        <td nzAlign="center">{{ data.dicType }}</td>
+        <td nzAlign="center">{{ data.dicSort }}</td>
+        <td nzAlign="center">{{ data.remark }}</td>
+        <td nzAlign="center">{{ data.dateCreated }}</td>
+        <td nzAlign="center">
+          <a>编辑</a>
+        </td>
+      </tr>
+      </tbody>
+    </nz-table>
+  </div>
+</nz-card>
+
+<ng-template #dicNameSuffixTemplate
+><i
+  nz-icon
+  nz-tooltip
+  class="ant-input-clear-icon"
+  nzTheme="fill"
+  nzType="close-circle"
+  *ngIf="dicName"
+  (click)="dicName = null"
+></i
+></ng-template>
+
+<ng-template #dicTypeSuffixTemplate
+><i
+  nz-icon
+  nz-tooltip
+  class="ant-input-clear-icon"
+  nzTheme="fill"
+  nzType="close-circle"
+  *ngIf="dicType"
+  (click)="dicType = null"
+></i
+></ng-template>
+
+<!--新增或编辑-->
+<nz-modal *ngIf="isShowModal"
+          [(nzVisible)]="isShowModal"
+          nzWidth="800"
+          [nzMaskClosable]="false"
+          [nzTitle]="modalType === 1 ? '新增' : '编辑'"
+          (nzOnCancel)="handleCancel()"
+          (nzOnOk)="handleOk()"
+          [nzOkLoading]="isModalOkLoading">
+
+  <form nz-form [formGroup]="addOrEditForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="code" nzRequired>编码</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24" nzErrorTip="必填项不能为空">
+        <input nz-input id="code" formControlName="code" placeholder="编码"/>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="value" nzRequired>值</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24" nzErrorTip="必填项不能为空">
+        <input nz-input id="value" formControlName="value" placeholder="值"/>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="remark">备注</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24">
+        <input nz-input id="remark" formControlName="remark" placeholder="备注"/>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+
+</nz-modal>

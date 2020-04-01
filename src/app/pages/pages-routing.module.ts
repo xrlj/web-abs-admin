@@ -41,6 +41,14 @@ const routes: Routes = [
       {
         path: 'announcement',
         loadChildren: './announcement/announcement.module#AnnouncementModule'
+      },
+      {
+        path: 'notify',
+        loadChildren: './notify/notify.module#NotifyModule'
+      },
+      {
+        path: 'sys-log',
+        loadChildren: './sys-log/sys-log.module#SysLogModule'
       }
     ]
   },

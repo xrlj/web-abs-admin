@@ -21,36 +21,36 @@
       (nzCurrentPageDataChange)="currentPageDataChange($event)"
     >
       <thead>
-      <tr>
-        <th
-          nzShowCheckbox
-          [(nzChecked)]="isAllDisplayDataChecked"
-          [nzIndeterminate]="isIndeterminate"
-          (nzCheckedChange)="checkAll($event)"
-        ></th>
-        <th nzWidth="40%" nzAlign="center">URL地址</th>
-        <th nzWidth="30%" nzAlign="center"
-            nzShowSort
-        >
-          创建时间
-        </th>
-        <th nzWidth="30%" nzAlign="center">操作</th>
-      </tr>
+        <tr>
+          <th
+            nzShowCheckbox
+            [(nzChecked)]="isAllDisplayDataChecked"
+            [nzIndeterminate]="isIndeterminate"
+            (nzCheckedChange)="checkAll($event)"
+          ></th>
+          <th nzWidth="40%" nzAlign="center">URL地址</th>
+          <th nzWidth="30%" nzAlign="center"
+              nzShowSort
+          >
+            创建时间
+          </th>
+          <th nzWidth="30%" nzAlign="center">操作</th>
+        </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let data of storageTable['data']">
-        <td
-          nzShowCheckbox
-          [(nzChecked)]="mapOfCheckedId[data.userId]"
-          [nzDisabled]="data.disabled"
-          (nzCheckedChange)="refreshStatus()"
-        ></td>
-        <td nzAlign="center">{{ data.url }}</td>
-        <td nzAlign="center">{{ data.dateCreated }}</td>
-        <td nzAlign="center">
-          <a>预览</a>
-        </td>
-      </tr>
+        <tr *ngFor="let data of storageTable['data']">
+          <td
+            nzShowCheckbox
+            [(nzChecked)]="mapOfCheckedId[data.id]"
+            [nzDisabled]="data.disabled"
+            (nzCheckedChange)="refreshStatus()"
+          ></td>
+          <td nzAlign="center">{{ data.url }}</td>
+          <td nzAlign="center">{{ data.dateCreated }}</td>
+          <td nzAlign="center">
+            <a>预览</a>
+          </td>
+        </tr>
       </tbody>
     </nz-table>
   </div>
@@ -59,7 +59,7 @@
 <!--上传文件对话框-->
 <nz-modal *ngIf="isShowUploadModal"
           [(nzVisible)]="isShowUploadModal"
-          nzWidth="800"
+          nzWidth="600"
           [nzMaskClosable]="false"
           [nzTitle]="'上传文件'"
           [nzFooter]="null"

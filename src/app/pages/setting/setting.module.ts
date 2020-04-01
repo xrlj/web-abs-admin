@@ -14,10 +14,14 @@ import {DictionaryComponent} from './dictionary-manage/dictionary/dictionary.com
 import {DictionaryTypeComponent} from './dictionary-manage/dictionary-type/dictionary-type.component';
 import { FileManageComponent } from './file-manage/file-manage.component';
 import { ZhAreaManageComponent } from './zh-area-manage/zh-area-manage.component';
+import { DictionaryManageComponent } from './dictionary-manage/dictionary-manage.component';
 
 
 @NgModule({
-  declarations: [UserManageComponent, AppManageComponent, DepartmentManageComponent, RoleManageComponent, PermissionManageComponent, MenuManageComponent, ParameterManageComponent, DictionaryComponent, DictionaryTypeComponent, FileManageComponent, ZhAreaManageComponent],
+  declarations: [UserManageComponent, AppManageComponent, DepartmentManageComponent,
+    RoleManageComponent, PermissionManageComponent, MenuManageComponent, ParameterManageComponent,
+    DictionaryComponent, DictionaryTypeComponent, FileManageComponent, ZhAreaManageComponent,
+    DictionaryManageComponent],
   imports: [
     CommonModule,
     FormsModule,

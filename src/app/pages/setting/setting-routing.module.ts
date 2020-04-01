@@ -7,10 +7,10 @@ import {MenuManageComponent} from './menu-manage/menu-manage.component';
 import {RoleManageComponent} from './role-manage/role-manage.component';
 import {PermissionManageComponent} from './permission-manage/permission-manage.component';
 import {ParameterManageComponent} from './parameter-manage/parameter-manage.component';
-import {DictionaryComponent} from './dictionary-manage/dictionary/dictionary.component';
 import {DictionaryTypeComponent} from './dictionary-manage/dictionary-type/dictionary-type.component';
 import {FileManageComponent} from './file-manage/file-manage.component';
 import {ZhAreaManageComponent} from './zh-area-manage/zh-area-manage.component';
+import {DictionaryManageComponent} from './dictionary-manage/dictionary-manage.component';
 
 const routes: Routes = [
   { path: 'user', component: UserManageComponent },
@@ -21,7 +21,7 @@ const routes: Routes = [
   { path: 'parameter', component: ParameterManageComponent },
   { path: 'permission', component: PermissionManageComponent },
   { path: 'parameter', component: ParameterManageComponent },
-  { path: 'dictionary', component: DictionaryComponent},
+  { path: 'dictionary', component: DictionaryManageComponent},
   { path: 'dictionary-type', component: DictionaryTypeComponent},
   { path: 'file', component: FileManageComponent},
   { path: 'zh-area', component: ZhAreaManageComponent},
