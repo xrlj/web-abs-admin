@@ -37,7 +37,8 @@
               "src/assets/styles/ng-zorro.less",
               "src/assets/styles/global.less"
             ],
-            "scripts": []
+            "scripts": [
+            ]
           },
           "configurations": {
             "production": {

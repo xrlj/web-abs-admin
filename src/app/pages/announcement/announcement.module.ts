@@ -5,8 +5,9 @@ import {AnnouncementManageComponent} from './announcement-manage/announcement-ma
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgZorroAntdModule} from 'ng-zorro-antd';
 import {AnnouncementRoutingModule} from './announcement-routing.module';
+import { UEditorModule } from 'ngx-ueditor';
 
-
+/*站内通知模块*/
 @NgModule({
   declarations: [AnnouncementMyComponent, AnnouncementManageComponent],
   imports: [
@@ -14,7 +15,8 @@ import {AnnouncementRoutingModule} from './announcement-routing.module';
     AnnouncementRoutingModule,
     FormsModule,
     NgZorroAntdModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    UEditorModule
   ]
 })
 export class AnnouncementModule { }

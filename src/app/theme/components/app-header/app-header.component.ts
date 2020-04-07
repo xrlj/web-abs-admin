@@ -29,18 +29,21 @@ export class AppHeaderComponent implements OnInit {
    * 退出登录。
    */
   logout(): void {
-    this.defaultBusService.showLoading(true);
-    this.api.get(ApiPath.logout).ok(data => {
-      if (data) {
-        localStorage.clear();
-        this.router.navigateByUrl(AppPath.login); // 退出成功
-      } else {
-        this.uiHelper.msgTipError('退出失败');
-      }
-    }).fail(error => {
-      this.uiHelper.msgTipError('退出失败');
-    }).final(() => {
-      this.defaultBusService.showLoading(false);
-    });
+    this.uiHelper.modalConfirm('确定退出登录？')
+      .ok(() => {
+        this.defaultBusService.showLoading(true);
+        this.api.get(ApiPath.logout).ok(data => {
+          if (data) {
+            localStorage.clear();
+            this.router.navigateByUrl(AppPath.login); // 退出成功
+          } else {
+            this.uiHelper.msgTipError('退出失败');
+          }
+        }).fail(error => {
+          this.uiHelper.msgTipError('退出失败');
+        }).final(() => {
+          this.defaultBusService.showLoading(false);
+        });
+      });
   }
 }

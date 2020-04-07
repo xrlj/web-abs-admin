@@ -33,8 +33,9 @@ export class DictionaryTypeComponent implements OnInit {
 
   constructor( private fb: FormBuilder) {
     this.addOrEditForm = this.fb.group({
-      code: [null, [Validators.required]],
-      value: [null, [Validators.required]],
+      dicTypeValue: [null, [Validators.required]],
+      dicTypeTag: [null, [Validators.required]],
+      sort: [null, [Validators.required]],
       remark: [null, null]
     });
   }

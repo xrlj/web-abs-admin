@@ -453,19 +453,22 @@ export class UserManageComponent implements OnInit {
    * @param userId 用户id
    */
   resetUserPwd(userId: string): void {
-    this.defaultBusService.showLoading(true);
-    this.userManageService.resetUserPassword(userId)
-      .ok(data => {
-        if (data) {
-          this.uiHelper.msgTipSuccess('重置密码成功');
-        } else {
-          this.uiHelper.msgTipError('重置用户密码失败');
-        }
-      }).fail(error => {
-        this.uiHelper.msgTipError(error.msg);
-    }).final(() => {
-      this.defaultBusService.showLoading(false);
-    });
+    this.uiHelper.modalConfirm('注意查看邮件、短信获知重置的新密码！')
+        .ok(() => {
+          this.defaultBusService.showLoading(true);
+          this.userManageService.resetUserPassword(userId)
+              .ok(data => {
+                if (data) {
+                  this.uiHelper.msgTipSuccess('重置密码成功');
+                } else {
+                  this.uiHelper.msgTipError('重置用户密码失败');
+                }
+              }).fail(error => {
+            this.uiHelper.msgTipError(error.msg);
+          }).final(() => {
+            this.defaultBusService.showLoading(false);
+          });
+        });
   }
 
   /**
@@ -603,15 +606,21 @@ export class UserManageComponent implements OnInit {
   /**
    * 拉黑用户。
    */
-  addUserBlack(userId: string): void {
-    this.updateUserStatus(userId, UserStatusEnum.BLACK);
+  addUserBlack(userId: string, username: string): void {
+    this.uiHelper.modalConfirm(`确定拉黑【${username}】用户？`)
+        .ok(() => {
+          this.updateUserStatus(userId, UserStatusEnum.BLACK);
+        });
   }
 
   /**
    * 禁用用户账号。
    */
-  disableUser(userId: string): void {
-    this.updateUserStatus(userId, UserStatusEnum.DISABLE);
+  disableUser(userId: string, username: string): void {
+    this.uiHelper.modalConfirm(`确定禁用【${username}】用户?`)
+        .ok(() => {
+          this.updateUserStatus(userId, UserStatusEnum.DISABLE);
+        });
   }
 
   /**

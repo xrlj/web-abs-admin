@@ -1,1 +1,145 @@
-<p>notify-sms-manage works!!!!!!</p>
+<nz-card class="card-list" nzTitle="短信服务">
+  <div class="card-list-action">
+    <nz-select nzShowSearch nzAllowClear nzPlaceHolder="平台类型" [(ngModel)]="platformType" style="min-width: 200px">
+      <nz-option [nzLabel]="'阿里云'" [nzValue]="1"></nz-option>
+      <nz-option [nzLabel]="'腾讯云'" [nzValue]="2"></nz-option>
+      <nz-option [nzLabel]="'七牛云'" [nzValue]="3"></nz-option>
+    </nz-select>
+    <button nz-button nzType="default" (click)="search(true)"><i nz-icon nzType="search"></i>查询</button>
+    <button nz-button nzType="primary" (click)="add()"><i nz-icon type="plus"></i>新增</button>
+    <button nz-button nzType="danger" (click)="del()"><i nz-icon type="delete"></i>删除</button>
+  </div>
+  <div class="card-list-table">
+    <nz-table
+      #table
+      nzShowPagination
+      nzShowSizeChanger
+      nzBordered
+      [nzFrontPagination]="false"
+      [nzData]="listOfAllData"
+      [nzLoading]="loading"
+      [nzTotal]="total"
+      [(nzPageIndex)]="pageIndex"
+      [(nzPageSize)]="pageSize"
+      (nzPageIndexChange)="search()"
+      (nzPageSizeChange)="search(true)"
+      (nzCurrentPageDataChange)="currentPageDataChange($event)"
+    >
+      <thead>
+      <tr>
+        <th
+          nzShowCheckbox
+          [(nzChecked)]="isAllDisplayDataChecked"
+          [nzIndeterminate]="isIndeterminate"
+          (nzCheckedChange)="checkAll($event)"
+        ></th>
+        <th nzWidth="20%" nzAlign="center">短信编码</th>
+        <th nzWidth="20%" nzAlign="center">平台类型</th>
+        <th nzWidth="20%" nzAlign="center">备注</th>
+        <th nzWidth="20%" nzAlign="center" nzShowSort>创建时间</th>
+        <th nzWidth="20%" nzAlign="center">操作</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let data of table['data']">
+        <td
+          nzShowCheckbox
+          [(nzChecked)]="mapOfCheckedId[data.id]"
+          [nzDisabled]="data.disabled"
+          (nzCheckedChange)="refreshStatus()"
+        ></td>
+        <td nzAlign="center">{{ data.code }}</td>
+        <td nzAlign="center">{{ data.flatformType }}</td>
+        <td nzAlign="center">{{ data.remark }}</td>
+        <td nzAlign="center">{{ data.sendTime }}</td>
+        <td nzAlign="center">
+          <a>发送短信</a>
+          <nz-divider nzType="vertical"></nz-divider>
+          <a>修改</a>
+          <nz-divider nzType="vertical"></nz-divider>
+          <a>删除</a>
+        </td>
+      </tr>
+      </tbody>
+    </nz-table>
+  </div>
+</nz-card>
+
+<!--新增或编辑-->
+<nz-modal *ngIf="isShowModal"
+          [(nzVisible)]="isShowModal"
+          nzWidth="800"
+          [nzMaskClosable]="false"
+          [nzTitle]="modalType === 1 ? '新增' : '编辑'"
+          (nzOnCancel)="handleCancel()"
+          (nzOnOk)="handleOk()"
+          [nzOkLoading]="isModalOkLoading">
+
+  <form nz-form [formGroup]="addOrEditForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="smsCode" nzRequired>短信编码</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24" nzErrorTip="必填项不能为空">
+        <input nz-input id="smsCode" formControlName="smsCode" placeholder="短信编码"/>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="remark">备注</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24">
+        <input nz-input id="remark" formControlName="remark" placeholder="备注"/>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+
+  <nz-divider nzDashed ></nz-divider>
+
+  <nz-radio-group [(ngModel)]="flatFormTypeRadioValue"  (ngModelChange)="selectFlatFormType($event)" class="flat-form-type">
+    <label><span>平台类型</span></label>
+    <label nz-radio nzValue="A">阿里云</label>
+    <label nz-radio nzValue="B">腾讯云</label>
+  </nz-radio-group>
+
+  <form nz-form [formGroup]="addOrEditForm">
+    <div *ngIf="flatFormTypeRadioValue === 'A'">
+      <nz-form-item>
+        <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="aliAccessKeyId" nzRequired>Key</nz-form-label>
+        <nz-form-control [nzSm]="10" [nzXs]="24" nzErrorTip="必填项不能为空">
+          <input nz-input id="aliAccessKeyId" formControlName="aliAccessKeyId" placeholder="阿里云AccessKeyId"/>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="aliAccessKeySecret" nzRequired>AccessKeySecret</nz-form-label>
+        <nz-form-control [nzSm]="10" [nzXs]="24" nzErrorTip="必填项不能为空">
+          <input nz-input id="aliAccessKeySecret" formControlName="aliAccessKeySecret" placeholder="阿里云AccessKeySecret"/>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div *ngIf="flatFormTypeRadioValue==='B'">
+      <nz-form-item>
+        <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="txAppId" nzRequired>AppId</nz-form-label>
+        <nz-form-control [nzSm]="10" [nzXs]="24" nzErrorTip="必填项不能为空">
+          <input nz-input id="txAppId" formControlName="txAppId" placeholder="腾讯云AppId"/>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="txAppKey" nzRequired>AppKey</nz-form-label>
+        <nz-form-control [nzSm]="10" [nzXs]="24" nzErrorTip="必填项不能为空">
+          <input nz-input id="txAppKey" formControlName="txAppKey" placeholder="腾讯云AppKey"/>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="smsSignName" nzRequired>短信签名</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24" nzErrorTip="必填项不能为空">
+        <input nz-input id="smsSignName" formControlName="smsSignName" placeholder="短信签名"/>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="smsTemplate" nzRequired>短信模板</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24" nzErrorTip="必填项不能为空">
+        <input nz-input id="smsTemplate" formControlName="smsTemplate" placeholder="短信模板CODE"/>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+
+</nz-modal>

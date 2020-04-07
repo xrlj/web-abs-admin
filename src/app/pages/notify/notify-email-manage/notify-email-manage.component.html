@@ -1,1 +1,149 @@
-<p>notify-email-manage works!</p>
+<nz-card class="card-list" nzTitle="邮件模板管理">
+  <div class="card-list-action">
+    <nz-input-group [nzSuffix]="suffixTemplate1">
+      <input type="text" nz-input [(ngModel)]="vEmailReq.templateName" placeholder="名称"/>
+    </nz-input-group>
+    <button nz-button nzType="default" (click)="search(true)"><i nz-icon nzType="search"></i>查询</button>
+    <button nz-button nzType="primary" (click)="add()"><i nz-icon type="plus"></i>新增</button>
+    <button nz-button nzType="primary" (click)="addEmailServer()"><i nz-icon type="mail"></i>邮件配置</button>
+    <button nz-button nzType="danger" (click)="del()"><i nz-icon type="delete"></i>删除</button>
+  </div>
+  <div class="card-list-table">
+    <nz-table
+      #table
+      nzShowPagination
+      nzShowSizeChanger
+      nzBordered
+      [nzFrontPagination]="false"
+      [nzData]="listOfAllData"
+      [nzLoading]="loading"
+      [nzTotal]="total"
+      [(nzPageIndex)]="pageIndex"
+      [(nzPageSize)]="pageSize"
+      (nzPageIndexChange)="search()"
+      (nzPageSizeChange)="search(true)"
+      (nzCurrentPageDataChange)="currentPageDataChange($event)"
+    >
+      <thead>
+      <tr>
+        <th
+          nzShowCheckbox
+          [(nzChecked)]="isAllDisplayDataChecked"
+          [nzIndeterminate]="isIndeterminate"
+          (nzCheckedChange)="checkAll($event)"
+        ></th>
+        <th nzWidth="30%" nzAlign="center">名称</th>
+        <th nzWidth="30%" nzAlign="center">主题</th>
+        <th nzWidth="20%" nzAlign="center" nzShowSort>创建时间</th>
+        <th nzWidth="20%" nzAlign="center">操作</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let data of table['data']">
+        <td
+          nzShowCheckbox
+          [(nzChecked)]="mapOfCheckedId[data.id]"
+          [nzDisabled]="data.disabled"
+          (nzCheckedChange)="refreshStatus()"
+        ></td>
+        <td nzAlign="center">{{ data.code }}</td>
+        <td nzAlign="center">{{ data.code }}</td>
+        <td nzAlign="center">{{ data.code }}</td>
+        <td nzAlign="center">
+          <a>发送邮件</a>
+          <nz-divider nzType="vertical"></nz-divider>
+          <a>修改</a>
+          <nz-divider nzType="vertical"></nz-divider>
+          <a>删除</a>
+        </td>
+      </tr>
+      </tbody>
+    </nz-table>
+  </div>
+</nz-card>
+
+<ng-template #suffixTemplate1
+><i
+  nz-icon
+  nz-tooltip
+  class="ant-input-clear-icon"
+  nzTheme="fill"
+  nzType="close-circle"
+  *ngIf="vEmailReq.templateName"
+  (click)="vEmailReq.templateName = null"
+></i
+></ng-template>
+
+<!--新增或编辑-->
+<nz-modal class="add-modal" *ngIf="isShowModal"
+          [(nzVisible)]="isShowModal"
+          nzWidth="800"
+          [nzMaskClosable]="false"
+          [nzTitle]="modalType === 1 ? '新增' : '编辑'"
+          (nzOnCancel)="handleCancel()"
+          (nzOnOk)="handleOk()"
+          [nzOkLoading]="isModalOkLoading">
+
+  <form nz-form [formGroup]="addOrEditForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="2" [nzXs]="24" nzFor="templateName" nzRequired>名称</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24" nzErrorTip="必填项不能为空">
+        <input nz-input id="templateName" formControlName="templateName" placeholder="名称"/>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="2" [nzXs]="24" nzFor="templateSubject" nzRequired>主题</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24" nzErrorTip="必填项不能为空">
+        <input nz-input id="templateSubject" formControlName="templateSubject" placeholder="主题"/>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="2" [nzXs]="24" nzFor="templateContent" nzRequired>内容</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24" nzErrorTip="必填项不能为空">
+        <div>
+          <ueditor id="templateContent" formControlName="templateContent" [(ngModel)] = "ueditorContent" [config] = "ueditorConfig"></ueditor>
+        </div>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+
+</nz-modal>
+
+<!--邮件配置-->
+<nz-modal class="email-server-modal" *ngIf="isShowEmailServerModal"
+          [(nzVisible)]="isShowEmailServerModal"
+          nzWidth="800"
+          [nzMaskClosable]="false"
+          [nzTitle]="modalType === 1 ? '邮件配置' : '编辑'"
+          (nzOnCancel)="handleEmailServerCancel()"
+          (nzOnOk)="handleEmailServerOk()"
+          [nzOkLoading]="isEmailServerModalOkLoading">
+
+  <form nz-form [formGroup]="addOrEditEmailServerForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="serverUrl" nzRequired>邮件配置</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24" nzErrorTip="必填项不能为空">
+        <input nz-input id="serverUrl" formControlName="serverUrl" placeholder="邮件配置"/>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="serverPort" nzRequired>端口号</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24" nzErrorTip="必填项不能为空">
+        <input nz-input id="serverPort" formControlName="serverPort" placeholder="端口号"/>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="emailAccount" nzRequired>邮箱账号</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24" nzErrorTip="必填项不能为空">
+        <input nz-input id="emailAccount" formControlName="emailAccount" placeholder="邮箱账号"/>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="emailPwd" nzRequired>邮箱密码</nz-form-label>
+      <nz-form-control [nzSm]="10" [nzXs]="24" nzErrorTip="必填项不能为空">
+        <input nz-input id="emailPwd" formControlName="emailPwd" placeholder="邮箱密码"/>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+
+</nz-modal>

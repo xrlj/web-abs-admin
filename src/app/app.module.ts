@@ -11,6 +11,7 @@ import {registerLocaleData} from '@angular/common';
 import zh from '@angular/common/locales/zh';
 import {CustomBtnComponent} from './components/custom-btn/custom-btn.component';
 import {httpInterceptorProviders} from './interceptors';
+import { UEditorModule } from 'ngx-ueditor';
 
 registerLocaleData(zh);
 
@@ -22,7 +23,17 @@ registerLocaleData(zh);
     NgZorroAntdModule,
     FormsModule,
     HttpClientModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    UEditorModule.forRoot({
+      js: [
+        `./assets/ueditor/ueditor.config.js`,
+        `./assets/ueditor/ueditor.all.min.js`,
+      ],
+      // 默认前端配置项
+      options: {
+        UEDITOR_HOME_URL: './assets/ueditor/'
+      }
+    })
   ],
   providers: [{provide: NZ_I18N, useValue: zh_CN}, httpInterceptorProviders],
   exports: [

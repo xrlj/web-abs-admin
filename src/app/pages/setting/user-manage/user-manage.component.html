@@ -85,9 +85,9 @@
           <div *ngSwitchDefault>
             <a (click)="editUser(data.userId)">编辑</a>
             <nz-divider nzType="vertical"></nz-divider>
-            <a (click)="disableUser(data.userId)">禁用</a>
+            <a (click)="disableUser(data.userId, data.username)">禁用</a>
             <nz-divider nzType="vertical"></nz-divider>
-            <a (click)="addUserBlack(data.userId)">拉黑</a>
+            <a (click)="addUserBlack(data.userId, data.username)">拉黑</a>
             <nz-divider nzType="vertical"></nz-divider>
             <a (click)="updateUserPwd(data.userId)">更改密码</a>
             <nz-divider nzType="vertical"></nz-divider>

@@ -1,1 +1,96 @@
-<p>notify-email-record works!</p>
+<nz-card class="card-list" nzTitle="邮件发送记录">
+  <div class="card-list-action">
+    <nz-input-group [nzSuffix]="suffixTemplate1">
+      <input type="text" nz-input [(ngModel)]="vEmailReq.templateId" placeholder="模板ID"/>
+    </nz-input-group>
+    <nz-input-group [nzSuffix]="suffixTemplate2">
+      <input type="text" nz-input [(ngModel)]="vEmailReq.reciever" placeholder="收件人"/>
+    </nz-input-group>
+    <nz-select nzShowSearch nzAllowClear nzPlaceHolder="发送状态" [(ngModel)]="vEmailReq.status" style="min-width: 200px">
+      <nz-option [nzLabel]="'发送成功'" [nzValue]="1"></nz-option>
+      <nz-option [nzLabel]="'发送失败'" [nzValue]="2"></nz-option>
+    </nz-select>
+    <button nz-button nzType="default" (click)="search(true)"><i nz-icon nzType="search"></i>查询</button>
+    <button nz-button nzType="danger" (click)="del()"><i nz-icon type="delete"></i>删除</button>
+  </div>
+  <div class="card-list-table">
+    <nz-table
+      #table
+      nzShowPagination
+      nzShowSizeChanger
+      nzBordered
+      [nzFrontPagination]="false"
+      [nzData]="listOfAllData"
+      [nzLoading]="loading"
+      [nzTotal]="total"
+      [(nzPageIndex)]="pageIndex"
+      [(nzPageSize)]="pageSize"
+      (nzPageIndexChange)="search()"
+      (nzPageSizeChange)="search(true)"
+      (nzCurrentPageDataChange)="currentPageDataChange($event)"
+    >
+      <thead>
+      <tr>
+        <th
+          nzShowCheckbox
+          [(nzChecked)]="isAllDisplayDataChecked"
+          [nzIndeterminate]="isIndeterminate"
+          (nzCheckedChange)="checkAll($event)"
+        ></th>
+        <th nzWidth="12%" nzAlign="center">模板ID</th>
+        <th nzWidth="12%" nzAlign="center">发送者</th>
+        <th nzWidth="12%" nzAlign="center">收件人</th>
+        <th nzWidth="12%" nzAlign="center">抄送</th>
+        <th nzWidth="12%" nzAlign="center">主题</th>
+        <th nzWidth="12%" nzAlign="center">状态</th>
+        <th nzWidth="16%" nzAlign="center" nzShowSort>发送时间</th>
+        <th nzWidth="12%" nzAlign="center">操作</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let data of table['data']">
+        <td
+          nzShowCheckbox
+          [(nzChecked)]="mapOfCheckedId[data.id]"
+          [nzDisabled]="data.disabled"
+          (nzCheckedChange)="refreshStatus()"
+        ></td>
+        <td nzAlign="center">{{ data.code }}</td>
+        <td nzAlign="center">{{ data.code }}</td>
+        <td nzAlign="center">{{ data.code }}</td>
+        <td nzAlign="center">{{ data.code }}</td>
+        <td nzAlign="center">{{ data.code }}</td>
+        <td nzAlign="center">{{ data.code }}</td>
+        <td nzAlign="center">{{ data.code }}</td>
+        <td nzAlign="center">{{ data.code }}</td>
+        <td nzAlign="center">
+          <a>编辑</a>
+        </td>
+      </tr>
+      </tbody>
+    </nz-table>
+  </div>
+</nz-card>
+
+<ng-template #suffixTemplate1
+><i
+  nz-icon
+  nz-tooltip
+  class="ant-input-clear-icon"
+  nzTheme="fill"
+  nzType="close-circle"
+  *ngIf="vEmailReq.templateId"
+  (click)="vEmailReq.templateId = null"
+></i
+></ng-template>
+<ng-template #suffixTemplate2
+><i
+  nz-icon
+  nz-tooltip
+  class="ant-input-clear-icon"
+  nzTheme="fill"
+  nzType="close-circle"
+  *ngIf="vEmailReq.reciever"
+  (click)="vEmailReq.reciever = null"
+></i
+></ng-template>
