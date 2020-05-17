@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {VEmailReq} from '../../../helpers/vo/req/v-email-req';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import {UEditorConfig} from '../../../helpers/ueditor-config';
-import { EditorChangeContent, EditorChangeSelection } from 'ngx-quill';
 
 @Component({
   selector: 'app-notify-email-manage',
@@ -40,9 +39,6 @@ export class NotifyEmailManageComponent implements OnInit {
   addOrEditEmailServerForm: FormGroup;
 
   ueditorConfig = new UEditorConfig();
-
-  blured = false;
-  focused = false;
 
   constructor(private fb: FormBuilder) {
     this.addOrEditForm = this.fb.group({
@@ -105,30 +101,6 @@ export class NotifyEmailManageComponent implements OnInit {
     this.isShowEmailServerModal = false;
     this.isEmailServerModalOkLoading = false;
     this.addOrEditEmailServerForm.reset();
-  }
-
-  created(event) {
-    // tslint:disable-next-line:no-console
-    console.log('editor-created', event);
-  }
-
-  focus($event) {
-    // tslint:disable-next-line:no-console
-    console.log('focus', $event);
-    this.focused = true;
-    this.blured = false;
-  }
-
-  changedEditor(event: EditorChangeContent | EditorChangeSelection) {
-    // tslint:disable-next-line:no-console
-    console.log('editor-change', event);
-  }
-
-  blur($event) {
-    // tslint:disable-next-line:no-console
-    console.log('blur', $event);
-    this.focused = false;
-    this.blured = true;
   }
 
   /**
