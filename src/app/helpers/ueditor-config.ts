@@ -25,7 +25,7 @@ export class UEditorConfig {
   imageUrlPrefix = ''; /* 图片访问路径前缀,可配置您的文件访问地址 */
   imagePathFormat = '' /* 上传保存路径,可以自定义保存路径和文件名格式，不使用本地保存，可不配置 */;
   replace = '';
-  serverUrl = 'http://172.31.31.31:9020'.concat('/sysFiles' + '/ueditorUploadImg'); // 服务器统一请求接口路径
+  serverUrl = 'http://192.168.0.3:9020'.concat('/sysFiles' + '/ueditorUploadImg'); // 服务器统一请求接口路径
 
   /*视频 start*/
   videoActionName = 'A'; // 执行上传视频的action名称
