@@ -5,6 +5,8 @@ import {Utils} from '../../../helpers/utils';
 import {DefaultBusService} from '../../../helpers/event-bus/default-bus.service';
 import {VCustomerEtpResp} from '../../../helpers/vo/resp/v-customer-etp-resp';
 import {VCustomerEtpReq} from '../../../helpers/vo/req/v-customer-etp-req';
+import {EtpTypeEnum} from '../../../helpers/enum/etp-type-enum';
+import {EtpManageService} from './etp-manage.service';
 
 @Component({
   selector: 'app-etp-manage',
@@ -37,21 +39,21 @@ export class EtpManageComponent implements OnInit {
   isShowAddOrEditModal = false;
   modalType = 1; // 1-新增；2-编辑
   isModalOkLoading = false;
-  vCustomerEtpResp: VCustomerEtpResp; // 用户详情
+  vCustomerEtpResp: VCustomerEtpResp; // 详情
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: FormBuilder, private etpManageService: EtpManageService,
               public uiHelper: UIHelper, private utils: Utils,
               private defaultBusService: DefaultBusService) {
     // 新增编辑对话框
     this.addOrEditForm = this.fb.group({
-      fullName: [null, [Validators.required]],
+      etpName: [null, [Validators.required]],
       oriCode: [null, null],
       shortName: [null, null],
-      etpPhone: [null, [Validators.required]],
+      telephone: [null, [Validators.required]],
       fax: [null, null],
-      linkName: [null, [Validators.required]],
-      linkMobile: [null, [Validators.required]],
-      linkPhone: [null, null]
+      contactName: [null, [Validators.required]],
+      contactMobile: [null, [Validators.required]],
+      contactPhone: [null, null]
     });
   }
 
@@ -94,11 +96,17 @@ export class EtpManageComponent implements OnInit {
   }
 
   /**
-   * 新增保理商
+   * 新增企业
    */
   addModalShow(modalType: number) {
     this.modalType = modalType;
     this.isShowAddOrEditModal = true;
+
+    switch (this.tabIndex) {
+      case 0:
+        break;
+      default:
+    }
   }
 
   /**
@@ -120,6 +128,20 @@ export class EtpManageComponent implements OnInit {
    * 新增或编辑确定。
    */
   handleOk(modalType: number) {
+    if (this.addOrEditForm.valid) { // 前端通过所有输入校验
+      const value = this.addOrEditForm.value;
+      console.log('>>>>>value:' + JSON.stringify(value));
+      this.isModalOkLoading = true;
+      if (modalType === 1) { // 新增
+
+      } else { // 编辑
+      }
+    } else {
+      for (const key in this.addOrEditForm.controls) {
+        this.addOrEditForm.controls[key].markAsDirty();
+        this.addOrEditForm.controls[key].updateValueAndValidity();
+      }
+    }
   }
 
   /**
@@ -128,5 +150,7 @@ export class EtpManageComponent implements OnInit {
   reInit() {
     this.modalType = 1;
     this.isShowAddOrEditModal = false;
+    this.isModalOkLoading = false;
+    this.addOrEditForm.reset();
   }
 }
