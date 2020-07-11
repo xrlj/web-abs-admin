@@ -31,6 +31,29 @@
   </ul>
 
   <div class="user">
+    <div nz-dropdown [nzDropdownMenu]="menu" [nzPlacement]="'bottomRight'" class="user-name">
+      <nz-avatar nzIcon="user"></nz-avatar>
+      <span>管理员</span>
+      <i nz-icon nzType="down" style="margin-left: 3px"></i>
+    </div>
+  </div>
+
+  <nz-dropdown-menu #menu="nzDropdownMenu">
+    <ul nz-menu>
+      <li nz-menu-item>个人中心</li>
+      <li nz-menu-item>修改密码</li>
+      <li nz-submenu nzTitle="设置主题">
+        <ul nz-menu nzSelectable>
+          <li nz-menu-item [nzSelected]="'true'" (click)="changeTheme('default')">default 默认主题</li>
+          <li nz-menu-item (click)="changeTheme('orange')">orange 橙色主题</li>
+          <li nz-menu-item (click)="changeTheme('turquoise')">turquoise 蓝绿色主题</li>
+        </ul>
+      </li>
+      <li nz-menu-item (click)="logout()">退出登录</li>
+    </ul>
+  </nz-dropdown-menu>
+
+  <!--<div class="user">
     <nz-dropdown [nzPlacement]="'bottomRight'">
       <div nz-dropdown class="user-name">
         <nz-avatar nzIcon="user"></nz-avatar>
@@ -50,5 +73,5 @@
         </li>
       </ul>
     </nz-dropdown>
-  </div>
+  </div>-->
 </div>

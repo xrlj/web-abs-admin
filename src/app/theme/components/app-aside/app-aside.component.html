@@ -27,6 +27,7 @@
                 <ng-template #withoutSubChild>
                   <li nz-menu-item>
                     <a [routerLink]="child.link">
+                      <i nz-icon [nzType]="child.icon"></i>
                       <span title>{{ child.title }}</span>
                     </a>
                   </li>
@@ -36,6 +37,7 @@
           </li>
         </ng-container>
 
+        <!--没有子级菜单的处理-->
         <ng-template #withoutChild>
           <li nz-menu-item>
             <a [routerLink]="menu.link">

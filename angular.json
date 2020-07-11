@@ -34,7 +34,6 @@
             ],
             "styles": [
               "src/styles.less",
-              "src/assets/styles/theme-default.less",
               "src/assets/styles/global.less"
             ],
             "scripts": [
@@ -134,7 +133,6 @@
             ],
             "styles": [
               "src/styles.less",
-              "src/assets/styles/theme-default.less",
               "src/assets/styles/global.less"
             ],
             "scripts": []

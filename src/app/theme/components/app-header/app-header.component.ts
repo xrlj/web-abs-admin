@@ -46,4 +46,45 @@ export class AppHeaderComponent implements OnInit {
         });
       });
   }
+
+  /*更改主题*/
+  changeTheme(theme: string) {
+    let themeUrl = './assets/themes/style.default.css';
+    switch (theme) {
+      case 'orange':
+        themeUrl = './assets/themes/style.orange.css';
+        break;
+      case 'turquoise':
+        themeUrl = './assets/themes/style.turquoise.css';
+        break;
+    }
+
+    // create new link element
+    const newThemeElement = document.createElement('link') as HTMLLinkElement;
+    // put the link into the document head
+    document.head.appendChild(newThemeElement);
+
+    // add the type to the link element
+    newThemeElement.type = 'text/css';
+    // add the rel to the link elmenent
+    newThemeElement.rel = 'stylesheet';
+    // listen the link load event
+    newThemeElement.onload = () => {
+      // get the theme link element
+      const themeElements = document.querySelectorAll('link[theme-link]');
+      // get all of the style elements and remove all of theme from the document
+      themeElements.forEach(themeElement => {
+        // remove the prevoius theme styles from the document when the new theme styles already downloaded
+        document.head.removeChild(themeElement);
+      });
+
+      // add attribute to the theme link element
+      newThemeElement.setAttribute('theme-link', '');
+      // remove the listener
+      newThemeElement.onload = null;
+
+    };
+
+    newThemeElement.href = themeUrl;
+  }
 }
