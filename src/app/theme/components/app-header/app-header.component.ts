@@ -48,6 +48,10 @@ export class AppHeaderComponent implements OnInit {
       });
   }
 
+  /**
+   * 更改主题。
+   * @param theme 主题。default 默认主题；orange 橙色主题；turquoise蓝绿色主题
+   */
   changeTheme(theme: ThemeEnum): void {
     const style = document.createElement('link');
     style.type = 'text/css';
@@ -80,11 +84,7 @@ export class AppHeaderComponent implements OnInit {
     };
   }
 
-  /**
-   * 更改主题。
-   * @param theme 主题。default 默认主题；orange 橙色主题；turquoise蓝绿色主题
-   */
- /* changeTheme(theme: string) {
+  /*changeTheme(theme: string) {
     let themeUrl = './assets/themes/style.default.css';
     switch (theme) {
       case 'orange':
