@@ -341,4 +341,20 @@ export class UIHelper {
     }
     return color;
   }
+
+  /**
+   * 保存当前主题字符串。
+   * @param currentTheme 选定的当前主题，默认为default
+   */
+  storageCurrentTheme(currentTheme: string): void {
+    localStorage.setItem('currentTheme', currentTheme);
+  }
+
+  /**
+   * 获取当前设定的主题。
+   */
+  getCurrentTheme(): string {
+    const currentTheme = localStorage.getItem('currentTheme');
+    return currentTheme;
+  }
 }

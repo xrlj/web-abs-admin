@@ -415,4 +415,32 @@ export class MenuManageComponent implements OnInit {
     }
   }
 
+  getMenuShowTagColorNo(): string {
+    const currentTheme = this.uiHelper.getCurrentTheme();
+    let color = 'geekblue';
+    switch (currentTheme) {
+      case 'orange':
+        color = 'lime';
+        break;
+      case 'turquoise':
+        color = '';
+        break;
+    }
+    return  color;
+  }
+
+  getMenuShowTagColorYes(): string {
+    const currentTheme = this.uiHelper.getCurrentTheme();
+    let color = 'blue';
+    switch (currentTheme) {
+      case 'orange':
+        color = 'orange';
+        break;
+      case 'turquoise':
+        color = 'cyan';
+        break;
+    }
+    return  color;
+  }
+
 }

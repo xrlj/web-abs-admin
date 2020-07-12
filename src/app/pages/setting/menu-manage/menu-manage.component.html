@@ -44,14 +44,14 @@
               <i nz-icon [nzType]="item.icon"></i>
             </td>
             <td *ngIf="item.type === 1" nzAlign="center">
-              <nz-tag [nzColor]="'blue'">菜单</nz-tag>
+              <nz-tag>菜单</nz-tag>
             </td>
             <td *ngIf="item.type === 2" nzAlign="center">
               <nz-tag [nzColor]="'green'">按钮</nz-tag>
             </td>
             <td nzAlign="center">{{ item.sort }}</td>
-            <td *ngIf="item.show" nzAlign="center">显示</td>
-            <td *ngIf="!item.show" nzAlign="center">不显示</td>
+            <td *ngIf="item.show" nzAlign="center"><nz-tag [nzColor]="">显示</nz-tag></td>
+            <td *ngIf="!item.show" nzAlign="center"><nz-tag [nzColor]="">不显示</nz-tag></td>
             <td nzAlign="center">{{ item.link }}</td>
             <td nzAlign="center">{{ item.perms }}</td>
             <td nzAlign="center">

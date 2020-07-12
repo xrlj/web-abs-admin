@@ -6,8 +6,8 @@ import {UIHelper} from '../../../helpers/ui-helper';
 import {AppPath} from '../../../app-path';
 import {DefaultBusService} from '../../../helpers/event-bus/default-bus.service';
 import {Utils} from '../../../helpers/utils';
-import {UserStatusEnum} from '../../../helpers/enum/user-status-enum';
 import {JwtKvEnum} from '../../../helpers/enum/jwt-kv-enum';
+import {ThemeEnum} from '../../../helpers/enum/theme-enum';
 
 @Component({
   selector: 'app-header',
@@ -23,6 +23,7 @@ export class AppHeaderComponent implements OnInit {
 
   ngOnInit() {
     this.appName = '运营总后台';
+    this.uiHelper.storageCurrentTheme('default');
   }
 
   /**
@@ -47,8 +48,43 @@ export class AppHeaderComponent implements OnInit {
       });
   }
 
-  /*更改主题*/
-  changeTheme(theme: string) {
+  changeTheme(theme: ThemeEnum): void {
+    const style = document.createElement('link');
+    style.type = 'text/css';
+    style.rel = 'stylesheet';
+    style.id = `theme-${theme}-link`;
+    switch (theme) {
+      case ThemeEnum.Default:
+        style.href = './assets/themes/style.default.css';
+        break;
+      case ThemeEnum.Orange:
+        style.href = './assets/themes/style.orange.css';
+        break;
+      case ThemeEnum.Turquoise:
+        style.href = './assets/themes/style.turquoise.css';
+        break;
+    }
+    document.head.append(style);
+
+    style.onload = () => {
+      // 移除旧的
+      for (const key in ThemeEnum) {
+        const themeName = ThemeEnum[key];
+        if (theme !== themeName) {
+          const dom = document.getElementById(`theme-${themeName}-link`);
+          if (dom) {
+            dom.remove();
+          }
+        }
+      }
+    };
+  }
+
+  /**
+   * 更改主题。
+   * @param theme 主题。default 默认主题；orange 橙色主题；turquoise蓝绿色主题
+   */
+ /* changeTheme(theme: string) {
     let themeUrl = './assets/themes/style.default.css';
     switch (theme) {
       case 'orange':
@@ -86,5 +122,7 @@ export class AppHeaderComponent implements OnInit {
     };
 
     newThemeElement.href = themeUrl;
-  }
+
+    this.uiHelper.storageCurrentTheme(theme); // 保存当前主题
+  }*/
 }
